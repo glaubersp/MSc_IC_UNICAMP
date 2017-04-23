@@ -1,0 +1,71 @@
+\chapter{Introdução}
+\label{chap:introducao}
+
+%Answer the question ``What was the problem?'' Why is it important? [What was your problem area?]
+%``The purpose of the Introduction should be to supply sufficient background information to allow the reader to understand and evaluate the results of the present study without needing to refer to previous publications on the topic. The Introduction should also provide the rationale for the present study. Above all, you should state briefly and clearly your purpose in writing the paper. Choose references carefully to provide the most important background information.''[Day, page 23]
+% introduce problem, outline solution; the statement of the problem should include a clear statement why the problem is important (or interesting).
+
+% Context: Métodos formais, Linguagens de especificação algébrica e HasCASL
+%% O que são métodos formais e pra que servem.
+%% Tipos de linguagens existentes?
+%% Qual linguagem irei usar?
+Métodos formais são ferramentas da Engenharia de Software que empregam formalismos matemáticos na construção e verificação de programas, visando a evitar e detectar precocemente defeitos nos programas.
+Devido à complexidade do emprego destes métodos e, consequentemente, o seu alto custo, a aplicação destes métodos ainda prevalece na construção de programas críticos, como sistemas de controle de trens~\cite{BadeauA05}, por exemplo.
+
+Em geral, um método formal consiste em uma ou mais linguagens de especificação e algumas ferramentas auxiliares, como verificadores sintáticos, tradutores entre linguagens e provadores de teoremas.
+Especificações de exemplo e bibliotecas contendo especificações pré-definidas para reuso acompanham as ferramentas.
+
+Existe uma gama variada de linguagens de especificação que utilizam diferentes formalismos matemáticos.
+As linguagens de especificação algébrica empregam a álgebra para verificar propriedades sobre os programas especificados.
+A linguagem de especificação algébrica \textit{Common Algebraic Specification Language (\CASL)}~\cite{Astesiano2002} foi concebida para ser a linguagem padrão na área de especificação algébrica.
+Suas características foram extraídas de outras linguagens de forma a obter uma linguagem que pudesse abranger a maioria das funcionalidades então disponíveis.
+Como não seria possível captar todas as funcionalidades existentes em uma única linguagem, \CASL foi projetada para permitir extensões e sublinguagens.
+As sublinguagens são criadas por restrições semânticas ou sintáticas à linguagem \CASL e suas extensões servem para implementar diferentes paradigmas de programação.
+
+A linguagem \HasCASL~\cite{SchroderMossakowski08} é uma extensão à linguagem \CASL que introduz o suporte à lógica de segunda ordem, com funções parciais e polimorfismo baseado em classes de tipos, incluindo-se construtores de tipos de segunda ordem e construtores de classes.
+Existe um subconjunto da linguagem que pode ser executado e se assemelha intimamente com a linguagem de programação \Haskell, graças a atalhos sintáticos criados para tornar as linguagens semelhantes.
+
+Os elementos sintáticos da linguagem \CASL estão presentes em todas as suas extensões, dentre elas, a linguagem \HasCASL.
+Algumas construções, embora possuam a mesma semântica, exibem diferenças sintáticas nas linguagens \CASL e \HasCASL.
+Alguns elementos, ainda, possuem a mesma finalidade embora apresentem diferenças semânticas importantes nas duas linguagens.
+
+% Precise problem definition: Criação de uma biblioteca para HasCASL
+Um pré-requisito para o uso prático de uma linguagem de especificação consiste na disponibilidade de um conjunto padrão de especificações pré-definidas~\cite{Schroder2006}.
+A linguagem \CASL possui tal conjunto na forma da biblioteca ``CASL Basic Datatypes''~\cite{Roggenbach:2004:CASL-Libraries}.
+No entanto, a linguagem \HasCASL ainda não possui uma biblioteca nos moldes da biblioteca de \CASL.
+
+% Limitation of existing solutions: Falta de uma biblioteca
+Embora \HasCASL possa importar os tipos de dados da biblioteca da linguagem \CASL, esta não disponibiliza propriedades e tipos de dados de segunda ordem.
+Uma biblioteca para a linguagem \HasCASL estenderia a biblioteca de \CASL com novas especificações para propriedades de segunda ordem, tal como completude de ordenações parciais, tipos de dados infinitos e alteração na forma de parametrização de especificações para suportar dependências reais de tipos~\cite{Schroder2006}.
+
+% Goal of the paper: Especificar uma biblioteca
+
+Nesta dissertação, descreve-se a especificação de uma biblioteca para a linguagem \HasCASL tendo como referência a biblioteca \Prelude da linguagem \Haskell.
+A biblioteca criada provê funções e tipos de dados de segunda ordem não existentes na biblioteca \textit{Basic Datatypes} da linguagem \CASL.
+Ao mesmo tempo, essa biblioteca aproxima a linguagem de especificação \HasCASL da linguagem de programação \Haskell ao criar especificações para os tipos de dados e funções existentes em \Haskell.
+Foram desenvolvidas duas versões da biblioteca, sendo a primeira com suporte a tipos de dados com avaliação estrita e a segunda com suporte a tipos de dados com avaliação preguiçosa.
+A verificação das duas versões da biblioteca foi realizada com o auxílio da ferramenta \Hets~\cite{MossakowskiEtAl07b}, responsável pela análise sintática e tradução das especificações, e do provador de teoremas \Isabelle~\cite{Nipkow-Paulson-Wenzel:2002}.
+
+% Contribution: Falar sobre a biblioteca criada
+Nossa contribuição pode ser sumarizada como segue:
+\begin{itemize}
+\item Especificação de uma biblioteca com avaliação estrita de tipos de dados cobrindo um subconjunto da biblioteca \Prelude, incluindo os tipos de dados booleano, listas, caracteres e cadeias de caracteres, além de classes e funções presentes na biblioteca.
+\item Refinamento da biblioteca anterior para suportar a avaliação preguiçosa de tipos de dados.
+\item Verificação das especificações criadas (9 especificações verificadas totalmente e 8 especificações verificadas parcialmente).
+\item Documentação do processo de especificação e verificação, incluindo exemplos para ilustrar o uso das linguagens \HasCASL e \Hets e da ferramenta \Isabelle.
+\end{itemize}
+
+A biblioteca aqui especificada possui um poder de representação semelhante ao poder da biblioteca \Prelude, excetuando-se os tipos recursivos e as estruturas infinitas, passíveis de suporte com um novo refinamento da biblioteca com suporte a avaliação preguiçosa de tipos de dados.
+
+% Outline
+A organização desta dissertação se dá como descrito a seguir:
+\begin{itemize}
+\item O Capítulo~\ref{chap:revisaobib} apresenta uma revisão bibliográfica de algumas linguagens de especificação relacionadas.
+\item Dada a pouca documentação da linguagem \HasCASL e a falta de documentação em português sobre a mesma, um tutorial introdutório foi incluído no Capítulo~\ref{chap:HasCASLTutorial}.
+\item A descrição da especificação da biblioteca para a linguagem \HasCASL com suporte a avaliação estrita de tipos de dados encontra-se no Capítulo~\ref{chap:desenvBiblioteca}. 
+\item O Capítulo~\ref{chap:laziness} documenta o refinamento da biblioteca para suportar a avaliação preguiçosa de tipos de dados.
+\item O processo de verificação da biblioteca é apresentado no Capítulo~\ref{chap:hetseisabelle}.
+\item No Capítulo~\ref{chap:conclusao} são apresentadas as conclusões do trabalho e as sugestões de trabalhos futuros.
+\item Os Apêndices ~\ref{appendix:strictSpec} e~\ref{appendix:strictProofs} listam, respetivamente, as especificações e as provas das especificações para a biblioteca modelada com avaliação estrita.
+\item A versão da biblioteca que faz uso de avaliação preguiçosa encontra-se no Apêndice~\ref{appendix:lazySpec} e as provas destas especificações podem ser encontradas no Apêndices~\ref{appendix:lazyProofs}.
+\end{itemize}

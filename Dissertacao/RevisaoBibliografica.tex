@@ -1,0 +1,306 @@
+\chapter{Linguagens de Especificação Formal Correlatas}
+\label{chap:revisaobib}
+
+Neste capítulo, realizamos uma compilação de natureza ilustrativa e introdutória de algumas linguagens de especificação formal disponíveis.
+Sem a pretensão de extensão ou de completude, as seções a seguir visam a uma apresentação das características de linguagens de especificação formal.
+Para uma visão aprofundada, deve-se consultar as referências assinaladas em cada seção.
+
+\section{Extended ML}\label{chap:revisaobib:eml}
+\textit{Extended ML (\EML)} \cite{MLDefIntro} é em uma linguagem formal que foi construída a partir da linguagem de programação funcional \textit{Standard ML (\SML)}, estendendo a sintaxe e a semântica desta última para alcançar o formalismo necessário para a execução de inferências lógicas.
+
+A linguagem de programação funcional \textit{Standard ML (\SML)} é composta por duas sublinguagens.
+A primeira, nomeada linguagem \textit{core}, provê a definição de tipos e valores (variáveis, funções e elementos) daqueles tipos.
+A segunda, chamada linguagem \textit{module}, permite a definição e a combinação de unidades autocontidas de programas codificadas na primeira linguagem.
+
+A linguagem \textit{core} é uma linguagem fortemente tipificada com um sistema de tipos que agrega tipos polimórficos, união disjunta de tipos, produtos de tipos, tipos que são funções de segunda ordem, tipos recursivos e a possibilidades de definição de tipos abstratos e concretos pelo usuário.
+A semântica da linguagem também reflete características de linguagens imperativas de programação, a saber: tratamento de exceções e referências (ponteiros) tipificadas.
+O tratamento de entrada e saída de dados é realizado através de \textit{streams}, que associam o fluxo de entrada com produtores (teclado, por exemplo) e o fluxo de saída com consumidores (monitor).
+
+A linguagem \textit{module} fornece mecanismos para a modularização de programas.
+Uma assinatura (\textit{signature}) fornece uma interface que é implementada por uma estrutura (\textit{structure}).
+Nesta interface são declarados tipos, valores, exceções e subestruturas que devem ser implementados pelas estruturas posteriormente associadas a esta assinatura.
+A linguagem ainda apresenta funtores, equivalentes a estruturas parametrizadas, que são aplicados sobre outras estruturas a fim de se obter novas estruturas.
+Um funtor possui uma assinatura de entrada, que descreve as estruturas às quais pode ser aplicado, e uma assinatura opcional de saída, que define a estrutura resultante da aplicação do mesmo sobre outras estruturas.
+Estruturas e funtores definem módulos e as assinaturas, por sua vez, impõem restrições às definições de módulos, além de definirem quais declarações dos módulos serão visíveis pelos usuários destes módulos.
+
+Além de ter sua sintaxe e sua semântica formalmente definidas, a linguagem \SML possui uma biblioteca padrão definida e que deve ser implementada pelos compiladores \cite{MLLib}.
+A biblioteca especifica interfaces e operações para tipos básicos de dados, como inteiros, caracteres e cadeias de caracteres, listas, tipos opcionais e vetores mutáveis e imutáveis.
+Também são definidos o suporte para operações de entrada e saída binária e textual, além de interfaces para serviços do sistema operacional e para comunicação em rede.
+
+A linguagem \EML permite o desenvolvimento formal de programas através de passos individualmente verificados.
+Ela engloba todos os estágios deste desenvolvimento, desde a especificação de alto nível até o programa final.
+Por ter como produto final um programa modular escrito na linguagem \SML, um grande subconjunto desta última linguagem forma uma sublinguagem executável de \EML.
+
+Além das características pertencentes às linguagens de programação funcional, \EML possui outras duas características particularmente interessantes para a aplicação em métodos formais.
+Primeiramente, permite total modularização para a modelagem de sistemas complexos.
+A modularização é um pré-requisito para a aplicação de métodos formais no desenvolvimento de exemplos complexos e \EML foi projetada visando ao seu emprego neste contexto.
+Em segundo, a sintaxe e a semântica da linguagem são formalmente definidas.
+Com a definição formal, torna-se possível fazer inferências por meio de lógica formal sobre o comportamento de programas escritos em \SML, o que permite, por sua vez, o desenvolvimento de provas de correção segundo uma dada especificação formal.
+
+\EML foi desenvolvida com o propósito de ser uma extensão mínima à linguagem \SML.
+Tem como princípio o desenvolvimento de uma linguagem para especificar sistemas modulares escritos em \SML ao invés do desenvolvimento de uma linguagem de especificação de propósito geral.
+Devido a essa abordagem, \EML pode ser facilmente aprendida por aqueles que possuem contato anterior com \SML.
+No entanto, devido à complexidade da linguagem \SML, a sintaxe de \EML também é complexa e seu manuseio no processo de especificação e verificação torna-se difícil.
+Uma outra desvantagem da linguagem é a falta de suporte a ferramentas automáticas de verificação, tais como provadores de teoremas \cite{MLSurvay}.
+
+A principal extensão de \EML com relação à sintaxe de \SML é a inclusão de axiomas nas assinaturas e no corpo dos módulos.
+Os axiomas definem propriedades que devem ser satisfeitas por todas as estruturas que implementarem a interface onde eles foram definidos.
+Assim como os tipos dos valores definidos nas interfaces de \SML permitem com que cada módulo seja compilado separadamente, a inclusão de axiomas nas interfaces de \EML permite com que propriedades dos módulos descritos por uma interface possam ser verificadas sem que seja necessário verificar o conteúdo do módulo.
+Isto cria a facilidade para que implementações diferentes de uma mesma interface sejam criadas e possam ser utilizadas sem afetar a correção das provas anteriormente desenvolvidas.
+
+Ao contrário de \SML, em que é opcional a definição de assinaturas para estruturas, todas as estruturas definidas em \EML devem possuir, obrigatoriamente, uma assinatura.
+No caso dos funtores, ambas as assinaturas de entrada e saída se tornam obrigatórias.
+Além do casamento entre nomes e tipos entre as entidades de uma assinatura e de um módulo, o corpo do módulo deve estar correto, ou seja, deve satisfazer todos os axiomas da assinatura a que está associado.
+
+Uma terceira extensão permite que o desenvolvimento de um programa em \EML comece com a definição de módulos de forma abstrata.
+Pode-se utilizar um sinal de interrogação no lugar da definição do corpo de um módulo, permitindo que sua definição seja incluída em refinamentos posteriores.
+Axiomas definindo o comportamento esperado da estrutura com declaração abstrata são declarados logo em seguida.
+Nos refinamentos posteriores, o sinal de interrogação é substituído por código escrito em \SML, o qual deve obedecer às propriedades definidas pelos axiomas.
+O desenvolvimento em \EML é encerrado quando todos os sinais de interrogação são substituídos por código \SML executável e os axiomas transformados em documentação.
+
+\EML possui um analisador sintático para verificar especificações e o código \SML resultante do processo de especificação pode ser analisado e gerado pelo compilador da linguagem \SML.
+No entanto, a linguagem ainda não possui ferramentas de verificação formal associadas, tal como um provador de teoremas ou um verificador automático de propriedades.
+A linguagem também não possui uma biblioteca padrão, embora tenha algumas funções pré-definidas na linguagem, tais como: tipo booleano e operações lógicas, listas e operações associadas, números (inteiros e reais) e funções aritméticas, cadeias de caracteres e operações de concatenação e quebra de cadeias \cite{MLDef}.
+
+\section{Maude}\label{chap:revisaobib:maude}
+
+A linguagem de especificação formal \Maude \cite{MaudeBook} foi projetada sobre três pilares: simplicidade, expressividade e performance.
+Dessa forma, uma grande variedade de aplicações deveriam ser naturalmente modeláveis na linguagem, de forma simples e com significado claro, e as implementações concretas destas aplicações deveriam ter performance competitiva com outras linguagens de programação eficientes.
+
+Um programa \Maude pode ser escrito através de equações e de regras, as quais possuem uma semântica de reescrita simples na qual o padrão encontrado do lado esquerdo é substituído pelo lado direito da equação ou da regra correspondente.
+
+Se um programa \Maude contem apenas equações, ele é considerado um \textit{módulo funcional}.
+Este módulo é um programa funcional onde são definidas, através de equações, uma ou mais funções que serão utilizadas como regras de simplificação.
+As equações podem, também, ser equações condicionais, ou seja, sua aplicação pode depender da validade de uma condição.
+Os módulos funcionais permitem definir sistemas determinísticos.
+
+Um programa que contem regras e, opcionalmente, equações, é considerado um \textit{módulo de sistema}.
+Assim como equações, as regras também são tratadas por reescrita do termo à esquerda pelo equivalente à direita e podem, opcionalmente, serem condicionais.
+No entanto, as regras diferem de equações por serem consideradas regras de transição local em um sistema possivelmente concorrente.
+O sistema pode ser encarado como um multiconjunto de objetos e mensagens, no qual estes últimos interagem localmente entre si através de regras e onde a ordem na qual objetos e mensagens são dispostos dentro do sistema é irrelevante, uma vez que o operador de união de multiconjuntos é declarado com as propriedades de associatividade e comutatividade.
+Um sistema declarado desta forma pode ser altamente concorrente e não-determinístico, ou seja, não há garantias de que todas as sequências de reescrita levam a um mesmo resultado final.
+Dependendo da ordem em que as regras forem aplicadas, os objetos podem terminar em estados diferentes, uma vez que as regras condicionais poderão, ou não, ser aplicadas devido ao estado dos objetos, nos diferentes caminhos possíveis de aplicação de mensagens, satisfazerem, ou não, as condições das regras.
+Há, ainda, a possibilidade de que não haja um estado final, ou seja, mensagens e objetos podem permanecer em interação contínua, formando um sistema reativo.
+
+A linguagem \Maude, além de permitir a definição de sistemas determinísticos e não-determinísticos, ainda é capaz de lidar com casamento de padrões em equações, definição de sintaxe e tipos de dados pelo usuário, polimorfismo --- com tipos, subtipos e funções parciais ---, tipos e módulos genéricos  --- podendo ser parametrizados por tipos e por novas teorias ---, objetos --- suportando orientação a objetos e comunicação através de mensagens com objetos externos ao sistema (arquivos, 
+\textit{socket} de rede, banco da dados, etc) --- e reflexão --- suportando redefinição de estratégias de reescrita, extensão dos módulos com novas operações e permitindo análises e transformações executadas por ferramentas de verificação.
+
+A boa performance dos programas \Maude provem da pré-compilação dos códigos para autômatos de casamento de padrões e de substituição eficientes.
+Esta pré-compilação permite, ainda, armazenar e analisar todos os passos de reescrita realizados.
+Ainda é possível otimizar o código através de outras quatro ferramentas.
+A ferramenta Perfil permite analisar gargalos de execução.
+As Estratégias de Avaliação permitem indicar quais argumentos devem ser avaliados e em qual ordem, antes que sejam executadas simplificações com equações, permitindo avaliação preguiçosa, avaliação estrita ou algum tipo de avaliação entre as duas anteriores.
+É possível, também, congelar a posição de argumentos em regras, evitando que estas últimas sejam aplicadas em qualquer subtermo naquela posição.
+Por último, é possível sinalizar que o resultado da chamada de funções sobre um determinado operador deve ser guardado para uso posterior, melhorando o tempo de execução de determinadas funções.
+
+A linguagem \Maude pode ser usada com três finalidades.
+Sistemas podem ser diretamente programados em \Maude, tirando vantagem da simplicidade da linguagem e das suas características formais.
+Pode-se, também, modelar um sistema através de uma especificação formal executável, permitindo o uso da especificação como um protótipo preciso do sistema para simular o seu comportamento.
+Dependendo do nível de detalhamento e da eficiência exigida, a especificação já pode ser considerada o programa final ou o modelo pode ser implementado em alguma outra linguagem de programação.
+As especificações servem, ainda, como modelos que podem ser formalmente verificados com respeito a diferentes propriedades que expressam requisitos formais do sistema.
+
+Propriedades podem ser descritas por fórmulas em lógica de primeira ordem ou em lógica temporal ou podem ser descritas por equações não-executáveis, regras e sentenças de pertinência escritas nas lógicas dos módulos funcionais ou dos módulos de sistema.
+As propriedades descritas em lógica de primeira ordem podem ser verificadas através de um provador de teoremas indutivo existente.
+As propriedades temporais, por sua vez, podem ser verificadas através do verificador de modelos para lógica temporal linear.
+Além de poder definir e verificar propriedades gerais com as duas ferramentas anteriores, \Maude apresenta algumas ferramentas para propriedades específicas.
+Módulos funcionais podem ter a sua terminação verificada.
+É possível verificar se módulos sem equações condicionais possuem a propriedade de \textit{Church-Rosser} e se são módulos coerentes.
+Pode-se, também, verificar se funções foram totalmente definidas em termos dos construtores dos tipos aos que as mesmas se aplicam.
+Há, ainda, uma ferramenta específica para simular sistemas de tempo real e realizar verificação de modelos sobre propriedades destes sistemas descritas em lógica temporal.
+
+Além das ferramentas, a linguagem \Maude provê uma biblioteca contendo a especificação do tipo booleano, dos números naturais, inteiros, racionais e de ponto flutuante, além de cadeias de caracteres. A biblioteca ainda possui a especificação de estruturas genéricas de armazenamento, a saber: listas, conjuntos, mapas e vetores.
+
+% Procurar um exemplo de pilha de inteiros
+
+\section{Larch}\label{chap:revisaobib:larch}
+
+\Larch \cite{LarchBook} constitui uma família de linguagens de especificação formal que dá suporte a especificações em duas camadas.
+As especificações possuem componentes escritos em duas linguagens: uma linguagem genérica, independente da linguagem de programação na qual pretende-se implementar a especificação, e uma segunda linguagem, dependente da linguagem de programação a ser utilizada posteriormente.
+A primeira linguagem recebe o nome de \textit{Larch Shared Language (LSL)} e as linguagens do segundo tipo são genericamente chamadas de \textit{Larch interface languages} --- referenciadas neste texto como linguagens de interface ---, embora cada uma possua seu respectivo nome.
+
+As linguagens de interface são usadas para definir uma camada de comunicação entre componentes de programas, fornecendo as informações necessárias para o uso de cada um destes componentes.
+Estas linguagens fornecem uma maneira de definir assertivas em relação aos estados que um programa pode assumir e incorporam notações das linguagens de programação para efeitos colaterais, tratamento de exceções, iteração e concorrência.
+A complexidade de cada uma das linguagens depende, diretamente, da complexidade da linguagem de programação associada.
+
+Como os mecanismos de comunicação entre elementos de um programa variam entre as linguagens de programação, o uso de duas camadas de abstração permite que as linguagens de interface sejam modeladas de forma a se aproximar das linguagens de programação associadas.
+Por refletirem o comportamento da linguagem de programação, as linguagens de interface evitam o tratamento genérico de questões associadas à semântica da linguagem de programação, tal como o modelo de alocação de memória para variáveis e a forma como parâmetros são passados para funções, por exemplo.
+Em comparação com o uso de uma única linguagem de interface genérica para diferentes linguagens e paradigmas, o uso de linguagens especializadas para cada linguagem de programação simplifica o processo de modelagem, tornando as especificações menores e mais claras com respeito à maneira como deverão ser implementadas.
+
+Existem linguagens de interface para as linguagens de programação C, Modula-3, Ada, C++, ML e Smaltalk.
+Há, também, uma linguagem genérica que pode ser especializada para outras linguagens de programação ou pode ser utilizada para especificar programas escritos em mais de uma linguagem.
+Por encorajar um estilo de programação que enfatiza o uso de abstrações, as linguagens de interface possuem mecanismos para especificar tipos abstratos de dados.
+Quando a linguagem de programação associada suporta tipos abstratos de dados, a linguagem de interface é modelada para refletir esta facilidade.
+No caso de linguagens de programação que não possuem suporte nativo para tipos abstratos de dados, os tipos abstratos da linguagem de interface são mapeados para entidades equivalentes na linguagem de programação.
+
+Em \Larch, encoraja-se a separação de interesses entre as duas camadas de linguagens.
+As especificações nas linguagens de interface devem concentrar detalhes de programação, tais como procedimentos para manipulação de dados e tratamento de exceções, enquanto as especificações descritas em \textit{LSL} devem definir estruturas primitivas a serem usadas pelas demais linguagens.
+Esta separação concentra a complexidade das especificações na linguagem \textit{LSL} com as vantagens de melhorar o reuso -- já que esta linguagem não depende da linguagem de programação --, de evitar erros -- uma vez que a semântica desta linguagem é mais simples do que a das linguagens de interface e linguagens de programação relacionadas -- e de facilitar a verificação de propriedades das especificações -- dado que este processo é mais fácil em \textit{LSL}.
+
+As linguagens da família \Larch definem dois tipos de símbolos: operadores e tipos.
+Na linguagem \textit{LSL}, operadores são funções totais entre tuplas de valores e um valor de resultado e tipos são conjuntos disjuntos e não-vazios de valores que indicam o domínio e a imagem dos operadores.
+Em cada linguagem de interface, ambos os símbolos devem possuir o mesmo significado que possuem na linguagem de programação associada.
+
+A unidade básica de especificação em \textit{LSL} recebe o nome de \textit{trait}.
+Esta unidade introduz operadores e suas propriedades, sendo possível, também, definir tipos abstratos de dados.
+As propriedades de operadores são definidas através de assertivas, que são equações relacionando operadores e variáveis.
+Há, também, a possibilidade de se criar assertivas não equacionais a fim de gerar teorias mais fortes.
+
+A teoria associada a um \textit{trait} é um conjunto infinito de fórmulas em lógica de primeira ordem multisortida, com igualdade, formado exclusivamente por todas as sentenças lógicas que seguem das assertivas definidas no \textit{trait}.
+Esta teoria contém igualdades e desigualdades que podem ser provadas por substituição entre termos associados entre si através de igualdades.
+
+Como boa prática, é sugerido que os \textit{traits} definam um conjunto de operadores e propriedades que, embora relacionados, não caracterizem totalmente um tipo específico.
+Desta forma, pode-se reutilizar tais operadores e suas propriedades em outros tipos de dados.
+
+As especificações escritas nas linguagens de interface fornecem informações para o uso de uma interface e, também, informações de como implementá-la.
+Cada linguagem de interface possui um modelo do estado manipulado pela linguagem de programação associada.
+O estado é o mapeamento entre uma unidade abstrata de armazenamento (chamadas \textit{loc}) e um valor.
+Toda variável possui um tipo e está associada a uma \textit{loc} deste tipo.
+A \textit{loc} pode armazenar apenas valores do seu tipo a qualquer momento.
+Os tipos de valores armazenados nas \textit{locs} podem ser valores básicos (constantes, tais como inteiros e caracteres), tipos expostos (estruturas de dados totalmente descritas pelos construtores de tipo da linguagem de programação associada e que são visíveis pelos clientes da interface) e tipos abstratos (estruturas de dados cujas implementações não estão visíveis para o cliente da interface).
+
+Cada linguagem de interface provê operadores aplicáveis às \textit{locs} a fim de se obter seus valores em estados específicos (geralmente, os estados antes e depois da execução de um método).
+Estes operadores variam de linguagem para linguagem, de forma a serem próximos a operadores equivalentes na linguagem de programação ou serem facilmente compreensíveis para os usuários habituados à linguagem de programação associada.
+
+Os tipos definidos em especificações escritas nas linguagens de interface são baseados em tipos definidos nas especificações escritas em \textit{LSL}, de forma a existir um mapeamento entre tipos nas linguagens de interface e os tipos em \textit{LSL}.
+As propriedades dos tipos devem ser definidas em \textit{LSL}, de forma que qualquer linguagem de interface possa acessá-las e, desta forma, os tipos apresentem o mesmo comportamento esperado em todas as especificações.
+
+Os métodos definidos nas linguagens de interface podem ser entendidos e utilizados sem a necessidade de se referenciar outros métodos.
+Cada método possui uma assinatura com os tipos dos parâmetros e do retorno e um corpo formado por três tipos de declarações.
+As declarações do corpo do método definem precondições para a aplicação do método; indicam as alterações de estado efetuadas pelo método; e definem estados que são garantidos após a aplicação do método.
+As definições de pré-condições podem se referir apenas a valores do estado anterior à chamada do método.
+As definições de pós-condições podem, também, se referir a valores do estado posterior à chamada do método.
+Apenas as variáveis explicitamente alteradas na definição de alterações podem ter valores diferentes em ambos os estados.
+Caso esta seção seja omitida, todas as variáveis deverão ter os mesmos valores antes e depois da chamada do método.
+
+O usuário de um método deve garantir as pré-condições deste método antes de executá-lo.
+Já o implementador do método deve assumir as pré-condições e garantir que as alterações exigidas e as pós-condições sejam respeitadas.
+Caso as pré-condições não sejam válidas, o comportamento do método será irrestrito.
+
+As especificações escritas em \Larch podem ser verificadas através da ferramenta \textit{LP}.
+A intenção principal desta ferramenta é ser um assistente de provas ou um depurador de provas, ao invés de ser uma ferramenta automática de provas.
+Este assistente de provas foi projetado para executar passos de provas de forma automática e prover informações relevantes sobre os motivos pelos quais uma prova não foi verificada, quando for o caso.
+Por não empregar heurísticas complexas para a automatização das provas, esta ferramenta facilita o emprego de técnicas padrões, mas exige que o usuário escolha a melhor 
+técnica a ser utilizada.
+
+O assistente \textit{LP} permite que, ao se alterar um axioma, os teoremas previamente verificados possam ser verificados novamente de forma automática para garantir que a mudança não tenha invalidado as provas já executadas.
+Isto é feito gerando-se um \textit{script} de prova que pode ser executado posteriormente.
+Após alterar um axioma, pode-se indicar ao assistente que pare a execução do \textit{script} gerado na primeira divergência entre a nova prova e as anotações da prova anterior.
+Esta capacidade auxilia a manutenibilidade das provas, que podem ser facilmente verificadas após mudanças durante o desenvolvimento.
+
+\section{Z}\label{chap:revisaobib:z}
+\Z \cite{ZMoura,ZNotation} é uma linguagem de especificação não-executável embasada na teoria de conjuntos de \textit{Zermelo-Fraenkel} e em lógica de predicados de primeira ordem com tipos.
+Esta linguagem descreve a estrutura lógica, ou o estado, de um sistema, suportando declarar explicitamente a mudança de estado de variáveis.
+Desta forma, pode-se dizer que a linguagem propicia um ambiente com facilidades para se especificar programas a serem implementados em linguagens de programação imperativas.
+Por não lidar com questões de implementação, no entanto, as especificações podem ser traduzidas para qualquer paradigma de programação.
+
+As especificações em \Z são constituídas por dois tipos de conteúdo: o conteúdo formal, formado por parágrafos escritos em notação formal, e o conteúdo textual, que dá suporte para o entendimento do conteúdo formal, visando a melhorar a clareza da especificação.
+Embora possa-se usar apenas o conteúdo formal, as especificações em \Z costumam ser documentos onde o conteúdo textual é utilizado para explicar ou traduzir para linguagem humana os conceitos formalizados em linguagem matemática.
+Dessa forma, pretende-se facilitar a compreensão do sistema descrito e fornecer informações que possam facilitar a implementação da especificação em linguagens de programação.
+
+% Descrever tipos
+Os tipos em \Z determinam conjuntos formados pelos possíveis valores a serem assumidos por objetos destes tipos.
+Todo objeto, incluindo-se variáveis, deve ser declarado com seu respectivo tipo antes que possa ser usado em uma especificação.
+Os tipos iniciais, ou primitivos, são declarados e sua existência é assumida sem que sua estrutura interna seja detalhada.
+A linguagem disponibiliza um tipo inicial, representando números inteiros, e pré-definido com as respectivas operações aritméticas e de ordenação padrões.
+
+Os tipos iniciais podem ser combinados, criando tipos compostos, a saber: tipo potência, tipo produto cartesiano, tipo enumerado e tipo esquema.
+Um tipo potência representa um conjunto de objetos de um mesmo tipo que pode ser, por sua vez, um tipo simples ou de um tipo composto.
+O tipo produto representa elementos na forma de tuplas formadas por objetos.
+A declaração de um tipo enumerado define um tipo e as constantes associadas a este tipo, garantindo, através de predicados implícitos, que todas as constantes sejam representadas por objetos distintos entre si.
+Uma associação é um objeto formado a partir da fixação de objetos como valores de identificadores.
+O tipo de uma associação, chamado tipo esquema, relaciona aos identificadores os tipos dos respectivos objetos.
+
+% Descrever predicados
+Predicados são expressões que devem ser tratadas como verdadeiras ou falsas.
+Em \Z, predicados não possuem um tipo associado a si.
+Os predicados são formados a partir de operadores relacionais e podem incluir quantificadores, conectivos lógicos e declarações de variáveis.
+Objetos associados pelos operadores relacionais em um predicado devem possuir o mesmo tipo e podem ser declarados no predicado ou podem ter sido declarados previamente.
+
+% Descrever relações e funções
+A linguagem \Z suporta os conceitos matemáticos de relações e funções, bem como algumas operações matemáticas sobre estas construções, tais como operação inversa, operação de composição e operação de potência, dentre outras.
+As funções podem ser totais ou parciais e pode-se, ainda, declarar funções como injetoras, sobrejetoras ou bijetoras.
+Um terceiro qualificador para uma função permite definir se o domínio da mesma é um conjunto finito.
+Ainda é possível especificar funções através de $\lambda$-abstrações.
+
+É possível criar especificações parametrizadas, onde as funções serão declaradas dependendo de tipos pré-definidos que serão passados como parâmetros no uso da especificação.
+A linguagem ainda possui dois tipos de estruturas bastante úteis: sequências e pacotes.
+As sequências são conjuntos de objetos, possivelmente repetidos, com uma relação de ordem interna.
+Os pacotes são conjuntos de objetos, possivelmente repetidos, mas sem uma relação de ordem entre os seus elementos.
+As sequências suportam operações geralmente associadas a listas, tais como \textit{head}, \textit{tail} e \textit{rev}.
+Os pacotes, por sua vez, são estruturas representadas por tuplas formadas entre um objeto e o número de repetições deste objeto no pacote.
+
+% Descrever esquemas
+A modularização das especificações em \Z é obtida através dos esquemas.
+Um esquema é um conjunto nomeado de declarações e predicados que pode ser referenciado.
+É possível incluir um esquema dentro de um outro esquema mais complexo indicando-se o nome do esquema mais simples na parte declarativa do esquema complexo.
+Sobre o nome de um esquema, pode-se aplicar variantes para indicar o comportamento das variáveis de estado da especificação.
+Uma primeira variante, ao ser aplicada sobre um esquema, indica a inclusão de duas versões deste esquema: a versão inicial e a versão após a execução do esquema atual, indicando que pode ter havido mudança de estado.
+Uma segunda variante indica que não houve mudança de estado nas variáveis de um esquema.
+Esta variante equivale a aplicar a variante anterior a um esquema e incluir, para cada variável de estado do esquema, um predicado igualando a variável antes e depois da execução do esquema atual.
+
+Sobre os esquemas, pode-se aplicar, também, algumas operações.
+A fim de combinar esquemas, pode-se aplicar sobre eles as operações de disjunção, conjunção e negação.
+Estas operações equivalem a aplicar a operação lógica de mesmo nome sobre os predicados dos esquemas sobre os quais a operação foi realizada.
+
+Outras duas operações interessantes são a composição e o sequenciamento de esquemas.
+A composição de dois esquemas cria um novo esquema onde as alterações de estado do sistema equivalem à aplicação sequencial das alterações de estado indicadas pelo primeiro e pelo segundo operandos da composição.
+O sequenciamento de esquemas, por sua vez, estende a noção de composição.
+Se dois esquemas possuem alterações de estados disjuntas, ou seja, as modificações de estado indicadas por um esquema são independentes das alterações indicadas pelo segundo, o sequenciamento destes esquemas equivale à atuação simultânea dos dois esquemas sobre o sistema.
+No sequenciamento, as variáveis de saída do primeiro esquema se tornam variáveis de entrada para o segundo esquema.
+
+Por último, é possível encapsular variáveis em especificações.
+O encapsulamento de variáveis de uma especificação força o conteúdo da variável a existir apenas no contexto do esquema sobre o qual o encapsulamento foi aplicado.
+Isto é feito retirando-se a variável das declarações do esquema e aplicando o quantificador existencial sobre esta variável nos predicados onde ela aparece.
+Desta forma, a variável passa a existir apenas dentro dos predicados do esquema.
+É possível estender esta idéia quantificando-se um esquema sobre outro, o que gera um efeito duplo.
+A parte declarativa do esquema resultante é formada removendo-se as variáveis do esquema quantificado da parte declarativa do outro esquema.
+A parte predicativa do novo esquema é criada utilizando-se os predicados do esquema quantificado como restrições adicionais para os possíveis valores das variáveis do segundo esquema.
+
+% Ferramentas
+A linguagem \Z, embora seja um padrão internacional, não possui um conjunto de ferramentas padronizado.
+No entanto, há diversas ferramentas para a linguagem \cite{Malik2005CZT,SpiveyFuzzTypeChecker, SpiveyZWordTools,King1996,ArthanProofPower,Stocks1996,Brucker2003HOLZ2}, desde verificadores de tipo e animadores de especificações a provadores de teoremas baseados na linguagem \HOL.
+Existem, ainda, extensões à linguagem a fim de incluir objetos (\textit{Object-Z}\cite{ObjectZ}) e especificar sistemas reativos (\textit{Circus}\cite{Circus}).
+
+% Referencia: http://www.uni-koblenz.de/~beckert/Lehre/Spezifikation/11Z.pdf
+% http://www.csci.csusb.edu/dick/samples/z.html
+% Olhar/citar Z/EVES e HOL-Z
+
+\section{Método B}
+Uma evolução, ou extensão, da linguagem \Z é o chamado \BMethod\cite{BMethod}, codesenvolvido pelo mesmo criador da linguagem \Z.
+
+O \BMethod foi o primeiro método formal a englobar todas as fases do desenvolvimento de programas.
+Este método consiste em um arcabouço para especificações que fornece uma notação e uma noção de refinamento para especificar programas e refiná-los até a fase de implementação.
+Especificações construídas com o \BMethod, em geral, são implementadas nas linguagens de programação \textit{C} e \textit{Ada}, para as quais há suporte nas ferramentas disponíveis para a linguagem.
+A notação utilizada para criar especificações no \BMethod chama-se \textit{Notação para Máquinas Abstratas} (do inglês, \textit{Abstract Machine Notation --- \AMN}) e é semelhante à linguagem \Z, sendo, também, baseada em teoria de conjuntos e lógica de primeira ordem.
+
+Máquinas são a principal construção do \BMethod e são descritas na linguagem \AMN.
+Uma máquina encapsula um estado e um conjunto de operações.
+Sua estrutura sintática fixa permite declarar variáveis, constantes e propriedades, além de inicializar variáveis e declarar operações.
+A semântica das operações obedece o conceito de substituições generalizadas, aplicando-se substituições sobre predicados.
+
+Uma máquina é refinada através de uma outra máquina com novas variáveis, novas declarações de invariantes e novas declarações para as operações existentes na máquina original.
+As invariantes da nova máquina devem criar uma relação entre as duas máquinas e as operações desta nova máquina devem simular as operações da máquina sendo refinada.
+
+As implementações são um caso especial de refinamento que, embora possam ser realizadas a qualquer momento em uma sequência de refinamentos, só podem ser realizadas uma única vez.
+Uma máquina deve ser implementada em termos de outras máquinas, ou seja, uma máquina não pode possuir nenhuma referência a si mesma.
+Esta exigência é satisfeita implementando-se as operações através de operações especificadas em outras máquinas e que são importadas na implementação atual.
+Esta exigência leva a um desenvolvimento em camadas que finaliza no momento em que todas as máquina possuem implementações.
+
+O \BMethod possui diversos mecanismos para importar especificações, permtitindo diferentes tipos de visibilidade para as especificações importadas.
+A visibilidade de uma especificação pode variar de acesso total para escrita e leitura a acesso de leitura apenas, sendo que os variados tipos de acesso também impõem outras restrições para o uso da especificação importada.
+
+Há duas ferramentas comerciais para o \BMethod que suportam dois dialetos da linguagem.
+O \textit{B-Toolkit}\cite{BToolkit} é uma ferramenta para gerência de configurações que auxilia (e, em alguns casos, torna automáticas) as operações sobre as especificações.
+É possível criar uma máquina a partir de modelos e, ao salvá-la, a ferramenta realiza uma análise sintática e permite, também, que seja realizada a verificação de tipos na especificação.
+Após esta verificação, a ferramenta permite gerar obrigações de prova que podem ser verificadas com dois assistentes de provas.
+Inicialmente, um provador automático pode ser utilizado e, para as provas que este não puder verificar, um provador semi-automático pode ser executado para auxiliar no processo.
+A ferramenta \textit{B-Toolkit} permite, também, uma execução simbólica (ou animação) das especificações, possibilitando validar o comportamento real das especificações com relação ao comportamento esperado e, assim, descobrir erros de requisitos.
+Após realizar a implementação de uma máquina, o \textit{B-Toolkit} permite a geração de código na linguagem \textit{C} e a criação de uma interface para executar a máquina implementada como um protótipo.
+Além de gerar automaticamente todas as máquinas necessárias para a máquina atual, a ferramenta permite que, ao serem realizadas alterações, todas as operações afetadas pelas modificações sejam refeitas automaticamente, garantindo que as especificações continuem consistentes.
+A ferramenta ainda permite geração de documentação, que pode incluir versões com marcação \textit{HTML} das máquinas, obrigações de provas, provas e comentários presentes nas especificações, possibilitando a navegação por estes documentos.
+
+A ferramenta \textit{Atelier B}\cite{AtelierB} suporta um dialeto do \BMethod voltado para eventos e sistemas reativos.
+Além de permitir a realização de tarefas semelhantes às da outra ferramenta, \textit{Atelier B} possui algumas vantagens.
+Em contraste com a licença proprietária de \textit{B-Toolkit}, a ferramenta \textit{Atelier B} pode ser utilizada gratuitamente e possui várias de suas ferramentas distribuídas sob licença de código aberto e toda a documentação disponibilizada sob a licença \textit{Creative Commons}, em uma tentativa de incentivar o uso do \BMethod.
+Esta ferramenta possui versões para ambientes \textit{Windows}, \textit{Linux}, \textit{Mac OS X} e \textit{Solaris}, enquanto \textit{B-Toolkit} pode ser executado apenas em ambientes \textit{UNIX-like}.
+Uma outra vantagem da ferramenta \textit{Atelier B} é permitir a geração automática de código para as linguagens \textit{C++} e \textit{Ada}, além da linguagem \textit{C}.

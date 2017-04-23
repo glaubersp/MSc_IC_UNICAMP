@@ -1,0 +1,34 @@
+\frametitle {Problemas Enfrentados}
+
+\begin{block}{Mudanças na Tradução para \HOL}
+Mudança na tradução de tipos com avaliação preguiçosa e funções parciais exigiu adaptação e correção de todas as provas desenvolvidas.
+\end{block}
+
+\renewcommand{\FancyVerbFormatLine}[1]{%
+\ifthenelse{%
+\value{FancyVerbLine}=1%
+\or%
+\value{FancyVerbLine}=3%
+}{%
+  \textcolor{red!60!black}{#1}%
+}{%
+{#1}%
+}%
+}
+
+\begin{block}{Mapeamento Inicial}
+\begin{Verbatim}
+theory MainHCPairs
+
+types 'a partial = "bool * 'a"
+\end{Verbatim}
+\end{block}
+
+\begin{block}{Mapeamento Posterior}
+\begin{Verbatim}
+theory MainHC
+
+types 'a partial = "'a option"
+\end{Verbatim}
+\end{block}
+

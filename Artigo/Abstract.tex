@@ -1,0 +1,29 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+\usepackage[english]{babel}   
+%\usepackage[latin1]{inputenc}  
+ 
+\sloppy
+
+\title{Creating a HasCASL Library}
+
+\author{Glauber M. Cabral\inst{1}\thanks{Supported by CNPq grant 132039/2007-9}\ , Arnaldo V. Moura\inst{1}\thanks{Supported by CNPq grants 472504/2007-0 and 304363/2008-1}\ , Christian Maeder\inst{2},\\ Till Mossakowski\inst{2}, Lutz Schr\"oder\inst{2} }
+
+\address{Institute of Computing , University of Campinas, Brazil \email{glauber.cabral@students.ic.unicamp.br, arnaldo@ic.unicamp.br}
+\nextinstitute
+DFKI-Lab Bremen and Dept. of Comput. Sci., Universit\"at Bremen, Germany
+\email{\{Christian.Maeder, Till.Mossakowski, Lutz.Schroeder\}@dfki.de}
+}
+
+\begin{document}
+
+\maketitle
+
+\section*{Abstract}
+	
+The practical use of a specification language depends on the availability of a set of predefined standard specifications. Although the \textit{Common Algebraic Specification Language (CASL)} has a library with such predefined specifications, its higher order extension, named \textit{HasCASL}, lacks predefined higher order specifications. In this paper, we describe the specification of a library for the \textit{HasCASL} language based on the \textit{Haskell Prelude} library providing the higher order functions and data types lacking in the \textit{CASL} library. We use the \textit{Hets} tool for parsing specifications, generating theorems and translating between the HasCASL and \textit{HOL} languages. To verify the generated theorems, we use the \textit{Isabelle} theorem prover. Our library comprises basic data types, such as boolean, ordering, lists, characters, strings, numbers and monadic types, and related functions. Two example specifications were developed to demonstrate the use of our library. We specified theorems to guarantee the behavior of the specifications and we verified most of them using the available tools. Our library leaves room for proofs dealing with numbers, as they depends on homomorphisms that are been developed by the \textit{HasCASL} development team.
+\end{document}

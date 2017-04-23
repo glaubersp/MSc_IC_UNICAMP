@@ -1,0 +1,36 @@
+\section{Haskell}
+Esta seção apresenta algums elementos sintáticos da linguagem Haskell. As informações aqui fornecidas, bem como conceitos mais aprofundados, podem ser obtidos em materiais encontrados na internet \cite{learnHaskell} ou em livros \cite{Thompson1999}.
+
+Haskell é uma linguagem de programação funcional pura, fortemente tipificada e com avaliação preguiçosa (\textit{lazy evaluation}) que surgiu da necessidade de padronização no campo das linguagens funcionais. A linguagem é funcional porque implementa os conceitos do $\lambda$-Cálculo; logo, a programação é feita através de aplicações de funções ou computações. A linguagem é fortemente tipificada, ou seja, os tipos de funções e valores precisam ser definidos explicitamente ou o compilador irá tentar resolver o tipo para o mais abrangente possível no contexto atual.
+%Comentar sobre o desaparecimento do conceito de sequenciamento de operações
+
+Os conceitos de avaliação preguiçosa e avaliação estrita (\textit{strict evaluation}) estão relacionados com a interpretação dos parâmetros de uma função. Uma linguagem com avaliação estrita avalia todos os parâmetros da chamada de uma função antes de executar o corpo da função chamada. No caso de Haskell, os parâmetros de uma função são avaliados apenas quando tornam-se necessários para a execução da função.
+
+A linguagem é pura porque não permite que a aplicação de uma função altere o estado do sistema (a menos das partes envolvidas nos cálculos do qual a aplicação depende). Algumas linguagens funcionais são ditas não-puras porque permitem que, além de efetuar a aplicação de funções, um programa defina ações tipicamente de linguagens imperativas, como exibir algo em tela ou salvar um conteúdo em um arquivo. Estas ações causam efeitos colaterais, alterando o mundo real.
+
+O mundo real pode ser entendido como tudo que está diretamente ligado ao sistema em que o programa está rodando; os efeitos colaterais, por sua vez, são todos os efeitos que não sejam o cálculo de funções. Haskell permite executar ações que alterem o mundo real através de uma entidade matemática chamada \textit{mônada}. As mônadas seqüenciam computações passando, implicitamente, o estado atual do mundo real; isto permite que os efeitos colaterais não interfiram no código do programa.
+
+Pode-se definir uma função, em Haskell, diretamente como se faria em $\lambda$-Cálculo, com tipos ou não. Uma vantagem de se utilizar uma linguagem de programação é poder reutilizar métodos definidos através de nomes dados aos mesmos. Nomeia-se, então, uma função cujo corpo está escrito em $\lambda$-Cálculo a fim de reutilizá-la. Como o tipo dos elementos não foi declarado, o compilador irá calcular os tipos de acordo com o contexto. Para definir-se o tipo de uma função, deve-se escrever o nome da mesma seguido por ``::'' e pela seqüência de tipos de cada parâmetro, separados por ``->'', com associação à direita.
+
+Dessa forma, sem se afastar muito do $\lambda$-Cálculo, é possível escrever programas em Haskell. Contudo, na maioria dos casos, as funções são definidas de acordo com a sintaxe de Haskell, por ser mais prática e fácil. Uma função é definida por um nome seguido por uma seqüência de parâmetros separados do corpo da função pelo sinal de ``=''.
+
+Faz-se necessário diferenciar uma função de um operador. Uma função, em Haskell, é sempre definida de forma prefixa; um operador tem sua definição infixa. Uma função prefixa pode ser usada de forma infixa colocando-a entre crases; um operador, por sua fez, pode ser utilizado de forma prefixa colocando-o entre parênteses.
+
+Outra característica explorada é a coincidência de padrões (\textit{pattern matching}). Uma função para calcular o fatorial de um inteiro pode ser definida, utilizando-se coincidência de padrões, como se segue:
+\begin{verbatim}
+fat :: Int-> Int
+fat 1 = 1
+fat x = x * fat(x-1)
+\end{verbatim}
+
+Cada chamada à função \textit{fat} percorrerá, em ordem, as duas definições da função. Se o parâmetro for o inteiro 1, ele será retornado; caso contrário, será feita uma chamada recursiva à função com o parâmetro decrescido de uma unidade.
+
+Haskell permite a criação de bibliotecas, que são chamadas de módulos e são criadas com a palavra-chave \textit{module}. A linguagem possui uma biblioteca padrão chamada \textit{Prelude}, na qual são definidas funções básicas que operam sobre os tipos primitivos: \textit{Int}, \textit{Bool}, \textit{Char}, \textit{Float}; e sobre uplas (seqüências de valores entre parênteses) e listas definidas sobre os tipos primitivos.
+
+Haskell, como as demais linguagens funcionais, trabalha com listas como ferramenta principal para representação de dados. Pode-se criar listas de tipos primitivos, listas de uplas, listas de listas, listas de funções; todos os elementos da lista, contudo, precisam ser de tipos idênticos. A ordem e a quantidade de elementos dentro de uma lista também são importantes para efeito de igualdade. A lista $[1,2]$ não é igual à lista $[2,1]$ e ambas são diferentes das lista $[1,1,2]$.
+
+Dois operadores básicos para se manipular listas são o operador ``:'' (construção) e o operador ``++'' (concatenação). Uma lista sempre é construída a partir de uma lista vazia unindo-se a esta o elemento desejado através do construtor de listas; dessa forma, as seguintes listas são eqüivalentes: $[1,2,3] = 1:2:3:[] = 1:2:[3] =  1:[2,3 $. Para que se possa concatenar duas listas, elas precisam ser do mesmo tipo. As listas $[1,2,3]::[Int]$ e $[4,5,6]::[Int]$ podem ser concatenadas por $[1,2,3]++[4,5,6]$, produzindo a lista $[1,2,3,4,5,6]$.
+
+Uma ferramenta fundamental da linguagem Haskell é a definição de Tipos de Dados. Define-se um tipo com a palavra-chave \textit{data} seguida do nome do tipo e do sinal de igual; em seguida, listam-se os elementos que compõem o tipo (os construtores), separados por ``|''. Tanto o nome do tipo quanto dos construtores devem iniciar-se com letra maiúscula. Um construtor pode ser apenas um nome ou um nome seguido de tipos ou variáveis de tipos; as variáveis servem para definir tipos polimorfos e devem ser unidas, através de parênteses, ao nome do construtor, de forma a evitar ambigüidade.
+
+Por fim, pode-se incluir a especificação de um tipo de dado em uma biblioteca. A declaração  deve exportar, em sua definição, todos os métodos definidos pela especificação, garantindo a integridade do tipo de dado e as propriedades provadas para o tipo em questão. Os nomes devem ser exportados no formato \textit{módulo.operação}, de forma que não gere conflitos de nomes com variáveis de outros pacotes presentes no escopo atual. Isto é uma limitação da linguagem que já está sendo aprimorada pelo grupo de trabalho do compilador \textit{GHC} \cite{ghc}.

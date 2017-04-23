@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99c (Web2C 7.5.6)
+The top-level auxiliary file: Proposta.aux
+The style file: abnt-alf.bst
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: Proposta.bib
+Database file #2: cofi.bib
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Warning--campo note vazio em Schroder2006
++---------------------------------------------------------+
+| Estilo bibliografico abnt-alf.bst versao 1.53           |
+| Implementa a NBR6023, NBR10520 e NBR10523               |
+| Em caso de duvidas ou problemas com este estilo procure |
+| http://abntex.codigolivre.org.br                        |
++---------------------------------------------------------+
+You've used 13 entries,
+            6522 wiz_defined-function locations,
+            1322 strings with 12615 characters,
+and the built_in function-call counts, 10780 in all, are:
+= -- 922
+> -- 432
+< -- 10
++ -- 203
+- -- 130
+* -- 790
+:= -- 1515
+add.period$ -- 54
+call.type$ -- 13
+change.case$ -- 139
+chr.to.int$ -- 25
+cite$ -- 14
+duplicate$ -- 449
+empty$ -- 780
+format.name$ -- 618
+if$ -- 2569
+int.to.chr$ -- 0
+int.to.str$ -- 0
+missing$ -- 230
+newline$ -- 68
+num.names$ -- 66
+pop$ -- 333
+preamble$ -- 1
+purify$ -- 53
+quote$ -- 0
+skip$ -- 584
+stack$ -- 1
+substring$ -- 287
+swap$ -- 202
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 2
+warning$ -- 1
+while$ -- 82
+width$ -- 0
+write$ -- 201
+(There was 1 warning)

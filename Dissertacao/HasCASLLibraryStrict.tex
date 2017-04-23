@@ -1,0 +1,1082 @@
+\fvset{fontsize=\relsize{-1}}
+\chapter{Listagem das Especificações com Avaliação Estrita}
+\label{appendix:strictSpec}
+Este apêndice contém o código das especificações com avaliação estrita desenvolvidas neste trabalho com o uso da linguagem \HasCASL.
+O arquivo-fonte pode ser reconstruído compiando-se todas as especificações aqui descritas, na ordem apresentada, em um arquivo com extensão \textit{.hs}.
+
+\section{Cabeçalho}
+\label{appendix:strictSpec:header}
+\begin{Verbatim}
+library StrictPrelude
+version 0.1
+%authors: Glauber M. Cabral <glauber.sp@gmail.com>
+%date: 19 Fev 2008
+
+logic HasCASL 
+
+from Basic/Numbers get Nat, Int, Rat
+from HasCASL/Metatheory/Monad get Functor, Monad
+from Basic/CharactersAndStrings get Char |-> IChar
+\end{Verbatim}
+
+\section{Especificação \textit{Bool}}
+\label{appendix:strictSpec:bool}
+\begin{Verbatim}
+spec Bool = %mono
+free type Bool ::= True | False 
+fun Not__ : Bool -> Bool
+fun __&&__ : Bool * Bool -> Bool
+fun __||__ : Bool * Bool -> Bool
+fun otherwiseH: Bool      
+vars x,y: Bool
+. Not(False) = True %(NotFalse)%
+. Not(True) = False                 %(NotTrue)%
+. False && x = False                %(AndFalse)%
+. True && x = x                     %(AndTrue)%
+. x && y = y && x                   %(AndSym)%
+. x || y = Not(Not(x) && Not(y))    %(OrDef)%
+. otherwiseH = True                 %(OtherwiseDef)% 
+. Not x = True <=> x = False        %(NotFalse1)% %implied
+. Not x = False <=> x = True        %(NotTrue1)% %implied
+. not (x = True) <=> Not x = True   %(notNot1)% %implied
+. not (x = False) <=> Not x = False %(notNot2)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Eq}}
+\label{appendix:strictSpec:eq}
+\begin{Verbatim}
+spec Eq = Bool then
+class Eq {
+var a: Eq
+fun __==__ : a * a -> Bool
+fun __/=__ : a * a -> Bool
+vars x,y,z: a
+. x = y => (x == y) = True                                %(EqualTDef)%
+. x == y = y == x                                         %(EqualSymDef)%
+. (x == x) = True                                         %(EqualReflex)%
+. (x == y) = True /\ (y == z) = True => (x == z) = True   %(EqualTransT)%
+. (x /= y) = Not (x == y)                                 %(DiffDef)%
+. (x /= y) = (y /= x)                                     %(DiffSymDef)% %implied
+. (x /= y) = True <=> Not (x == y) = True                 %(DiffTDef)% %implied
+. (x /= y) = False <=> (x == y) = True                    %(DiffFDef)% %implied
+. (x == y) = False => not (x = y)            %(TE1)% %implied
+. Not (x == y) = True <=> (x == y) = False   %(TE2)% %implied
+. Not (x == y) = False <=> (x == y) = True   %(TE3)% %implied
+. not ((x == y) = True) <=> (x == y) = False %(TE4)% %implied
+}
+type instance Bool: Eq
+. (True == True) = True                %(IBE1)% %implied
+. (False == False) = True              %(IBE2)% %implied
+. (False == True) = False              %(IBE3)%
+. (True == False) = False              %(IBE4)% %implied
+. (True /= False) = True               %(IBE5)% %implied
+. (False /= True) = True               %(IBE6)% %implied
+. Not (True == False) = True           %(IBE7)% %implied
+. Not (Not (True == False)) = False    %(IBE8)% %implied
+type instance Unit: Eq
+. (() == ()) = True  %(IUE1)% %implied
+. (() /= ()) = False %(IUE2)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Ord}}
+\label{appendix:strictSpec:ord}
+\begin{Verbatim}
+spec Ord = Eq and Bool then
+free type Ordering ::= LT | EQ | GT
+type instance Ordering: Eq
+. (LT == LT) = True   %(IOE01)% %implied
+. (EQ == EQ) = True   %(IOE02)% %implied
+. (GT == GT) = True   %(IOE03)% %implied
+. (LT == EQ) = False  %(IOE04)%
+. (LT == GT) = False  %(IOE05)%
+. (EQ == GT) = False  %(IOE06)%
+. (LT /= EQ) = True   %(IOE07)% %implied
+. (LT /= GT) = True   %(IOE08)% %implied
+. (EQ /= GT) = True   %(IOE09)% %implied
+class Ord < Eq
+{
+ var a: Ord
+ fun compare: a -> a -> Ordering
+ fun __<__ : a * a -> Bool
+ fun __>__ : a * a -> Bool
+ fun __<=__ : a * a -> Bool
+ fun __>=__ : a * a -> Bool
+ fun min: a -> a -> a
+ fun max: a -> a -> a
+ var    x, y, z, w: a
+ . (x == y) = True => (x < y) = False                      %(LeIrreflexivity)%
+ . (x < y) = True => y < x = False                         %(LeTAsymmetry)% %implied
+ . (x < y) = True /\ (y < z) = True => (x < z) = True      %(LeTTransitive)%
+ . (x < y) = True \/ (y < x) = True \/ (x == y) = True     %(LeTTotal)%
+ . (x > y) = (y < x)                                    %(GeDef)%
+ . (x == y) = True => (x > y) = False                   %(GeIrreflexivity)% %implied
+ . (x > y) = True => (y > x) = False                    %(GeTAsymmetry)% %implied
+ . ((x > y)  && (y > z)) = True => (x > z) = True       %(GeTTransitive)% %implied
+ . (((x > y) || (y > x)) || (x == y)) = True            %(GeTTotal)% %implied 
+ . (x <= y) = (x < y) || (x == y)                         %(LeqDef)%
+ . (x <= x) = True                                        %(LeqReflexivity)% %implied
+ . ((x <= y) && (y <= z)) = True => (x <= z) = True       %(LeqTTransitive)% %implied
+ . (x <= y) && (y <= x) = (x == y)                        %(LeqTTotal)% %implied
+ . (x >= y) = ((x > y) || (x == y))                 %(GeqDef)%
+ . (x >= x) = True                                  %(GeqReflexivity)% %implied 
+ . ((x >= y) && (y >= z)) = True => (x >= z) = True %(GeqTTransitive)% %implied
+ . (x >= y) && (y >= x) = (x == y)                  %(GeqTTotal)% %implied
+ . (x == y) = True <=> (x < y) = False /\ (x > y) = False  %(EqTSOrdRel)%
+ . (x == y) = False <=> (x < y) = True \/ (x > y) = True   %(EqFSOrdRel)%
+ . (x == y) = True <=> (x <= y) = True /\ (x >= y) = True  %(EqTOrdRel)%
+ . (x == y) = False <=> (x <= y) = True \/ (x >= y) = True %(EqFOrdRel)%
+ . (x == y) = True /\ (y < z) = True => (x < z) = True     %(EqTOrdTSubstE)%
+ . (x == y) = True /\ (y < z) = False => (x < z) = False   %(EqTOrdFSubstE)%
+ . (x == y) = True /\ (z < y) = True => (z < x) = True     %(EqTOrdTSubstD)%
+ . (x == y) = True /\ (z < y) = False => (z < x) = False   %(EqTOrdFSubstD)%
+ . (x < y) = True <=> (x > y) = False /\ (x == y) = False %(LeTGeFEqFRel)%
+ . (x < y) = False <=> (x > y) = True \/ (x == y) = True  %(LeFGeTEqTRel)%
+ . (x < y) = True <=> (y > x) = True     %(LeTGeTRel)% %implied
+ . (x < y) = False <=> (y > x) = False   %(LeFGeFRel)% %implied
+ . (x <= y) = True <=> (y >= x) = True   %(LeqTGetTRel)% %implied
+ . (x <= y) = False <=> (y >= x) = False %(LeqFGetFRel)% %implied
+ . (x > y) = True <=> (y < x) = True     %(GeTLeTRel)% %implied
+ . (x > y) = False <=> (y < x) = False   %(GeFLeFRel)% %implied
+ . (x >= y) = True <=> (y <= x) = True   %(GeqTLeqTRel)% %implied
+ . (x >= y) = False <=> (y <= x) = False %(GeqFLeqFRel)% %implied
+ . (x <= y) = True <=> (x > y) = False                    %(LeqTGeFRel)% %implied
+ . (x <= y) = False <=> (x > y) = True                    %(LeqFGeTRel)% %implied
+ . (x > y) = True <=> (x < y) = False /\ (x == y) = False %(GeTLeFEqFRel)% %implied
+ . (x > y) = False <=> (x < y) = True \/ (x == y) = True  %(GeFLeTEqTRel)% %implied
+ . (x >= y) = True <=> (x < y) = False                    %(GeqTLeFRel)% %implied
+ . (x >= y) = False <=> (x < y) = True                    %(GeqFLeTRel)% %implied
+ . (x <= y) = True <=> (x < y) = True \/ (x == y) = True    %(LeqTLeTEqTRel)% %implied
+ . (x <= y) = False <=> (x < y) = False /\ (x == y) = False %(LeqFLeFEqFRel)% %implied
+ . (x >= y) = True <=> (x > y) = True \/ (x == y) = True    %(GeqTGeTEqTRel)% %implied
+ . (x >= y) = False <=> (x > y) = False /\ (x == y) = False %(GeqFGeFEqFRel)% %implied
+ . (x < y) = True <=> (x >= y) = False  %(LeTGeqFRel)% %implied
+ . (x > y) = True <=> (x <= y) = False  %(GeTLeqFRel)% %implied
+ . (x < y) = (x <= y) && (x /= y)       %(LeLeqDiff)% %implied
+ . (compare x y == LT) = (x < y)                       %(CmpLTDef)%
+ . (compare x y == EQ) = (x == y)                      %(CmpEQDef)%
+ . (compare x y == GT) = (x > y)                       %(CmpGTDef)%
+ . (max x y == y) = (x <= y)                          %(MaxYDef)%
+ . (max x y == x) = (y <= x)                          %(MaxXDef)%
+ . (min x y == x) = (x <= y)                          %(MinXDef)%
+ . (min x y == y) = (y <= x)                          %(MinYDef)%
+ . (max x y == y) = (max y x == y)                    %(MaxSym)% %implied
+ . (min x y == y) = (min y x == y)                    %(MinSym)% %implied
+}
+ . (x == y) = True \/ (x < y) = True <=> (x <= y) = True    %(TO1)% %implied
+ . (x == y) = True  => (x < y) = False                      %(TO2)% %implied
+ . Not (Not (x < y)) = True \/ Not (x < y) = True           %(TO3)% %implied
+ . (x < y) = True => Not (x == y) = True                    %(TO4)% %implied
+ . (x < y) = True /\ (y < z) = True 
+   /\ (z < w) = True => (x < w) = True                      %(TO5)% %implied
+ . (z < x) = True => Not (x < z) = True                     %(TO6)% %implied
+ . (x < y) = True <=> (y > x) = True                        %(TO7)% %implied
+ type instance Ordering: Ord
+ . (LT < EQ) = True                     %(IOO13)%
+ . (EQ < GT) = True                     %(IOO14)%
+ . (LT < GT) = True                     %(IOO15)%
+ . (LT <= EQ) = True                    %(IOO16)% %implied
+ . (EQ <= GT) = True                    %(IOO17)% %implied
+ . (LT <= GT) = True                    %(IOO18)% %implied
+ . (EQ >= LT) = True                    %(IOO19)% %implied
+ . (GT >= EQ) = True                    %(IOO20)% %implied
+ . (GT >= LT) = True                    %(IOO21)% %implied
+ . (EQ > LT) = True                     %(IOO22)% %implied
+ . (GT > EQ) = True                     %(IOO23)% %implied
+ . (GT > LT) = True                     %(IOO24)% %implied
+ . (max LT EQ == EQ) = True             %(IOO25)% %implied
+ . (max EQ GT == GT) = True             %(IOO26)% %implied
+ . (max LT GT == GT) = True             %(IOO27)% %implied
+ . (min LT EQ == LT) = True             %(IOO28)% %implied
+ . (min EQ GT == EQ) = True             %(IOO29)% %implied
+ . (min LT GT == LT) = True             %(IOO30)% %implied
+ . (compare LT LT == EQ) = True         %(IOO31)% %implied
+ . (compare EQ EQ == EQ) = True         %(IOO32)% %implied
+ . (compare GT GT == EQ) = True         %(IOO33)% %implied
+ type instance Bool: Ord
+ . (False < True) = True                %(IBO5)%
+ . (False >= True) = False              %(IBO6)% %implied
+ . (True >= False) = True               %(IBO7)% %implied
+ . (True < False) = False               %(IBO8)% %implied
+ . (max False True == True) = True      %(IBO9)% %implied
+ . (min False True == False) = True     %(IBO10)% %implied
+ . (compare True True == EQ) = True     %(IBO11)% %implied
+ . (compare False False == EQ) = True   %(IBO12)% %implied
+ type instance Unit: Ord
+ . (() <= ()) = True                    %(IUO01)% %implied
+ . (() <  ()) = False                   %(IUO02)% %implied
+ . (() >= ()) = True                    %(IUO03)% %implied
+ . (() > ()) = False                    %(IUO04)% %implied
+ . (max () () == ()) = True             %(IUO05)% %implied
+ . (min () () == ()) = True             %(IUO06)% %implied
+ . (compare () () == EQ) = True         %(IUO07)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Maybe}}
+\label{appendix:strictSpec:maybe}
+\begin{Verbatim}
+spec Maybe = Eq and Ord then
+var a,b,c : Type;
+    e : Eq;
+    o : Ord;
+free type Maybe a ::= Just a | Nothing
+var x : a;
+    y : b;
+    ma : Maybe a;
+    f : a -> b
+fun maybe : b -> (a -> b) -> Maybe a -> b
+. maybe y f (Just x: Maybe a) = f x                    %(MaybeJustDef)%
+. maybe y f (Nothing: Maybe a) = y                     %(MaybeNothingDef)%
+type instance Maybe e: Eq
+var x,y : e; 
+. (Just x == Just y) = True <=> (x == y) = True        %(IME01)%
+. ((Nothing : Maybe e) == (Nothing: Maybe e)) = True   %(IME02)% %implied
+. Just x == Nothing = False                            %(IME03)%
+type instance Maybe o: Ord
+var x,y : o;
+. (Nothing < Just x) = True                            %(IMO01)%
+. (Just x < Just y) = (x < y)                          %(IMO02)%
+. (Nothing >= Just x) = False                          %(IMO03)% %implied
+. (Just x >= Nothing) = True                           %(IMO04)% %implied
+. (Just x < Nothing) = False                           %(IMO05)% %implied
+. (compare Nothing (Just x) == EQ)
+     = (Nothing == (Just x))                           %(IMO06)% %implied
+. (compare Nothing (Just x) == LT)
+     = (Nothing < (Just x))                            %(IMO07)% %implied
+. (compare Nothing (Just x) == GT)
+     = (Nothing > (Just x))                            %(IMO08)% %implied
+. (Nothing <= (Just x))
+     = (max Nothing (Just x) == (Just x))              %(IMO09)% %implied
+. ((Just x) <= Nothing)
+     = (max Nothing (Just x) == Nothing)               %(IMO10)% %implied
+. (Nothing <= (Just x))
+     = (min Nothing (Just x) == Nothing)               %(IMO11)% %implied
+. ((Just x) <= Nothing)
+     = (min Nothing (Just x) == (Just x))              %(IMO12)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{MaybeMonad}}
+\label{appendix:strictSpec:maybeMonad}
+\begin{Verbatim}
+spec MaybeMonad = Maybe and Monad then
+var a,b,c : Type;
+         e : Eq;
+         o : Ord;
+type instance Maybe: Functor
+vars  x: Maybe a;
+      f: a -> b;
+      g: b -> c
+. map (\ y: a .! y) x = x                            %(IMF01)% %implied
+. map (\ y: a .! g (f y)) x = map g (map f x)        %(IMF02)% %implied
+type instance Maybe: Monad
+vars  x, y: a;
+      p: Maybe a;
+      q: a ->? Maybe b;
+      r: b ->? Maybe c;
+      f: a ->? b
+. def q x => ret x >>= q = q x                       %(IMM01)% %implied
+. p >>= (\ x: a . ret (f x) >>= r)
+     = p >>= \ x: a . r (f x)                        %(IMM02)% %implied
+. p >>= ret = p                                      %(IMM03)% %implied
+. (p >>= q) >>= r = p >>= \ x: a . q x >>= r         %(IMM04)% %implied
+. (ret x : Maybe a) = ret y => x = y                 %(IMM05)% %implied
+var x : Maybe a;
+    f : a -> b;
+. map f x = x >>= (\ y:a . ret (f y))                 %(T01)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Either}}
+\label{appendix:strictSpec:either}
+\begin{Verbatim}
+spec Either = Eq and Ord then
+var a, b, c : Type; e, ee : Eq; o, oo : Ord;
+free type Either a b ::= Left a | Right b     
+var x : a; y : b; z : c; eab : Either a b; f : a -> c; g : b -> c
+fun either : (a -> c) -> (b -> c) -> Either a b -> c
+. either f g (Left x: Either a b) = f x                  %(EitherLeftDef)%
+. either f g (Right y: Either a b) = g y                 %(EitherRightDef)%
+type instance Either e ee: Eq
+var x,y : e; z,w : ee;
+. ((Left x : Either e ee) == 
+   (Left y : Either e ee)) = (x == y)                    %(IEE01)%
+. ((Right z : Either e ee) ==
+   (Right w : Either e ee)) = (z == w)                   %(IEE02)%
+. ((Left x : Either e ee) ==
+   (Right z : Either e ee)) = False                      %(IEE03)%
+type instance Either o oo: Ord
+var x,y : o; z,w : oo;
+. ((Left x : Either o oo) < (Right z : Either o oo))
+     = True                                              %(IEO01)%
+. ((Left x : Either o oo) < (Left y : Either o oo))
+     = (x < y)                                           %(IEO02)%
+. ((Right z : Either o oo) < (Right w : Either o oo))
+     = (z < w)                                           %(IEO03)%
+. ((Left x : Either o oo) >= (Right z : Either o oo))
+     = False                                             %(IEO04)% %implied
+. ((Right z : Either o oo) >= (Left x : Either o oo))
+     = True                                              %(IEO05)% %implied
+. ((Right z : Either o oo) < (Left x : Either o oo))
+     = False                                             %(IEO06)% %implied
+. (compare (Left x : Either o oo) (Right z : Either o oo) == EQ)
+     = ((Left x) == (Right z))                           %(IEO07)% %implied
+. (compare (Left x : Either o oo) (Right z : Either o oo) == LT)
+     = ((Left x) < (Right z))                            %(IEO08)% %implied
+. (compare (Left x : Either o oo) (Right z : Either o oo) == GT)
+     = ((Left x) > (Right z))                            %(IEO09)% %implied
+. ((Left x : Either o oo) <= (Right z : Either o oo))
+     = (max (Left x) (Right z) == (Right z))             %(IEO10)% %implied
+. ((Right z : Either o oo) <= (Left x : Either o oo))
+     = (max (Left x) (Right z) == (Left x))              %(IEO11)% %implied
+. ((Left x : Either o oo) <= (Right z : Either o oo))
+     = (min (Left x) (Right z) == (Left x))              %(IEO12)% %implied
+. ((Right z : Either o oo) <= (Left x : Either o oo))
+     = (min (Left x) (Right z) == (Right z))             %(IEO13)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{EitherFunctor}}
+\label{appendix:strictSpec:eitherFunctor}
+\begin{Verbatim}
+spec EitherFunctor = Either and Functor then
+var a, b, c : Type;
+    e, ee : Eq;
+    o, oo : Ord;
+type instance Either a: Functor
+vars x: Either c a;  
+     f: a -> b;
+     g: b -> c
+. map (\ y: a .! y) x = x                          %(IEF01)% %implied
+. map (\ y: a .! g (f y)) x = map g (map f x)      %(IEF02)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Composition}}
+\label{appendix:strictSpec:composition}
+\begin{Verbatim}
+spec Composition =
+vars a,b,c : Type
+fun __o__ : (b -> c) * (a -> b) -> (a -> c);
+vars a,b,c : Type; y:a;
+     f : b -> c; 
+     g : a -> b
+     . ((f o g) y) = f (g y)                 %(Comp1)%
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Function}}
+\label{appendix:strictSpec:function}
+\begin{Verbatim}
+spec Function = Composition then
+var a,b,c: Type;
+    x: a;
+    y: b;   
+    f: a -> b -> c;
+    g: (a * b) -> c
+fun id: a -> a
+fun flip: (a -> b -> c) -> b -> a -> c
+fun fst: (a * b) -> a
+fun snd: (a * b) -> b
+fun curry: ((a * b) -> c) -> a -> b -> c
+fun uncurry: (a -> b -> c) -> (a * b) -> c
+. id x = x                     %(IdDef)%
+. flip f y x = f x y           %(FlipDef)%
+. fst (x, y) = x               %(FstDef)%
+. snd (x, y) = y               %(SndDef)%
+. curry g x y = g (x, y)       %(CurryDef)%
+. uncurry f (x,y) = f x y      %(UncurryDef)%
+end
+\end{Verbatim}
+
+\section{Especificação \textit{ListNoNumbers}}
+\label{appendix:strictSpec:listNoNumbers}
+\begin{Verbatim}
+spec ListNoNumbers = Function and Ord then
+var a : Type
+free type List a ::= Nil | Cons a (List a)
+var a,b : Type
+fun head : List a ->? a;
+fun tail : List a ->? List a;
+fun foldr : (a -> b -> b) -> b -> List a -> b;
+fun foldl : (a -> b -> a) -> a -> List b -> a;
+fun map : (a -> b) -> List a -> List b;
+fun filter : (a -> Bool) -> List a -> List a;
+fun __++__ : List a * List a -> List a;
+fun zip : List a -> List b -> List (a * b);
+fun unzip : List (a * b) -> (List a * List b)
+vars a,b : Type; 
+     f : a -> b -> b; 
+     g : a -> b -> a;
+     h : a -> b; 
+     p : a -> Bool; 
+     x,y,t : a; 
+     xs,ys,l : List a; 
+     z,s : b; 
+     zs : List b; 
+     ps : List (a * b)
+. not def head (Nil : List a)                               %(NotDefHead)%
+. head (Cons x xs) = x                                      %(HeadDef)%
+. not def tail (Nil : List a)                               %(NotDefTail)%
+. tail (Cons x xs) = xs                                     %(TailDef)%
+. foldr f s Nil = s                                         %(FoldrNil)%
+. foldr f s (Cons x xs) 
+     = f x (foldr f s xs)                                   %(FoldrCons)%
+. foldl g t Nil = t                                         %(FoldlNil)%
+. foldl g t (Cons z zs) 
+     = foldl g (g t z) zs                                   %(FoldlCons)%
+. map h Nil = Nil                                           %(MapNil)%
+. map h (Cons x xs)       
+     = (Cons (h x) (map h xs))                              %(MapCons)%
+. Nil ++ l = l                                              %(++Nil)%
+. (Cons x xs) ++ l = Cons x (xs ++ l)                       %(++Cons)%
+. filter p Nil = Nil                                        %(FilterNil)%
+. p x = True 
+     => filter p (Cons x xs) = Cons x (filter p xs)         %(FilterConsT)%
+. p x = False 
+     => filter p (Cons x xs) = filter p xs                  %(FilterConsF)%
+. zip (Nil : List a) l = Nil                                %(ZipNil)%
+. l = Nil 
+     => zip (Cons x xs) l = Nil                             %(ZipConsNil)%
+. l = (Cons y ys) 
+     => zip (Cons x xs) l = Cons (x,y) (zip xs ys)          %(ZipConsCons)%
+. unzip (Nil : List (a * b)) = (Nil, Nil)                   %(UnzipNil)%
+. unzip (Cons (x,z) ps) = let (ys, zs) = unzip ps in
+     (Cons x ys, Cons z zs)                                 %(UnzipCons)%
+then
+var a : Eq; x,y: a; xs, ys: List a
+type instance List a: Eq
+. ((Nil: List a) == (Nil: List a)) = True                    %(ILE01)% %implied
+. ((Cons x xs) == (Cons y ys)) = ((x == y) && (xs == ys))    %(ILE02)%
+var b : Ord; z,w: b; zs, ws: List b
+type instance List b: Ord
+. ((Nil: List b) < (Nil: List b)) = False                    %(ILO01)% %implied
+. ((Nil: List b) <= (Nil: List b)) = True                    %(ILO02)% %implied
+. ((Nil: List b) > (Nil: List b)) = False                    %(ILO03)% %implied
+. ((Nil: List b) >= (Nil: List b)) = True                    %(ILO04)% %implied
+. (z < w) = True => ((Cons z zs) < (Cons w ws)) = True       %(ILO05)%
+. (z == w) = True => ((Cons z zs) < (Cons w ws)) = (zs < ws) %(ILO06)%
+. (z < w) = False /\ (z == w) = False
+     => ((Cons z zs) < (Cons w ws)) = False                  %(ILO07)%
+. ((Cons z zs) <= (Cons w ws))
+     = ((Cons z zs) < (Cons w ws)) 
+          || ((Cons z zs) == (Cons w ws))                    %(ILO08)% %implied
+. ((Cons z zs) > (Cons w ws))
+     = ((Cons w ws) < (Cons z zs))                           %(ILO09)% %implied
+. ((Cons z zs) >= (Cons w ws))
+     = ((Cons z zs) > (Cons w ws)) 
+          || ((Cons z zs) == (Cons w ws))                    %(ILO10)% %implied
+. (compare (Nil: List b) (Nil: List b) == EQ)
+     = ((Nil: List b) == (Nil: List b))                      %(ILO11)% %implied
+. (compare (Nil: List b) (Nil: List b) == LT)
+     = ((Nil: List b) < (Nil: List b))                       %(ILO12)% %implied
+. (compare (Nil: List b) (Nil: List b) == GT)
+     = ((Nil: List b) > (Nil: List b))                       %(ILO13)% %implied
+. (compare (Cons z zs) (Cons w ws) == EQ)
+     = ((Cons z zs) == (Cons w ws))                          %(ILO14)% %implied
+. (compare (Cons z zs) (Cons w ws) == LT)
+     = ((Cons z zs) < (Cons w ws))                           %(ILO15)% %implied
+. (compare (Cons z zs) (Cons w ws) == GT)
+     = ((Cons z zs) > (Cons w ws))                           %(ILO16)% %implied
+. (max (Nil: List b) (Nil: List b) == (Nil: List b)) 
+     = ((Nil: List b) <= (Nil: List b))                      %(ILO17)% %implied
+. (min (Nil: List b) (Nil: List b) == (Nil: List b)) 
+     = ((Nil: List b) <= (Nil: List b))                      %(ILO18)% %implied
+. ((Cons z zs) <= (Cons w ws))
+     = (max (Cons z zs) (Cons w ws) == (Cons w ws))          %(ILO19)% %implied
+. ((Cons w ws) <= (Cons z zs))
+     = (max (Cons z zs) (Cons w ws) == (Cons z zs))          %(ILO20)% %implied
+. ((Cons z zs) <= (Cons w ws))
+     = (min (Cons z zs) (Cons w ws) == (Cons z zs))          %(ILO21)% %implied
+. ((Cons w ws) <= (Cons z zs))
+     = (min (Cons z zs) (Cons w ws) == (Cons w ws))          %(ILO22)% %implied
+then %implies
+vars a,b,c : Ord;
+     f : a -> b;
+     g : b -> c;
+     h : a -> a -> a;
+     i : a -> b -> a;
+     p : b -> Bool;
+     x:a;
+     y:b;
+     xs,zs : List a;
+     ys,ts : List b;
+     z,e : a;
+     xxs : List (List a)
+. foldl i e (ys ++ ts) 
+     = foldl i (foldl i e ys) ts                               %(FoldlDecomp)%
+. map f (xs ++ zs) 
+     = (map f xs) ++ (map f zs)                                %(MapDecomp)%
+. map (g o f) xs = map g (map f xs)                            %(MapFunctor)%
+. filter p (map f xs) 
+     = map f (filter (p o f) xs)                               %(FilterProm)%
+then
+vars a,b: Type;
+     x,q: a;
+     xs,qs: List a;
+     y,z: b;
+     ys,zs: List b;
+     f: a -> a -> a;
+     g: a -> b -> a;
+     h: a -> b -> b;
+fun init: List a ->? List a;
+fun last: List a ->? a;
+fun null: List a -> Bool;
+fun reverse: List a -> List a;
+fun foldr1: (a -> a -> a) -> List a ->? a;
+fun foldl1: (a -> a -> a) -> List a ->? a;
+fun scanl: (a -> b -> a) -> a -> List b -> List a
+fun scanl1: (a -> a -> a) -> List a -> List a
+fun scanr: (a -> b -> b) -> b -> List a -> List b
+fun scanr1: (a -> a -> a) -> List a -> List a
+. not def init (Nil: List a)                                   %(InitNil)%
+. init (Cons x (Nil: List a)) = (Nil:List a)                   %(InitConsNil)%
+. init (Cons x xs) = Cons x (init xs)                          %(InitConsCons)%
+. not def last (Nil: List a)                                   %(LastNil)%
+. last (Cons x (Nil: List a)) = x                              %(LastConsNil)%
+. last (Cons x xs) = last xs                                   %(LastConsCons)%
+. null (Nil:List a) = True                                     %(NullNil)%
+. null (Cons x xs) = False                                     %(NullCons)%
+. reverse (Nil: List a) = (Nil: List a)                        %(ReverseNil)%
+. reverse (Cons x xs) = (reverse xs) ++ (Cons x (Nil: List a)) %(ReverseCons)%
+. not def foldr1 f (Nil: List a)                               %(Foldr1Nil)%
+. foldr1 f (Cons x (Nil: List a)) = x                          %(Foldr1ConsNil)%
+. foldr1 f (Cons x xs) = f x (foldr1 f xs)                     %(Foldr1ConsCons)%
+. not def foldl1 f (Nil: List a)                               %(Foldl1Nil)%
+. foldl1 f (Cons x (Nil: List a)) = x                          %(Foldl1ConsNil)%
+. foldl1 f (Cons x xs) = f x (foldr1 f xs)                     %(Foldl1ConsCons)%
+. ys = Nil => scanl g q ys = Cons q Nil                           %(ScanlNil)%
+. ys = (Cons z zs) => scanl g q ys = Cons q (scanl g (g q z) zs)  %(ScanlCons)%
+. scanl1 f Nil = Nil                                              %(Scanl1Nil)%
+. scanl1 f (Cons x xs) = scanl f x xs                             %(Scanl1Cons)%
+. scanr h z Nil = Cons z Nil                                      %(ScanrNil)%
+. (Cons y ys) = scanr h z xs
+     => scanr h z (Cons x xs) = Cons (h x y)  (Cons y ys)         %(ScanrCons)%
+. scanr1 f (Nil:List a) = (Nil:List a)                            %(Scanr1Nil)%
+. scanr1 f (Cons x (Nil:List a)) = (Cons x (Nil:List a))          %(Scanr1ConsNil)%
+. Cons q qs = scanr1 f xs  
+     => scanr1 f (Cons x xs) =  Cons (f x q) (Cons q qs)   %(Scanr1ConsCons)%
+. last (scanl g x ys) = foldl g x ys                       %(ScanlProperty)% %implied
+. head (scanr h y xs) = foldr h y xs                       %(ScanrProperty)% %implied
+then
+vars a,b,c : Type;
+     b1,b2: Bool;
+     d : Ord;
+     x, y : a;
+     xs, ys, zs : List a;
+     xxs : List (List a);
+     r, s : d;
+     ds : List d;
+     bs : List Bool;
+     f : a -> a -> a;
+     p, q : a -> Bool;
+     g : a -> List b;
+fun andL : List Bool -> Bool;
+fun orL : List Bool -> Bool;
+fun any : (a -> Bool) -> List a -> Bool;
+fun all : (a -> Bool) -> List a -> Bool;
+fun concatMap : (a -> List b) -> List a -> List b;
+fun concat : List (List a) -> List a;
+fun maximum : List d ->? d;
+fun minimum : List d ->? d;
+fun takeWhile : (a -> Bool) -> List a -> List a
+fun dropWhile  : (a -> Bool) -> List a -> List a
+fun span : (a -> Bool) -> List a -> (List a * List a)
+fun break : (a -> Bool) -> List a -> (List a * List a)
+. andL (Nil: List Bool) = True                             %(AndLNil)%
+. andL (Cons b1 bs) = b1 && (andL bs)                      %(AndLCons)%
+. orL (Nil: List Bool) = False                             %(OrLNil)%
+. orL (Cons b1 bs) = b1 || (orL bs)                        %(OrLCons)%
+. any p xs = orL (map p xs)                                %(AnyDef)%
+. all p xs = andL (map p xs)                               %(AllDef)%
+. concat xxs = foldr (curry __++__) (Nil: List a) xxs      %(ConcatDef)%
+. concatMap g xs = concat (map g xs)                       %(ConcatMapDef)%
+. not def maximum (Nil: List d)                            %(MaximunNil)%
+. maximum ds = foldl1 max ds                               %(MaximumDef)%
+. not def minimum (Nil: List d)                            %(MinimunNil)%
+. minimum ds = foldl1 min ds                               %(MinimumDef)%
+. takeWhile p (Nil: List a) = Nil: List a                  %(TakeWhileNil)%
+. p x = True => takeWhile p (Cons x xs) 
+     = Cons x (takeWhile p xs)                             %(TakeWhileConsT)%
+. p x = False => takeWhile p (Cons x xs) = Nil: List a     %(TakeWhileConsF)%
+. dropWhile p (Nil: List a) = Nil: List a                  %(DropWhileNil)%
+. p x = True => dropWhile p (Cons x xs) = dropWhile p xs   %(DropWhileConsT)%
+. p x = False => dropWhile p (Cons x xs) = Cons x xs       %(DropWhileConsF)%
+. span p (Nil: List a) = ((Nil: List a), (Nil: List a))    %(SpanNil)%
+. p x = True => span p (Cons x xs) 
+     = let (ys, zs) = span p xs in
+          ((Cons x ys), zs)                                %(SpanConsT)%
+. p x = False => span p (Cons x xs)
+     = let (ys, zs) = span p xs in
+          ((Nil: List a), (Cons x xs))                     %(SpanConsF)%
+. span p xs = (takeWhile p xs, dropWhile p xs)             %(SpanThm)% %implied
+. break p xs = let q = (Not__ o p) in span q xs            %(BreakDef)%
+. break p xs = span (Not__ o p) xs                         %(BreakThm)% %implied
+then
+vars a,b,c : Type;
+     d : Ord;
+     e: Eq;
+     x, y : a;
+     xs, ys : List a;
+     q, r : d;
+     qs, rs : List d;
+     s,t: e;
+     ss,ts: List e;
+     p: a -> Bool
+fun insert: d -> List d -> List d
+fun delete: e -> List e -> List e
+fun select: (a -> Bool) -> a -> (List a * List a) -> (List a * List a)
+fun partition: (a -> Bool) -> List a -> (List a * List a)
+. insert q (Nil: List d) = Cons q Nil                        %(InsertNil)%
+. (q <= r) = True => insert q (Cons r rs) 
+     = (Cons q (Cons r rs))                                  %(InsertCons1)%
+. (q > r) = True => insert q (Cons r rs) 
+     = (Cons r (insert q rs))                                %(InsertCons2)%
+. delete s (Nil: List e) = Nil                               %(DeleteNil)%
+. (s == t) = True => delete s (Cons t ts) = ts               %(DeleteConsT)%
+. (s == t) = False => delete s (Cons t ts) 
+     = (Cons t (delete s ts))                                %(DeleteConsF)%
+. (p x) = True => select p x (xs, ys) = ((Cons x xs), ys)    %(SelectT)%
+. (p x) = False => select p x (xs, ys) = (xs, (Cons x ys))   %(SelectF)%
+. partition p xs = foldr (select p) ((Nil: List a),(Nil)) xs %(Partition)%
+. partition p xs 
+    = (filter p xs, filter (Not__ o p) xs)           %(PartitionProp)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{NumericClasses}}
+\label{appendix:strictSpec:numericClasses}
+\begin{Verbatim}
+spec NumericClasses = Ord and Nat and Int and Rat then
+type instance Pos: Eq
+type instance Pos: Ord
+type instance Nat: Eq
+type instance Nat: Ord
+type instance Int: Eq
+type instance Int: Ord
+type instance Rat: Eq
+type instance Rat: Ord
+
+class Num < Eq {
+ vars a: Num;
+ x,y : a
+ fun __+__: a * a -> a
+ fun __*__: a * a -> a
+ fun __-__: a * a -> a
+ fun negate: a -> a
+ fun abs: a -> a
+ fun signum: a -> a
+ fun fromInteger: Int -> a
+}
+vars a: Num;
+     x,y : a
+. (abs x) * (signum x) = x                  %(AbsSignumLaw)% %implied
+
+type instance Pos: Num
+vars a: Num;
+     x,y: Pos;
+     z: Int
+. x + y = (__+__: Nat * Nat -> Nat) (x,y)    %(IPN01)%
+. x * y = (__*__: Nat * Nat -> Nat) (x,y)    %(IPN02)%
+. x - y = (__-!__: Nat * Nat -> Nat) (x,y)   %(IPN03)%
+. negate x = 0 -! x                          %(IPN04)%
+. (fun abs: a -> a) x = x                    %(IPN05)%
+. signum x = 1                               %(IPN06)%
+. fromInteger z = z as Pos                   %(IPN07)%
+
+type instance Nat: Num
+vars a: Num;
+     x,y: Nat;
+     z: Int
+. x + y = (__+__: Nat * Nat -> Nat) (x,y)    %(INN01)%
+. x * y = (__*__: Nat * Nat -> Nat) (x,y)    %(INN02)%
+. x - y = (__-!__: Nat * Nat -> Nat) (x,y)   %(INN03)%
+. negate x = 0 -! x                          %(INN04)%
+. (fun abs: a -> a) x = x                    %(INN05)%
+. signum x = 1                               %(INN06)%
+. fromInteger z = z as Nat                   %(INN07)%
+
+type instance Int: Num
+vars a: Num;
+     x,y: Int
+. x + y = (__+__: Int * Int -> Int) (x,y)             %(IIN01)%
+. x * y = (__*__: Int * Int -> Int) (x,y)             %(IIN02)%
+. x - y = (__-__: Int * Int -> Int) (x,y)             %(IIN03)%
+. negate x = 0 - x                                    %(IIN04)%
+. (x >= 0) = True => (fun abs: a -> a) x = x          %(IIN05)%
+. (x < 0) = True => (fun abs: a -> a) x = negate x    %(IIN06)%
+. (x > 0) = True => signum x = 1                      %(IIN07)%
+. (x == 0) = True => signum x = 0                     %(IIN07)%
+. (x < 0) = True => signum x = - 1                    %(IIN08)%
+. fromInteger x = x                                   %(IIN09)%
+
+type instance Rat: Num
+vars a: Num;
+     x,y: Rat;
+     z: Int
+. x + y = (__+__: Rat * Rat -> Rat) (x,y)             %(IRN01)%
+. x * y = (__*__: Rat * Rat -> Rat) (x,y)             %(IRN02)%
+. x - y = (__-__: Rat * Rat -> Rat) (x,y)             %(IRN03)%
+. negate x = 0 - x                                    %(IRN04)%
+. (x >= 0) = True => (fun abs: a -> a) x = x          %(IRN05)%
+. (x < 0) = True => (fun abs: a -> a) x = negate x    %(IRN06)%
+. (x > 0) = True => signum x = 1                      %(IRN07)%
+. (x == 0) = True => signum x = 0                     %(IRN07)%
+. (x < 0) = True => signum x = - 1                    %(IRN08)%
+. fromInteger z = z / 1                               %(IRN09)%
+
+class Integral < Num
+{
+vars a: Integral;
+fun __quot__, __rem__, __div__, __mod__: a * a -> a
+fun quotRem, divMod: a -> a -> (a * a)
+fun toInteger: a -> Int
+}
+
+type instance Nat: Integral
+type instance Int: Integral
+type instance Rat: Integral
+
+vars a: Integral;
+     x,y,z,w,r,s: a;
+. (z,w) = quotRem x y => x quot y = z                                 %(IRI01)%
+. (z,w) = quotRem x y => x rem y = w                                  %(IRI02)%
+. (z,w) = divMod x y => x div y = z                                   %(IRI03)%
+. (z,w) = divMod x y => x mod y = w                                   %(IRI04)%
+. signum w = negate (signum y) /\ (z,w) = quotRem x y
+    => divMod x y = (z - (fromInteger (toInteger (1:Nat))) , w + s)   %(IRI05)%
+. not (signum w = negate (signum y)) /\ (z,w) = quotRem x y 
+    => divMod x y = (z, w)                                            %(IRI06)%
+
+class Fractional < Num
+{
+vars a: Fractional
+fun __/__ : a * a -> a
+fun recip: a -> a
+}
+
+type instance Int: Fractional
+type instance Rat: Fractional
+
+vars a: Fractional;
+     x,y: Int
+. recip x = (1 / x)                                %(IRI01)%
+. x / y = x * (recip y)                            %(IRI02)%
+
+vars a: Fractional;
+     x,y: Rat
+. recip x = (1 / x)                                %(IRF01)%
+. x / y = x * (recip y)                            %(IRF02)%
+
+end
+\end{Verbatim}
+
+\section{Especificação \textit{ListWithNumbers}}
+\label{appendix:strictSpec:listWithNumbers}
+\begin{Verbatim}
+spec ListWithNumbers = ListNoNumbers and NumericClasses then {
+vars a,b: Type;
+     c,d: Num;
+     x,y : a;
+     xs,ys : List a;
+     n,nx : Int;
+     z,w: Int;
+     zs,ws: List Int
+fun length: List a -> Int;
+fun take: Int -> List a -> List a
+fun drop: Int -> List a -> List a
+fun splitAt: Int -> List a -> (List a * List a)
+fun sum: List c -> c
+fun sum': List c -> c -> c
+fun product: List c -> c
+fun product': List c -> c -> c
+. length (Nil : List a) = 0                                 %(LengthNil)%
+. length (Cons x xs) = (length xs) + 1                      %(LengthCons)%
+. n <= 0 => take n xs = (Nil:List a)                        %(TakeNegative)%
+. take n (Nil:List a) = (Nil:List a)                        %(TakeNil)%
+. take n (Cons x xs) = Cons x (take (n-1) xs)               %(TakeCons)%
+. n <= 0 => drop n xs = xs                                  %(DropNegative)%
+. drop n (Nil:List a) = (Nil:List a)                        %(DropNil)%
+. drop n (Cons x xs) =  drop (n-1) xs                       %(DropCons)%
+. splitAt n xs =  (take n xs, drop n xs)                    %(SplitAt)%
+. sum' (Nil: List Int) z = z                                %(Sum'Nil)%
+. sum' (Cons z zs) w
+     = sum' zs ((fun __+__: c * c -> c)(w,z))               %(Sum'Cons)%
+. sum zs = sum' zs 0                                        %(SumL)%
+. product' (Nil: List Int) z = z                            %(Prod'Nil)%
+. product' (Cons z zs) w
+     = product' zs  ((fun __*__: c * c -> c)(w,z))          %(Prod'Cons)%
+. product zs = product' zs 1                                %(ProdL)%
+then %implies
+vars a,b,c : Ord;
+     f : a -> b;
+     g : b -> c;
+     h : a -> a -> a;
+     i : a -> b -> a;
+     p : b -> Bool;
+     x:a;
+     y:b;
+     xs,zs : List a;
+     ys,ts : List b;
+     z,e : a;
+     xxs : List (List a)
+. length (xs) = 0 <=> xs = Nil                                 %(LengthNil1)%  
+. length (Nil : List a) = length ys
+     => ys = (Nil : List b)                                    %(LengthEqualNil)%
+. length (Cons x xs) = length (Cons y ys)
+     => length xs = length ys                                  %(LengthEqualCons)%
+. length xs = length ys
+     => unzip (zip xs ys) = (xs, ys)                           %(ZipSpec)%
+} hide sum', product'
+end
+\end{Verbatim}
+
+\section{Especificação \textit{NumericFunctions}}
+\label{appendix:strictSpec:numericFunctions}
+\begin{Verbatim}
+spec NumericFunctions = Function and NumericClasses then {
+var a,b: Type;
+    a: Num;
+    b: Integral;
+    c: Fractional
+fun subtract: a -> a -> a
+fun even: b -> Bool
+fun odd: b -> Bool
+fun gcd: b -> b ->? b
+fun lcm: b -> b -> b
+fun gcd': b -> b -> b
+fun __^__: a * b -> a
+fun f: a -> b -> a
+fun g: a -> b -> a -> a
+fun __^^__: c * b -> c
+vars a: Num;
+     b: Integral;
+     c: Fractional;
+     x,y: Int;
+     z,w: Int;
+     r,s: Rat
+. subtract x y = y - x                                      %(Subtract)%
+. even z = (z rem (fromInteger 2)) == 0                     %(Even)%
+. odd z = Not even z                                        %(Odd)%
+. not def gcd 0 0                                           %(GgdUndef)%
+. gcd z w = gcd' ((fun abs: a -> a) z)
+     ((fun abs: a -> a) w)                                  %(Gcd)%
+. gcd' z 0 = z                                              %(Gcd'Zero)%
+. gcd' z w = gcd' w (z rem w)                               %(Gcd')%
+. lcm z 0 = 0                                               %(LcmVarZero)%
+. lcm (toInteger 0) z = 0                                   %(LcmZeroVar)%
+. lcm z w = (fun abs: a -> a)
+     ((z quot ((fun gcd: b -> b ->? b) z w)) * w)           %(Lcm)%
+. (z < 0) = True => not def(x ^ z)                          %(ExpUndef)%
+. (z == 0) = True => x ^ z = 1                              %(ExpOne)%
+. (even y) = True => f x z = f (x * x) (z quot 2);          %(AuxF1)%
+. (z == 1) = True => f x z = x;                             %(AuxF2)%
+. (even y) = False /\ (z == 1) = False
+     => f x z = g (x * x) ((y - 1) quot 2) x;               %(AuxF3)%
+. (even y) = True => g x z w = g (x * x) (z quot 2) w;      %(AuxG1)%
+. (y == 1) = True => g x z w = x * w;                       %(AuxG2)%
+. (even y) = False /\ (y == 1) = False
+     => g x z w = g (x * x) ((z - 1) quot 2) (x * w)        %(AuxG3)%
+. (z < 0) = False /\ (z == 0) = False => x ^ z = f x z      %(Exp)%
+} hide f,g
+end
+\end{Verbatim}
+
+\section{Especificação \textit{Char}}
+\label{appendix:strictSpec:char}
+\begin{Verbatim}
+spec Char = IChar and Ord and NumericClasses then
+vars x, y: Char
+type instance Char: Eq
+. (ord(x) == ord(y)) = (x == y)                             %(ICE01)%
+. Not(ord(x) == ord(y)) = (x /= y)                          %(ICE02)% %implied
+type instance Char: Ord
+. (ord(x) < ord(y)) = (x < y)                               %(ICO04)%
+. (ord(x) <= ord(y)) = (x <= y)                             %(ICO05)% %implied
+. (ord(x) > ord(y)) = (x > y)                               %(ICO06)% %implied
+. (ord(x) >= ord(y)) = (x >= y)                             %(ICO07)% %implied
+. (compare x y == EQ) = (ord(x) == ord(y))                  %(ICO01)% %implied
+. (compare x y == LT) = (ord(x) < ord(y))                   %(ICO02)% %implied
+. (compare x y == GT) = (ord(x) > ord(y))                   %(ICO03)% %implied
+. (ord(x) <= ord(y)) = (max x y == y)                       %(ICO08)% %implied
+. (ord(y) <= ord(x)) = (max x y == x)                       %(ICO09)% %implied
+. (ord(x) <= ord(y)) = (min x y == x)                       %(ICO10)% %implied
+. (ord(y) <= ord(x)) = (min x y == y)                       %(ICO11)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{String}}
+\label{appendix:strictSpec:string}
+\begin{Verbatim}
+spec String = %mono
+     ListNoNumbers and Char then
+type String := List Char
+vars a,b: String; x,y,z: Char; xs, ys: String
+. x == y = True => ((Cons x xs) == (Cons y xs)) = True    %(StringT1)% %implied
+. xs /= ys = True => ((Cons x ys) == (Cons y xs)) = False %(StringT2)% %implied
+. (a /= b) = True =>  (a == b) = False                    %(StringT3)% %implied
+. (x < y) = True =>  ((Cons x xs) < (Cons y xs)) = True   %(StringT4)% %implied
+. (x < y) = True /\ (y < z) = True => ((Cons x (Cons z Nil)) 
+         < (Cons x (Cons y Nil))) = False                 %(StringT5)% %implied
+end
+\end{Verbatim}
+
+\section{Especificação \textit{MonadicList}}
+\label{appendix:strictSpec:monadicList}
+\begin{Verbatim}
+spec MonadicList = Monad and ListNoNumbers then
+vars a,b: Type;
+     m: Monad;
+     f: a -> m b;
+     ms: List (m a);
+     k: m a -> m (List a) -> m (List a);
+     n: m a;
+     nn: m (List a);
+     x: a;
+     xs: List a;
+fun sequence: List (m a) -> m (List a)
+fun sequenceUnit: List (m a) -> m Unit
+fun mapM: (a -> m b) -> List a -> m (List b)
+fun mapMUnit: (a -> m b) -> List a -> m (List Unit)
+. sequence ms = let
+  k n nn = n >>= \ x:a. (nn >>= \ xs: List a . (ret (Cons x xs))) in
+    foldr k (ret (Nil: List a)) ms                          %(SequenceListDef)%
+end
+\end{Verbatim}
+
+\section{Especificação \textit{ExamplePrograms}}
+\label{appendix:strictSpec:examplePrograms}
+\begin{Verbatim}
+spec ExamplePrograms = ListNoNumbers then
+var a: Ord;
+    x,y: a;
+    xs,ys: List a
+fun quickSort: List a -> List a
+fun insertionSort: List a -> List a
+. quickSort (Nil: List a) = Nil                                %(QuickSortNil)%
+. quickSort (Cons x xs) 
+     = ((quickSort (filter (\ y:a .! y < x) xs)) 
+        ++ (Cons x Nil))
+          ++ (quickSort (filter (\ y:a .! y >= x) xs))        %(QuickSortCons)%
+. insertionSort (Nil: List a) = Nil                        %(InsertionSortNil)%
+. insertionSort (Cons x xs) =
+    insert x (insertionSort xs)                       %(InsertionSortConsCons)%
+then %implies
+var a: Ord;
+    x,y: a;
+    xs,ys: List a
+. andL (Cons True (Cons True (Cons True Nil))) = True             %(Program01)%
+. quickSort (Cons True (Cons False (Nil: List Bool))) 
+     = Cons False (Cons True Nil)                                 %(Program02)%
+. insertionSort (Cons True (Cons False (Nil: List Bool))) 
+     = Cons False (Cons True Nil)                                 %(Program03)%
+. insertionSort xs = quickSort xs                                 %(Program04)%
+end
+\end{Verbatim}
+
+\section{Especificação \textit{SortingPrograms}}
+\label{appendix:strictSpec:sortingPrograms}
+\begin{Verbatim}
+spec SortingPrograms = ListWithNumbers then
+var a,b : Ord;
+free type Split a b ::= Split b (List (List a))
+var x,y,z,v,w: a;
+    r,t: b;
+    xs,ys,zs,vs,ws: List a;
+    rs,ts: List b;
+    xxs: List (List a);
+    split: List a -> Split a b;
+    join: Split a b -> List a;
+    n: Nat
+fun genSort: (List a -> Split a b) -> (Split a b -> List a) -> List a -> List a
+fun splitInsertionSort: List b -> Split b b
+fun joinInsertionSort: Split a a -> List a
+fun insertionSort: List a -> List a
+fun splitQuickSort: List a -> Split a a
+fun joinQuickSort: Split b b -> List b
+fun quickSort: List a -> List a
+fun splitSelectionSort: List a -> Split a a
+fun joinSelectionSort: Split b b -> List b
+fun selectionSort: List a -> List a
+fun splitMergeSort: List b -> Split b Unit
+fun joinMergeSort: Split a Unit -> List a
+fun merge: List a -> List a -> List a
+fun mergeSort: List a -> List a
+. xs = (Cons x (Cons y ys)) /\ split xs = Split r xxs 
+     => genSort split join xs
+          = join (Split r (map (genSort split join) xxs))         %(GenSortT1)%
+. xs = (Cons x (Cons y Nil)) /\ split xs = Split r xxs 
+     => genSort split join xs 
+          = join (Split r (map (genSort split join) xxs))         %(GenSortT2)%
+. xs = (Cons x Nil) \/ xs = Nil
+     => genSort split join xs = xs                                 %(GenSortF)%
+. splitInsertionSort (Cons x xs) 
+     = Split x (Cons xs (Nil: List (List a)))            %(SplitInsertionSort)%
+. joinInsertionSort (Split x (Cons xs (Nil: List (List a)))) 
+     = insert x xs                                        %(JoinInsertionSort)%
+. insertionSort xs 
+     = genSort splitInsertionSort joinInsertionSort xs        %(InsertionSort)%
+. splitQuickSort (Cons x xs) 
+     = let (ys, zs) = partition (\t:a .! x < t) xs
+       in Split x (Cons ys (Cons zs Nil))                    %(SplitQuickSort)%
+. joinQuickSort (Split x (Cons ys (Cons zs Nil))) 
+     = ys ++ (Cons x zs)                                      %(JoinQuickSort)%
+. quickSort xs = genSort splitQuickSort joinQuickSort xs          %(QuickSort)%
+. splitSelectionSort xs = let x = minimum xs
+  in Split x (Cons (delete x xs) (Nil: List(List a)))    %(SplitSelectionSort)%
+. joinSelectionSort (Split x (Cons xs Nil)) = (Cons x xs) %(JoinSelectionSort)%
+. selectionSort xs
+     = genSort splitSelectionSort joinSelectionSort xs        %(SelectionSort)%
+. def((length xs) div 2) /\ n = ((length xs) div 2) 
+     => splitMergeSort xs = let (ys,zs) = splitAt n xs
+        in Split () (Cons ys (Cons zs Nil))                  %(SplitMergeSort)%
+. xs = (Nil: List a) => merge xs ys = ys                           %(MergeNil)%
+. xs = (Cons v vs) /\ ys = (Nil: List a) 
+     => merge xs ys = xs                                       %(MergeConsNil)%
+. xs = (Cons v vs) /\ ys = (Cons w ws) /\ (v < w) = True 
+     => merge xs ys = Cons v (merge vs ys)                   %(MergeConsConsT)%
+. xs = (Cons v vs) /\ ys = (Cons w ws) /\ (v < w) = False 
+     => merge xs ys = Cons w (merge xs ws)                   %(MergeConsConsF)%
+. joinMergeSort (Split () (Cons ys (Cons zs Nil))) 
+     = merge ys zs                                            %(JoinMergeSort)%
+. mergeSort xs = genSort splitMergeSort joinMergeSort xs          %(MergeSort)%
+then
+vars a: Ord;
+     x,y: a;
+     xs,ys: List a
+preds __elem__ : a * List a;
+      isOrdered: List a;
+      permutation: List a * List a
+. not x elem (Nil: List a)                                          %(ElemNil)%
+. x elem (Cons y ys) <=> x = y \/ x elem ys                        %(ElemCons)%
+. isOrdered (Nil: List a)                                      %(IsOrderedNil)%
+. isOrdered (Cons x (Nil: List a))                            %(IsOrderedCons)%
+. isOrdered (Cons x (Cons y ys)) 
+     <=> (x <= y) = True /\ isOrdered(Cons y ys)          %(IsOrderedConsCons)%
+. permutation ((Nil: List a), Nil)                           %(PermutationNil)%
+. permutation (Cons x (Nil: List a), Cons y (Nil: List a))
+     <=> x=y                                                %(PermutationCons)%
+. permutation (Cons x xs, Cons y ys) <=>
+     (x=y /\ permutation (xs, ys)) \/ (x elem ys
+          /\ permutation(xs, Cons y (delete x ys)))     %(PermutationConsCons)%
+then %implies
+var a,b : Ord;
+    xs, ys : List a;
+. insertionSort xs = quickSort xs                                 %(Theorem01)%
+. insertionSort xs = mergeSort xs                                 %(Theorem02)%
+. insertionSort xs = selectionSort xs                             %(Theorem03)%
+. quickSort xs = mergeSort xs                                     %(Theorem04)%
+. quickSort xs = selectionSort xs                                 %(Theorem05)%
+. mergeSort xs = selectionSort xs                                 %(Theorem06)%
+. isOrdered(insertionSort xs)                                     %(Theorem07)%
+. isOrdered(quickSort xs)                                         %(Theorem08)%
+. isOrdered(mergeSort xs)                                         %(Theorem09)%
+. isOrdered(selectionSort xs)                                     %(Theorem10)%
+. permutation(xs, insertionSort xs)                               %(Theorem11)%
+. permutation(xs, quickSort xs)                                   %(Theorem12)%
+. permutation(xs, mergeSort xs)                                   %(Theorem13)%
+. permutation(xs, selectionSort xs)                               %(Theorem14)%
+end
+\end{Verbatim}

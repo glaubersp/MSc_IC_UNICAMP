@@ -1,0 +1,23 @@
+\section{HasCASL}
+Esta seção apresenta a linguagem HasCASL baseando-se em \cite{Schroder}. A definição formal da linguagem encontra-se em \cite{SchröderEtAl03}.
+
+A linguagem HasCASL é uma extensão de CASL, anteriormente descrita, com conceitos de lógica de segunda ordem tais como tipos que são funções, polimorfismo e construtores de tipos. HasCASL foi criada de forma que a linguagem de programação funcional Haskell seja seu sub-conjunto; dessa forma, torna-se possível transformar uma especificação em HasCASL em um programa Haskell de uma forma mais simples. Como citado anteriormente, para extender CASL é necessario, apenas, extender ou alterar a Especificação Básica, sem que seja necessário alterar os outros três tipos de especificação.
+
+A lógica de segunda ordem tradicional não permite os tipos e funções recursivas amplamente usados em linguagem funcional. HasCASL tenta resolver o problema sem utilizar semântica denotacional, fazendo emergir uma lógica interna às $\lambda$-abstrações sem que esta lógica seja um conceito primitivo da linguagem. Dessa forma, mantém-se a linguagem próxima a CASL e, ao mesmo tempo, com as propriedades desejadas de lógica de segunda ordem.
+
+As sentenças em HasCASL diferem de CASL em dois aspectos:
+\begin{itemize}
+\item Os quantificadores (universal, existencial e unicamente existencial) podem ser aplicados sobre as variáveis de tipo e possuem restrições de sub-tipos;
+\item Os predicados de CASL são substituídos por termos do tipo \textit{unit}.
+\end{itemize}
+
+Diferentemente das linguagens de programação funcional, os operações polimórficos precisam ser explicitamente instanciados, uma vez que ainda não está claro, teoricamente, como se relacionam a resolução de sobrecarga de sub-tipos e a instanciação implícita.
+
+Como HasCASL tenta manter-se o mais próximo de CASL, sua semântica também é baseada em teoria dos conjuntos. Para que as assinaturas de segunda ordem sejam modeladas nesta semântica, é usada a noção de modelo Henkin intensional. Neste modelo, os tipos de funções são interpretados por conjuntos arbitrários equipados com uma operação de aplicação do tipo apropriado (em oposição a um tipo parcial $s->?t$ ser interpretado pelo conjunto completo de todas as funções parciais de $s$ em $t$). A interpretação dos $\lambda$-termos é parte da estrutura do modelo ao invés de ser apenas um axioma existencial.
+
+O modelo intensional tem algumas vantagens, entre as quais: eliminar os problemas de completude; permitir modelos iniciais de assinaturas que contenham funções parciais; e permitir que a semântica operacional das linguagens de programação funcional seja aplicada, ao invés de usar diretamente a lógica de segunda ordem.
+Ao contrário de Haskell, na qual a avaliação de funções é preguiçosa, a avaliação de funções em HasCASL é estrita, ou seja, argumentos indefinidos sempre resultam em valores indefinidos. Uma maneira de emular a avaliação preguiçosa, na qual é permitido que funções deixem de avaliar argumentos não utilizados internamente a fim de retornar valores definidos mesmo na presença de argumentos indefinidos, é mover os parâmetros para tipos unitários ($unit ->? a$).
+
+Os tipos são definidos pelo uso da palavra reservada $type$, que pode ser precedida pelos qualificadores $free$ e $generated$, como em CASL. Definições de tipo que possuam tipos de funções como argumentos de construtores e recursão apenas no lado direito da seta devem ser realizadas com a palavra-reservada $cofree$; com recursão em ambos os lados da seta, os tipos devem ser definidos com $free$.
+
+Funções recursivas, por sua vez, são definidas utilizando a abreviatura $op \; f:t = rec \, \alpha$ que equivale a declarar a operação $op \; f:t$ e adicionar o axioma $f=Y(\lambda f:t.a)$, onde Y é o operador de ponto fixo.

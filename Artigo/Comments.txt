@@ -1,0 +1,28 @@
+PermutationCons: This is a lemma, even if it has not been proved --
+please mark accordingly.
+
+Non-strict free types: Constructors should *not* be partial (a partial
+constructor in a free type will not yield any elements of the free
+type; e.g. the specification of lazy lists as in the original
+submission will contain only the empty list).
+
+The paragraph on Bool following the discussion of lazy lists was
+incomprehensible to me, respectively what I managed to gather out of
+it was partly wrong, so I removed it. The same holds for the next
+paragraph discussing lists of tuples.
+
+Can we actually use colour in the paper?
+
+Example proofs: after the lengthy discussion of simp only, why is
+there no example of its actual use?
+
+I've changed "proved" to "proven"
+
+I've removed the (for sorting) irrelevant %(Program01)% 
+ . andL (Cons True (Cons True (Cons True Nil))) = True
+(or are you refering to this example in the conclusion?)
+
+In the graph pictures I found no "List" specification, therefore I made
+"SortingPrograms" start with "ListWithNumbers", since "length" is used for
+mergesort (although one could also split a list by taking every second
+element).

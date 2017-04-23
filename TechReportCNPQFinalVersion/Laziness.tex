@@ -1,0 +1,182 @@
+\chapter{Uma tentativa de extensão para inclusão de avaliação preguiçosa, recursão e tipos infinitos}
+\label{chap:laziness}
+
+A avaliação preguiçosa pode ser incluída em especificações escritas em \HasCASL de duas formas.
+Em uma abordagem mais simples, pode-se apenas utilizar funções com avaliação preguiçosa sem que o comportamento das mesmas possa ser mapeado para o comportamento de funções na linguagem \Haskell.
+A abordagem mais complexa, por sua vez, exige a alteração do domínio semântico das funções em \HasCASL para um subconjunto de tipos onde a noção de especificação executável pode ser definida, permitindo recursão e não-terminação de programas.
+A seguir, discutimos as duas abordagens e a aplicação das mesmas no projeto.
+
+\section{Tipos com avaliação preguiçosa}
+A inclusão de tipos com avaliação preguiçosa, inicialmente, pode ser feita trocando-se os tipos nos perfis das funções.
+Todo tipo \Verb.T. deve ser substituído pelo tipo \Verb.?T., que é a abreviação sintática para a função parcial \Verb.Unit ->? T..
+Quando o tipo a ser alterado for a imagem de uma função parcial, é necessário alterar a função para uma função total, ou seja, uma função parcial com perfil \Verb. T ->? S., ao incorporar tipos com avaliação preguiçosa passa a ser a função total \Verb.?T -> ?S..
+Vale notar que a função total \Verb.T1 -> T2 -> ... -> ?S., com imagem no tipo com avaliação preguiçaosa \Verb.?S., equivale à função parcial \Verb.T1 -> T2 -> ... ->? S, com imagem no tipo com avaliação estrita \Verb.S..
+
+Com o uso de funções com avaliação preguiçosa, o tipo de dado \Verb.Bool. poderia ser mapeado para o tipo \Verb.?Bool. ao invés de ser definido na especificação.
+Como os operadores lógicos de \HasCASL são definidos sobre o tipo \Verb.?Unit., este mapeamento permitiria que as aplicações de funções com tipo de retorno \Verb.Bool. fossem interpretadas como predicados.
+Desta forma, não seria necessário comparar uma aplicação de função com um dos construtores do tipo \Verb.Bool. para formar um termo.
+Seria possível, também, utilizar todas as funções lógicas de \HasCASL diretamente sobre os termos formados pela aplicação de tais funções.
+
+O tipo de dados \Verb.Bool., por exemplo, deveria ser alterado de:
+
+\begin{Verbatim}
+spec Bool = %mono
+free type Bool ::= True | False 
+fun Not__ : Bool -> Bool
+fun __&&__ : Bool * Bool -> Bool
+fun __||__ : Bool * Bool -> Bool
+fun otherwiseH: Bool      
+vars x,y: Bool
+. Not(False) = True                 %(NotFalse)%
+. Not(True) = False                 %(NotTrue)%
+. False && x = False                %(AndFalse)%
+. True && x = x                     %(AndTrue)%
+. x && y = y && x                   %(AndSym)%
+. x || y = Not(Not(x) && Not(y))    %(OrDef)%
+. otherwiseH = True                 %(OtherwiseDef)%
+. Not x = True <=> x = False        %(NotFalse1)% %implied
+. Not x = False <=> x = True        %(NotTrue1)% %implied
+. not (x = True) <=> Not x = True   %(notNot1)% %implied
+. not (x = False) <=> Not x = False %(notNot2)% %implied
+end
+\end{Verbatim}
+
+para:
+
+\begin{Verbatim}
+spec Bool = %mono
+type Bool := ?Unit 
+fun Not__ : ?Bool -> ?Bool
+fun __&&__ : ?Bool * ?Bool -> ?Bool
+fun __||__ : ?Bool * ?Bool -> ?Bool
+fun otherwiseH: ?Bool      
+vars x,y: ?Bool
+. Not(false)                        %(NotFalse)%
+. not Not(true)                     %(NotTrue)%
+. not (false && x)                  %(AndFalse)%
+. true && x = x                     %(AndTrue)%
+. x && y = y && x                   %(AndSym)%
+. x || y = Not(Not(x) && Not(y))    %(OrDef)%
+. otherwiseH                        %(OtherwiseDef)%
+. (Not x) = not x           %(NotFalse1)% %implied
+. not (Not x) = x           %(NotTrue1)% %implied
+. (not x) = Not x           %(notNot1)% %implied
+. (not not x) = not Not x   %(notNot2)% %implied
+end
+\end{Verbatim}
+
+Estas alterações melhorariam a legibilidade das especificações e simplificariam o processo de provas em \Isabelle uma vez que o tipo de dado \Verb.?Unit. é mapeado para o tipo de dado \Verb.bool. de \HOL.
+A aplicação das alterações na biblioteca pode ser conferida no \citeAppendix{appendix:lazySpec}, e as respectivas provas, no \citeAppendix{appendix:lazyProofs}.
+
+A falta de exemplos na literatura deixou algumas dúvidas com relação a aplicação da avaliação preguiçosa.
+A aplicação deste tipo de avaliação no tipo \Verb.List List a., por exemplo, poderia gerar o tipo \Verb.?List List a. ou o tipo \Verb.?List(?List(?a))..
+Nenhum destes tipos gera erro sintático na ferramenta \Hets no perfil de funções.
+O uso do primeiro tipo, no entanto, não permitiu que as especificações fossem traduzidas para \HOL porque a ferramenta \Hets não era capaz de casar os tipos de retorno, de parâmetros de funções e de variáveis que fizessem uso desse tipo.
+O segundo tipo, por sua vez, permitiu a tradução das especificações para \HOL.
+
+Durante as provas, entretanto, os tipos de algumas funções não conseguiram ser casados e as provas não puderam avançar.
+Notadamente, não foi possível casar os tipos das funções definidas nas especificações com o tipo das funções definidas internamente pela ferramenta \Hets e utilizadas de forma auxiliar durante a tradução de tipos com avaliação preguiçosa de \HasCASL para \HOL.
+Dessa forma, apenas as especificações \Verb.Bool., \Verb.Eq., \Verb.Ord., \Verb.Maybe. e \Verb.Either. tiveram todos os seus teoremas provados.
+A especificação \Verb.ListNoNumbers. possui apenas um teorema em aberto.
+As demais especificações ou possuem a maior parte dos teoremas em aberto ou não puderam ter as provas iniciadas pelo problema descrito anteriormente.
+
+A aplicação de tipos com avaliação preguiçosa definidos da forma descrita anteriormente não simula o comportamento da linguagem de programação \Haskell, impedindo o uso de recursão e de estruturas de dados infinitas.
+Esta limitação, talvez, possa estar relacionada com o problema enfrentado na aplicação de avaliação preguiçosa no tipo \Verb.?List(?List(?a))..
+A eliminação destas restrições é possível com a abordagem descrita na próxima seção.
+
+\section{Recursão e não-terminação de programas}
+O uso de recursão, tipos infinitos e a possibilidade de não-terminação de programas exigem o uso de um domínio semântico diferente, tanto nas especificações escritas em \HasCASL quanto nas provas escritas para a ferramenta \Isabelle.
+Este domínio representa um subconjunto de tipos onde a noção de especificação executável é permitida, ou seja, onde as especificações podem ser interpretadas como programas escritos em linguagens de programação funcional.
+
+O domínio de especificações executáveis em \HasCASL pode ser usado através das classes \Verb.Cpo. e \Verb.Cppo., definidas na especificação \Verb.Recursion. da biblioteca \Verb.HasCASL/Metatheory/. \Verb.Recursion. e transcritos a seguir:
+
+\begin{Verbatim}
+spec Recursion = Ord with Ord |-> InfOrd, __<=__ |-> __<<=__ and Nat then
+class  Cpo < InfOrd {
+var    a: Cpo
+fun    __<<=__ : Pred (a * a)
+op     undefined: ?a
+. not def (undefined: ?a)
+type   Chain a = {s: Nat ->? a . forall n: Nat . def s n => s n <<= s (n + 1)}
+fun    sup: Chain a ->? a
+var    x: ?a; c: Chain a
+. sup c <<=[?a] x <=> forall n: Nat . c n <<=[?a] x
+}
+
+class Cppo < Cpo {
+var    a : Cppo
+fun    bottom : a
+. bottom <<= x
+}
+
+class FlatCpo < Cpo {
+vars   a : FlatCpo; x, y: a
+. x <<= y => x = y
+}
+
+vars a, b: Cpo; c: Cppo; x, y: a; z, w: b
+type instance __*__ : +Cpo -> +Cpo -> Cpo
+type instance __*__ : +Cppo -> +Cppo -> Cppo
+
+type instance Unit : Cppo
+type instance Unit : FlatCpo
+
+type a -->? b = { f : a ->? b . forall c: Chain a .
+                 sup ((\ n: Nat . f (c n)) as Chain b) = f (sup c) }
+
+type a --> b = { f : a -->? b . f in a -> b }
+
+type instance __-->?__ : -Cpo -> +Cpo -> Cppo
+var  f, g: a -->? b
+. f <<= g <=> forall x: a . def (f x) => f x <<= g x
+
+type instance __-->__ : -Cpo -> +Cpo -> Cpo
+var  f, g: a --> b
+. f <<= g <=> forall x: a . f x <<= g x
+
+type instance __-->__ : -Cpo -> +Cppo -> Cppo
+. bottom[a --> c] = \ x: a . bottom[c]
+
+then %def
+
+var c: Cppo
+fun Y : (c --> c) --> c
+var f : c --> c; x: c; P : Pred c
+. f(Y f) = Y f
+. f x = x => Y f <<= x
+. P bottom /\ (forall x : c . P x => P (f x)) => P (Y f) %implied
+\end{Verbatim}
+
+Os tipos de dados utilizados nas especificações devem ser instâncias das classes \Verb.Cpo. ou \Verb.Cppo. e, quando polimórficos, devem estar definidos sobre variáveis de tipos que sejam instâncias destas classes.
+Um tipo nesta semântica pode ser definido com o uso da palavra-chave \Verb.free domain., como a seguir:
+
+\begin{Verbatim}
+var a : Cpo
+free domain List a ::= Nil | Cons a (List a)
+\end{Verbatim}
+
+O tipo de dado definido acima representa uma lista finita de elementos cujo tipo é instância da classe \Verb.Cpo..
+Esta lista pode ser utilizada em funções recursivas, embora ainda não capture as noções de listas com avaliação preguiçosa e nem de listas infinitas.
+
+Para representar listas com avaliação preguiçosa e listas infinitas, deve-se definir o tipo de dado da seguinte forma:
+
+\begin{Verbatim}
+var a : Cpo
+free domain LList a ::= Nil | Cons a ?(LList a)
+\end{Verbatim}
+
+Então, listas finitas com avaliação preguiçosa podem ser obtidas mapeando-se um elemento do tipo \Verb.a. para uma lista indefinida (com avaliação preguiçosa).
+As listas infinitas podem ser criadas através de uma cadeia de listas finitas com avaliação preguiçosa.
+
+Neste domínio, funções recursivas podem ser definidas como equações recursivas no estilo de linguagens de programação funcional, tal como \Haskell, bastando defini-las após a palavra-chave \Verb.program..
+A tradução destas equações para os termos que façam uso do operador de ponto fixo definido na especificação \Verb.Recursion. é implícita.
+
+Neste domínio semântico pode-se definir funções com avaliação estrita ou preguiçosa, tal como no domínio padrão de \HasCASL.
+A definição de funções com avaliação preguiçosa (como sugerido na seção anterior) dentro deste domínio semântico produz especificações com comportamento equivalente ao comportamento encontrado na linguagem \Haskell.
+
+Para escrever provas na ferramenta \Isabelle dentro deste domínio é necessário alterar a lógica utilizada de \HOL para \HOLCF.
+O suporte à tradução para a teoria \HOLCF pela ferramenta \Hets ainda está em desenvolvimento e a complexidade do uso desta lógica é muito maior do que a do uso da lógica \HOL.
+
+O uso desta abordagem para avaliação preguiçosa, pelo acima descrito, exigiria mais tempo do que o disponível para a confecção deste trabalho.
+Notadamente, a necessidade de aprender mais uma lógica associada ao provador \Isabelle demandaria um tempo consideravemente grande.
+Dessa forma, optou-se por não avançar na aplicação desta abordagem.

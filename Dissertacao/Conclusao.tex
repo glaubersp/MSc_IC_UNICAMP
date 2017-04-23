@@ -1,0 +1,40 @@
+\chapter{Conclusões e Trabalhos Futuros}
+\label{chap:conclusao}
+
+%What do you conclude?
+% What actions need to be taken?\
+% Summary of contributions
+Nesta dissertação, discutiu-se como especificar uma biblioteca para a linguagem \HasCASL tendo como base a biblioteca \Prelude da linguagem de programação \Haskell.
+Também foram criados alguns exemplos de uso da biblioteca.
+Comentários sobre as dificuldades encontradas que não permitiram refinar as especificações para utilizarem o subconjunto executável da linguagem \HasCASL também foram incluídos.
+
+% Main result
+A biblioteca criada inclui os tipos de dados booleano, listas, caracteres e cadeias de caracteres.
+Criou-se duas versões para a biblioteca deste trabalho.
+A primeira versão foi especificada com o uso de tipos com avaliação estrita, devido à complexidade de iniciar-se as especificações com o uso de tipos com avaliação preguiçosa.
+Uma segunda versão da biblioteca foi refinada para suportar tipos com avaliação preguiçosa.
+A verificação de ambas as bibliotecas foi realizada com o uso da ferramenta  \Hets, que traduziu as especificações para a linguagem \HOL, gerando necessidades de provas que foram, por sua vez, verificadas com o auxílio do provador de teoremas \Isabelle.
+
+% Application of the result
+O subconjunto especificado pode ser utilizado para escrever especificações maiores.
+Para ilustrar o uso da biblioteca, foram incluídas algumas especificações envolvendo listas e tipos booleanos.
+A especificação criada neste trabalho também serve de exemplo para a especificação de outras bibliotecas para a linguagem \HasCASL.
+
+%% Open issues
+As especificações da biblioteca da linguagem \CASL não possuem todos os lemas necessários para que a ferramenta \Isabelle consiga utilizá-las.
+A criação de homomorfismos entre tipos de dados da biblioteca da linguagem \CASL e tipos de dados da linguagem \HOL, utilizada pela ferramenta \Isabelle, possibilitará que esta ferramenta utilize os tipos de dados da linguagem \HOL nos processos de verificação quando os tipos de dados da biblioteca da linguagem \CASL forem utilizados.
+Os tipos de dados numéricos da biblioteca da linguagem \CASL são um exemplo de especificações que dependem dos homomorfismos para que as provas que as envolvam possam ser escritas.
+Homomorfismos para os tipos numéricos estão em desenvolvimento pela equipe responsável pelas linguagens e, quando completos, permitirão que as provas das especificações desta biblioteca que importam os tipos de dados numéricos da biblioteca \CASL possam ser escritas.
+
+O refinamento realizado para suportar a avaliação preguiçosa não implementou a recursão e os tipos de dados contínuos de \HasCASL.
+Estes tipos de dados ainda não são corretamente suportados pela ferramenta \Hets e sua verificação ou análise ainda não são possíveis.
+Sem suporte a recursão, não é possível a especificação de estruturas infinitas e o refinamento de especificações para o subconjunto executável da linguagem \HasCASL.
+
+Por fim, alguns teoremas ainda permanecem com as provas em aberto devido à complexidade em se utilizar o provador de teoremas \Isabelle.
+
+% Future research directions
+A biblioteca resultante deste trabalho pode ser estendida de várias maneiras.
+Pode-se escrever novos mapeamentos entre os tipos de dados da biblioteca da linguagem \CASL e os tipos de dados da linguagem \HOL, abrindo caminho para  as especificações de tipos de dados numéricos e escrever as provas das propriedades que envolvem estes tipos de dados.
+Uma outra extensão possível é o suporte à recursão, permitindo a especificação de tipos de dados infinitos e, em seguida, o refinamento das especificações para o subconjunto executável da linguagem \HasCASL.
+Uma terceira possibilidade é a implementação de estruturas de dados mais complexas presentes em alguns compiladores da linguagem \Haskell e que não fazem parte da biblioteca \Prelude.
+Com estas extensões, já seria possível criar especificações mais sofisticadas, permitindo verificações de exemplos mais realistas.

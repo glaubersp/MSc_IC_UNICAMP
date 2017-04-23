@@ -1,0 +1,400 @@
+\documentclass{beamer}
+
+%\setbeamertemplate{background canvas}[vertical shading][top=blue!40]
+%bottom=red!20,
+
+% Escolhendo modo de apresentacao ideal
+%\mode<presentation>
+%{
+  % Escolhe o tema grafico de apresentacao
+  %\usetheme{Warsaw}%Berkeley
+  % Possiveis temas graficos a serem escolhidos:
+  % Antibes, Bergen, Berkeley, Berlin, Boadilla, Copenhagen, Darmstadt,
+  % Dresden, Frankfurt, Goettingen, Hannover, Ilmenau, JuanLesPins,
+  % Luebeck, Madrid, Malmoe, Marburg, Montpellier, PaloAlto, Pittsburgh,
+  % Rochester, Singapore, Szeged, Warsaw, boxes, default.
+
+%}
+
+%\usecolortheme{seahorse}% orchid,dolphin, rose, structure, albatross, crane, dove, fly, seagull,seahorse, lily, whale, 
+
+%\usefonttheme[onlysmall]{structurebold} 
+
+\usepackage[brazil]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[brazil]{babel}
+\usetheme{Marburg}
+%\usetheme{Pittsburgh}%Slides clean
+
+%\setbeamertemplate{navigation symbols}{} % retira a barra de navegação
+\setbeamertemplate{footline}[frame number] % coloca numero nas páginas
+
+\title[Criação de uma biblioteca de tipos de segunda ordem para HasCASL]{Criação de uma biblioteca de tipos de segunda ordem para HasCASL}
+\author[Glauber M. Cabral]{Glauber Módolo Cabral -- Orientando\\
+Prof. Dr. Arnaldo Vieira Moura -- Orientador}
+\institute[IC - UNICAMP]{
+  \textbf{\large{Universidade Estadual de Campinas}}\par
+  \textbf{\large{Instituto de Computação}}\par
+  \textbf{\normalsize{Proposta de Mestrado em Ciência da Computação}}\par
+  \begin{figure}
+    \begin{center}
+      \raisebox{10pt}{\textbf{\normalsize{Apoio:}}}
+      \includegraphics[scale=0.5]{cnpq}
+    \end{center}
+  \end{figure}
+}
+\date{Outubro de 2007}
+\subject{}
+\logo{\includegraphics[scale=0.06]{Ic}}
+
+\begin{document}
+%para criar a página de rosto
+\frame{\titlepage} %inclui a front page
+
+\section*{Roteiro}
+% cria o sumário
+\begin{frame}
+  \frametitle{Roteiro}
+  \tableofcontents
+\end{frame}
+
+\section{Contextualização}
+
+%\begin{frame}
+%  \frametitle{Introdução} 
+%\end{frame}
+
+\subsection{CASL}
+\begin{frame}
+\frametitle{CASL (Common Algebraic Specification Language)}
+\begin{itemize}
+\item Linguagem de especificação algébrica;
+\item Criada por um grupo de pesquisadores para ser padrão na área;
+\item Une as boas características de outras linguagens;
+\item Permite extensões e sub-linguagens;
+\item Linguagem central de uma família de linguagens;
+\item Possui 4 partes semanticamente independentes;
+\item Possui uma biblioteca com exemplos de especificações.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{CASL - 4 partes semanticamente independentes}
+
+\begin{itemize}
+\item \textbf{Especificações Básicas:} declarações de tipos e operações; definições de operações; axiomas relacionando as operações;
+\item \textbf{Especificações Estruturais:} permitem a combinação de Especificações Básicas em especificações maiores;
+\item \textbf{Especificações Arquiteturais:} definem como combinar especificações em blocos de especificações dependentes entre si para serem implementadas e reusadas;
+\item \textbf{Especificações de Bibliotecas:} definem conjuntos de especificações, com controle de versão e distribuição via Internet.
+\end{itemize}
+
+Extensões e sub-linguagens são criadas alterando-se apenas as Especificações Básicas.
+\end{frame}
+
+\subsection{Haskell}
+\begin{frame}
+\frametitle{Haskell}
+
+\begin{itemize}
+\item Linguagem funcional de programação: Implementa os conceitos de $\lambda$-Cálculo; programação através de aplicações de funções;
+\item Fortemente tipificada: todo elemento possui tipo (pré-definido ou calculado automaticamente no contexto);
+\item Avaliação preguiçosa: um argumento de uma função só é avaliado quando é usado no cálculo;
+\item Pura: não permite alterar o estado do sistema (efeitos colaterais) a menos das partes envolvidas no cálculo de uma função.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Haskell - Sintaxe e Semântica}
+\begin{itemize}
+\item Tipos polimorfos: permitem sobrecarga através de parametrização;
+\item Construtores de tipos: permitem definir novos tipos de dados;
+\item Classes de tipos: permitem associar operadores sobrecarregados (\textit{overloading}) a classes e definir, através de instâncias, quais tipos possuem as operações;
+\item Coincidência de padrões (\textit{pattern matching}): permite o uso de padrões para verificar se uma estrutura tem as características desejadas;
+%\item Usa listas para representar estruturas de dados;
+\item Mônadas são utilizadas para seqüenciar operações com efeitos colaterais, encapsulando as alterações.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Haskell - Prelude}
+\begin{itemize}
+\item Biblioteca padrão implementada e distribuída por todo compilador Haskell;
+\item Possui funções de uso corriqueiro:
+  \begin{itemize}
+  \item Tipos básicos (Integer, Char, String, Float, \ldots);
+  \item Manipulação de listas;
+  \item Manipulação de texto;
+  \item Mônadas para IO em tela e arquivo.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{HasCASL}
+\begin{frame}
+\frametitle{HasCASL}
+
+\begin{itemize}
+\item Extensão de CASL com conceitos de lógica de segunda ordem: tipos que são funções; polimorfismo e construtores de tipos;
+\item Tem a linguagem de programação funcional Haskell como sub-conjunto;
+  \begin{itemize}
+  \item Facilita a transformação da especificação em código Haskell executável;
+  \end{itemize}
+\item Possui uma lógica interna para permitir tipos e funções recursivos;
+  \begin{itemize}
+  \item A lógica não é um conceito básico da linguagem (não precisa ser aprendido para o uso da linguagem);
+  \end{itemize}
+%\item Semântica baseada em teoria dos conjuntos para manter-se próxima de CASL;
+\item Possui avaliação estrita de parâmetros: parâmetros indefinidos sempre resultam em valores de retorno indefinidos;
+\item Não possui biblioteca com especificações prontas.
+\end{itemize}
+\end{frame}
+
+\subsection{HetCASL e Hets}
+\begin{frame}
+\frametitle{HetCASL (Heterogeneous CASL)}
+\begin{itemize}
+\item Linguagem da família CASL que implementa as construções estruturais;
+\item Interliga as demais linguagens (interliga várias especificações básicas em linguagens diferentes);
+\item Preserva a ortogonalidade entre as lógicas de cada especificação básica;
+\item Possui construções para indicar as lógicas utilizadas ao traduzir-se uma especificação em outra.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hets: Heterogeneous Tool Set}
+\begin{itemize}
+\item Analisador sintático e gerenciador de provas.
+\item Implementado em Haskell;
+\item Gerencia ferramentas de provas para as lógicas utilizadas nas extensões e sub-linguagens de CASL:
+  \begin{itemize}
+  \item SPASS: lógica de primeira ordem;
+  \item Isabelle: lógica de segunda ordem.
+  \end{itemize}
+\item Utiliza o editor Emacs como interface para:
+  \begin{itemize}
+  \item formatação automática de código;
+  \item execução automática da ferramenta de grafos de desenvolvimento.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hets - Grafos de desenvolvimento}
+\begin{itemize}
+\item Grafo de lógicas e linguagens;
+\item Nós: especificações (completas ou não)
+  \begin{itemize}
+  \item Assinatura;
+  \item Axiomas locais, herdados pelos nós dependentes através dos arcos de definição;
+  \end{itemize}
+\item Arcos: 
+  \begin{itemize}
+  \item de definição: dependência entre especificações e suas sub-especificações;
+  \item de teorema: criam relações entre teorias, indicando necessidades de provas que surgem no desenvolvimento;
+    \begin{itemize}
+    \item globais: todos os axiomas válidos no nó fonte são válidos no nó alvo;
+    \item locais: apenas os axiomas definidos no nó fonte são válidos no nó alvo.
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Isabelle}
+\begin{frame}
+\frametitle{Isabelle}
+\begin{itemize}
+  \item Provador de teoremas genérico, semi-automático, que permite o uso de várias lógicas como cálculo formal;
+  %\item Permite o uso de \LaTeX para escrever provas, gerando documentos a partir do próprio código;
+  \item Automatiza alguns trechos repetitivos de provas: equações, aritmética básica e fórmulas matemáticas;
+  \item Hets usa Isabelle com HOL (Higher-Order Language);
+  \item A sintaxe de HOL assemelha-se à de Haskell;
+  \item Hets traduz uma especificação em HasCASL para HOL de forma automática;
+  %\item Possui uma extensão para descrever formas com uma sintaxe mais próxima de linguagem natural (Isar).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+\begin{figure}
+\centering
+%\includegraphics[width=\textwidth]{hets-new}
+%\includegraphics[height=0.75\textheight]{hets-new}
+\includegraphics[height=0.8\textheight]{hets-new}
+%\caption{Fonte: http://www.informatik.uni-bremen.de/\allowbreak{}agbkb/forschung/formal\_methods/CoFI/hets/index\_e.htm}
+\end{figure}
+{\scriptsize{Fonte: http://www.informatik.uni-bremen.de/agbkb/\allowbreak{}forschung/\allowbreak{}formal\_methods/\allowbreak{}CoFI/hets/index\_e.htm}}
+\end{frame}
+
+\section{Proposta}
+\begin{frame}
+\frametitle{Proposta}
+\begin{block}{Objetivo}
+Criar uma biblioteca para HasCASL e verificá-la através da ferramenta Hets.
+\end{block}
+
+\begin{block}{Metodologia}
+\begin{itemize}
+\item Reutilizar os tipos já especificados pela biblioteca de CASL;
+\item Incluir os tipos e funções presentes na biblioteca Prelude;
+\item Verificar formalmente as especificações criadas através da ferramenta Hets.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivação e Justificativa}
+%\begin{block}{Motivação e Justificativa}
+\begin{itemize}
+\item Criar a biblioteca contribui para difundir a linguagem;
+\item Permite o reuso em outras especificações;
+\item Tomar a biblioteca Prelude como base facilita a transformação de especificações em HasCASL para código executável em Haskell;
+\item Aprofundar conhecimentos em programação funcional e métodos formais.
+\end{itemize}
+%\end{block}
+\end{frame}
+
+\section{Cronograma}
+\begin{frame}[plain]
+\frametitle{Cronograma}
+
+\begin{enumerate}
+\item Créditos obrigatórios do mestrado; \label{cron:1}
+\item Estudo das linguagens HasCASL e CASL; \label{cron:2}
+\item Estudo da ferramenta Hets e do provador Isabelle; \label{cron:3}
+%\item Exame de Qualificação do Mestrado; \label{cron:4}
+\item Estudo da bib. Prelude e de lógica de segunda ordem; \label{cron:5}
+\item Implementação e verificação formal da biblioteca; \label{cron:6}
+\item Escrita de um artigo para congresso; \label{cron:7}
+\item Escrita da dissertação; \label{cron:8}
+\item Defesa e revisão. \label{cron:9}
+\end{enumerate}
+
+{
+\tiny
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{||c||c|c|c|c|c||c|c|c|c|c|c||c||}
+\hline \hline
+%% Anos
+Atividade
+& \multicolumn{5}{c||}{2007} 
+& \multicolumn{6}{c||}{2008}
+& \multicolumn{1}{c||}{2009} \\ \cline{2-13}
+
+%% Meses
+&  3-4 & 5-6 & 7-8 & 9-10 & 11-12 & 1-2 & 3-4 & 5-6 & 7-8 & 9-10 & 11-12 & 1-2 \\ \hline \hline
+
+%% Atividades
+\ref{cron:1}  & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & \\ \hline 
+\ref{cron:2}  & & $\bullet$ & $\bullet$ & & & & & & & & & \\ \hline 
+\ref{cron:3}  & & & & $\bullet$ & $\bullet$ & & & & & & & \\ \hline 
+%\ref{cron:4}  & & & & $\bullet$ & & & & & & & & \\ \hline 
+\ref{cron:5}  & & & & & & $\bullet$ & $\bullet$ & & & & & \\ \hline 
+\ref{cron:6}  & & & & & & & & $\bullet$ & $\bullet$ & $\bullet$ & & \\ \hline 
+\ref{cron:7}  & & & & & & & & & & $\bullet$ & & \\ \hline 
+\ref{cron:8}  & & & $\bullet$ & & $\bullet$ & & $\bullet$ & & & $\bullet$ & $\bullet$ & \\ \hline 
+\ref{cron:9}  & & & & & & & & & & & & $\bullet$ \\ \hline
+\hline
+\end{tabular}
+\label{tab:cronograma}
+\end{center}
+\end{table}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Agradecimentos}
+
+\begin{block}{Obrigado!}
+\end{block}
+
+\begin{block}{Dúvidas?}
+\end{block}
+
+\begin{block}{Contato:}
+glauber.cabral@students.ic.unicamp.br
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{HasCASL - Modelo Henkin Intensional (1)}
+
+\begin{block}{Modelo padrão}
+As funções parciais $s ->? t$ são interpretadas pelo conjunto completo de funções parciais de $s$ em $t$.
+\end{block}
+
+\begin{block}{Modelo Henkin Extensional}
+As funções parciais são interpretadas por subconjuntos dos conjuntos anteriores de tal forma que todos os $\lambda$-termos possam ser interpretados (\textit{comprehension}).
+\end{block}
+
+\begin{block}{Modelo Henkin Intensional}
+Um tipo de função é interpretado por um conjunto arbitrário equipado com operação de aplicação do tipo em questão. A interpretação dos $\lambda$-termos passa a ser parte da estrutura do modelo ao invés de um axioma existencial.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{HasCASL - Modelo Henkin Intensional (2)}
+
+\begin{block}{Vantagens}
+\begin{itemize}
+\item Elimina os problemas de completude presentes em outros modelos;
+\item Permite funções parciais em modelos iniciais de assinaturas;
+\item Permite o uso da semântica operacional de Haskell ao invés do uso direto de lógica de segunda ordem.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Grafo de Desenvolvimento - Especificação de Categorias}
+\begin{figure}
+\centering
+\includegraphics[height=0.8\textheight]{graph}
+%\caption{Fonte: http://www.informatik.uni-bremen.de/\allowbreak{}agbkb/forschung/formal\_methods/CoFI/hets/index\_e.htm}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{State Monad - Haskell code}
+{\footnotesize
+\begin{verbatim}
+newtype State s a = State { runState :: (s -> (a,s)) } 
+ 
+instance Monad (State s) where 
+  return a        = State $ \s -> (a,s)
+  (State x) >>= f =
+    State $ \s -> let (v,s') = x s in runState (f v) s' 
+\end{verbatim}
+}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{State Monad - HasCASL code}
+{\footnotesize
+\begin{verbatim}
+library State
+logic HasCASL
+spec State =
+  sort S;
+  op __>>=__ : forall a : Type . (S ->? (S * a)) * 
+                (a ->? (S ->? (S * a))) ->? (S ->? (S * a));
+     return  : forall a : Type . a ->? (S ->? (S * a));
+  forall a : Type; x : a; m : S ->? (S * a); 
+         f : a ->? (S ->? (S * a))
+   . return x = \ s:S . (s, x)                 %(return_def)%
+   . m >>= f = \ s:S . let (s', a) 
+                          = m s in (f a) s'      %(bind_def)%
+ then %implies
+  forall a: Type; x: a; m: S ->? (S * a); 
+         f, g, h : a ->? (S ->? (S * a))
+   . forall x:a
+   . (f x >>= g) >>= h = 
+                   f x >>= (\ y:a . g y >>= h) %(monad_assoc)%
+   . f x >>= return = f x                      %(monad_unit1)%
+   . def (f x) => return x >>= f = f x        %(monad_unit2a)%
+   . m >>= (\ x:a . return x >>= f) = m >>= f %(monad_unit2b)%
+\end{verbatim}
+}
+\end{frame}
+
+\end{document}

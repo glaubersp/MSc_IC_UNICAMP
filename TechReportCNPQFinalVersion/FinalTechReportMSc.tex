@@ -1,0 +1,180 @@
+\documentclass[11pt,twoside,a4paper]{report}
+
+\usepackage[a4paper]{geometry}
+
+\usepackage[brazil]{polyglossia}
+\usepackage{lmodern}
+
+%%For XeLaTeX
+\usepackage[xetex, draft=false, colorlinks=true, breaklinks=true, bookmarks=true, pdftitle={Creating a HasCASL Library}, pdfauthor={G. M. Cabral and A. V. Moura}]{hyperref}
+\usepackage{hypcap}
+
+\usepackage[xetex]{graphicx}
+
+%Fonts
+\usepackage{fontspec} % provides font selecting commands 
+\usepackage{xunicode} % provides unicode character macros 
+\usepackage{xltxtra}  % provides some fixes/extras 
+%\defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
+%\setmainfont[Mapping=tex-text]{Baskerville}
+%\setsansfont[Mapping=tex-text]{Skia} 
+%\setmonofont{Courier} 
+
+%For printing - few ink
+%\setmainfont{Spranq Eco Sans}
+%\setsansfont{Spranq Eco Sans}
+%\setmonofont{Andale Mono}
+
+\usepackage{amsmath}
+
+\usepackage{multicol}
+\setlength{\columnseprule}{0.1pt}
+
+%Bibliography
+\usepackage{natbib}
+\setcitestyle{numbers,square}
+\bibliographystyle{plainnat}
+%\bibliographystyle{abbrvnat}
+%\bibliographystyle{unsrtnat}
+
+\usepackage{url}
+
+%For Headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+%For double line space
+\usepackage{setspace}
+%\doublespace
+
+%For Appendix
+\usepackage{appendix}
+
+%fancyvrb: for customizable verbatim env.
+\usepackage{fancyvrb}
+\fvset{fontsize=\relsize{-1}}
+
+%relsize: for font resizing
+\usepackage{relsize}
+
+% My macros
+% Macro for citing Appendix
+\newcommand{\citeAppendix}[1]{Apêndice~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Specification
+\newcommand{\citeSpec}[1]{Especificação~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Proof Excerpt
+\newcommand{\citeProof}[1]{Excerto de Prova do Isabelle~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Full Proof Excerpt
+\newcommand{\citePScript}[1]{Prova do Isabelle~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing figure
+\newcommand{\citeFig}[1]{Figura~\ref{#1}, na página~\pageref{#1}}
+% Macro for referencing axiom
+\newcommand{\axiom}[1]{{\tt \%(#1)\%}}
+% Macro for referencing Haskell Code
+\newcommand{\citeHaskell}[1]{Código-fonte Haskell~\ref{#1}, na página~\pageref{#1}}
+
+\usepackage{xspace}
+\newcommand{\HasCASL}{\textsc{HasCasl}\xspace}
+\newcommand{\CASL}{\textsc{Casl}\xspace}
+\newcommand{\Hets}{\textsc{Hets}\xspace}
+\newcommand{\Haskell}{\textsc{Haskell}\xspace}
+\newcommand{\ML}{\textsc{ML}\xspace}
+\newcommand{\HOL}{\textsc{HOL}\xspace}
+\newcommand{\Isabelle}{\textsc{Isabelle}\xspace}
+\newcommand{\Prelude}{\textsc{Prelude}\xspace}
+\newcommand{\HOLCF}{\textsc{HOLCF}\xspace}
+\newcommand{\SML}{\textsc{SML}\xspace}
+\newcommand{\EML}{\textsc{EML}\xspace}
+\newcommand{\Maude}{\textsc{Maude}\xspace}
+\newcommand{\Larch}{\textsc{Larch}\xspace}
+\newcommand{\Z}{\textsc{Z}\xspace}
+
+\newcommand{\sort}{tipo (\textit{sort})\xspace}
+\newcommand{\sorts}{tipos (\textit{sorts})\xspace}
+
+\newcommand{\kind}{tipo (\textit{kind})\xspace}
+\newcommand{\kinds}{tipos (\textit{kinds})\xspace}
+
+\newcommand{\type}{tipo (\textit{type})\xspace}
+\newcommand{\types}{tipos (\textit{types})\xspace}
+
+% Está conflitando com as figuras. Não usar!
+%%For XeLaTeX, insert xetex option inside hyperref
+%\usepackage[xetex, draft=false, colorlinks=true, breaklinks=true, bookmarks=true, pdftitle={Creating a HasCASL Library}, pdfauthor={G. M. Cabral and A. V. Moura}]{hyperref}
+%\usepackage[all]{hypcap}
+
+
+
+\fancyhead{}
+\fancyhead[el]{\thepage}
+\fancyhead[er]{\textit{Cabral, G. M.}}
+\fancyhead[ol]{\textit{Criação de uma biblioteca padrão para a linguagem \HasCASL}}
+\fancyhead[or]{\thepage}
+\fancyfoot{}
+%\fancyfoot[l]{Rev: \svnrev\ (\svnfilerev)}
+%\fancyfoot[r]{\svnyear-\svnmonth-\svnday \hspace{0.5cm} \svnhour:\svnminute} % Date
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Fancy style for chapter page (\maketitle uses plain style):
+\fancypagestyle{plain}{%
+\fancyhf{}
+%\fancyfoot[ol]{Rev: \svnrev\ (\svnfilerev)}
+\fancyhead[or]{\thepage}
+%\fancyfoot[or]{\svnyear-\svnmonth-\svnday \hspace{0.5cm} \svnhour:\svnminute} % Date
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+}
+
+\title{\textbf{Relatório Final de Mestrado}\\
+\ \\
+Criação de uma biblioteca padrão para a linguagem \HasCASL}
+
+\author{Glauber Módolo Cabral\thanks{Instituto  de Computação, Universidade Estadual  de Campinas, 13081-970  Campinas,  SP.  Suporte CNPq Processo: 132039/2007-9}}
+
+\date{Processo CNPq: 132039/2007-9\\
+\ \\
+Período de Fomento: Março de 2007 a Fevereiro de 2009\\
+\ \\
+Previsão de Defesa: Fevereiro de 2010}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este relatório contém uma versão preliminar da dissertação de mestrado do aluno \textit{Glauber Módolo Cabral}, desenvolvida sob a orientação do professor \textit{Dr. Arnaldo Vieira Moura}, no programa de \textit{Mestrado Acadêmico} da \textit{Universidade Estadual de Campinas (UNICAMP)}.
+O trabalho consistiu em especificar uma biblioteca para a linguagem de especificação algébrica \HasCASL tendo como ponto de partida a biblioteca \Prelude da linguagem de programação \Haskell.
+Aqui, relatamos as dificuldades encontradas durante o trabalho, bem como os resultados obtidos com a execução do mesmo e  apresentamos algumas propostas de trabalhos.
+\end{abstract}
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\tableofcontents 
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+
+\input{Sumario}
+\input{RevisaoBibliografica}
+\input{HasCASLTutorial}
+\input{HasCASLBiblioteca}
+\input{HetsEIsabelle}
+\input{Laziness}
+
+\bibliography{Dissertacao,cofi}
+
+\newpage
+%Apêndices
+\appendix
+
+\renewcommand{\appendixpagename}{Apêndices}
+\appendixpage
+
+\input{HasCASLLibraryStrict}
+\input{IsabelleProofsStrict}
+\input{HasCASLLibraryLazy}
+\input{IsabelleProofsLazy}
+
+\end{document}

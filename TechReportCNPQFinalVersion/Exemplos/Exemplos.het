@@ -1,0 +1,36 @@
+logic HasCASL
+
+type S,T
+var a,b: S;
+    x,y: T
+
+.forall z,r:T . r=z
+
+op c: S
+fun c: S
+fun f: S -> T
+
+fun g1: S -> S -> T
+. g1 a b = x
+. (g1: S -> S -> T) (a:S) (b:S) = (x:T)
+
+fun g2: S * S -> T
+. g2 (a, b) = x
+. (g2: S * S -> T) (a:S, b:S) = (x:T)
+
+fun g3 __ __: S * S -> T
+. g3 a b = x
+. (g3 __ __: S * S -> T) (a:S, b:S) = (x:T)
+
+fun __gi__: S * S -> T
+. a gi b = x
+. (__gi__: S * S -> T) (a:S, b:S) = (x:T)
+
+fun __ __ gp: S * S -> T
+. a b gp = x
+. (__ __ gp: S * S -> T) (a:S, b:S) = (x:T)
+
+fun fd: S -> (S -> T)
+fun fe: (S -> T) -> T
+. (fd a) b = x
+. (fe: (S -> T) -> T) (fd a) = x

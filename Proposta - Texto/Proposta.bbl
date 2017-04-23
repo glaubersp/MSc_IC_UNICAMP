@@ -1,0 +1,88 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{1.53 }
+
+\bibitem[Astesiano et al. 2002]{Astesiano2002}
+\abntrefinfo{Astesiano et al.}{ASTESIANO et al.}{2002}
+{ASTESIANO, E. et al. {CASL}: {T}he {C}ommon {A}lgebraic {S}pecification
+  {L}anguage.
+\emph{Theoretical Computer Science}, 2002.
+Dispon{\'\i}vel em: $<$http://citeseer.ist.psu.edu/astesiano01casl.html$>$.}
+
+\bibitem[Comunity 2007]{IsabelleSite}
+\abntrefinfo{Comunity}{COMUNITY}{2007}
+{COMUNITY, I. \emph{Isabelle Overview}. 2007.
+Dispon{\'\i}vel em: $<$http://isabelle.in.tum.de/overview.html$>$.}
+
+\bibitem[{GHC Team} 2007]{ghc}
+\abntrefinfo{{GHC Team}}{{GHC Team}}{2007}
+{{GHC Team}, T. \emph{The Glasgow Haskell Compiler}. 2007.
+Dispon{\'\i}vel em: $<$http://haskell.org/ghc/$>$.}
+
+\bibitem[{Haskell Team} 2007]{learnHaskell}
+\abntrefinfo{{Haskell Team}}{{Haskell Team}}{2007}
+{{Haskell Team}, T. \emph{Learning Haskell}. 2007.
+Dispon{\'\i}vel em:
+  $<$http://www.haskell.org/haskellwiki/Learning\_Haskell$>$.}
+
+\bibitem[Mossakowski Christian~Maeder e Wölfl]{MossakowskiWeb}
+\abntrefinfo{Mossakowski Christian~Maeder e Wölfl}{MOSSAKOWSKI
+  CHRISTIAN~MAEDER; WöLFL}{}
+{MOSSAKOWSKI CHRISTIAN~MAEDER, K.~L. T.; WöLFL, S. \emph{The {H}eterogeneous
+  {T}ool {S}et}.
+Dispon{\'\i}vel em:
+  $<$http://www.informatik.uni-bremen.de/~till/papers/hets-paper.pdf$>$.}
+
+\bibitem[Mossakowski, Autexier e Hutter 2006]{Mossakowski2006}
+\abntrefinfo{Mossakowski, Autexier e Hutter}{MOSSAKOWSKI; AUTEXIER;
+  HUTTER}{2006}
+{MOSSAKOWSKI, T.; AUTEXIER, S.; HUTTER, D. \emph{Development graphs - Proof
+  management for structured specifications}. v.~67, n.~1-2, 2006. 114-145~p.}
+
+\bibitem[Nipkow, Paulson e Wenzel 2002]{Nipkow-Paulson-Wenzel:2002}
+\abntrefinfo{Nipkow, Paulson e Wenzel}{NIPKOW; PAULSON; WENZEL}{2002}
+{NIPKOW, T.; PAULSON, L.~C.; WENZEL, M. \emph{{I}sabelle/{HOL} --- A Proof
+  Assistant for Higher-Order Logic}. [S.l.]: Springer, 2002.  (LNCS, v.~2283).}
+
+\bibitem[Roggenbach, Mossakowski e Schr{\"o}der
+  2004]{Roggenbach:2004:CASL-Libraries}
+\abntrefinfo{Roggenbach, Mossakowski e Schr{\"o}der}{ROGGENBACH; MOSSAKOWSKI;
+  SCHR{\"O}DER}{2004}
+{ROGGENBACH, M.; MOSSAKOWSKI, T.; SCHR{\"O}DER, L. \textsc{Casl} libraries. In:
+   \emph{\textsc{Casl} Reference Manual}. [S.l.]: Springer, 2004,  (LNCS Vol.
+  2960 (IFIP Series)). part~V.}
+
+\bibitem[Schr{\"o}der 2006]{Schroder2006}
+\abntrefinfo{Schr{\"o}der}{SCHR{\"O}DER}{2006}
+{SCHR{\"O}DER, L. Higher order and reactive algebraic specification and
+  development. Feb 2006. Dispon{\'\i}vel em:
+  $<$http://www.informatik.uni-bremen.de/~lschrode/papers/Summary.ps$>$.}
+
+\bibitem[Schr\"oder e Mossakowski]{Schroder}
+\abntrefinfo{Schr\"oder e Mossakowski}{SCHR\"ODER; MOSSAKOWSKI}{}
+{SCHR\"ODER, L.; MOSSAKOWSKI, T. \emph{{HasCASL}: {T}owards {I}ntegrated
+  {S}pecification {A}nd {D}evelopment {O}f {H}askell {P}rograms}.
+Dispon{\'\i}vel em: $<$\url{http://citeseer.ist.psu.edu/459463.html}$>$.}
+
+\bibitem[Schr{\"o}der, Mossakowski e Maeder 2003]{SchröderEtAl03}
+\abntrefinfo{Schr{\"o}der, Mossakowski e Maeder}{SCHR{\"O}DER; MOSSAKOWSKI;
+  MAEDER}{2003}
+{SCHR{\"O}DER, L.; MOSSAKOWSKI, T.; MAEDER, C. \emph{HasCASL - Integrated
+  functional specification and programming. Language summary.} 2003.}
+
+\bibitem[Thompson 1999]{Thompson1999}
+\abntrefinfo{Thompson}{THOMPSON}{1999}
+{THOMPSON, S. \emph{{H}askell: {T}he {C}raft {O}f {F}unctional {P}rogramming}.
+  2. ed. Boston, USA: Addison Wesley, 1999. 512~p.
+ISBN 0-201-34275-8.}
+
+\bibitem[Weidenbach et al. 2002]{WBH+02}
+\abntrefinfo{Weidenbach et al.}{WEIDENBACH et al.}{2002}
+{WEIDENBACH, C. et al. {SPASS} version 2.0. In:  VORONKOV, A. (Ed.).
+  \emph{Proceedings of the 18th International Conference on Automated
+  Deduction}. [S.l.]: Springer-Verlag, 2002.  (LNAI, v.~2392), p. 275--279.}
+
+\end{thebibliography}

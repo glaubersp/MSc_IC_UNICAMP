@@ -1,0 +1,240 @@
+\documentclass[12pt,twoside]{report} % Use esta linha para tese com mais de 100 páginas
+%\documentclass[12pt]{report} % Use esta linha para tese com até 100 páginas
+
+\usepackage[brazil]{polyglossia}
+% Evita que os headers tenham as fontes alteradas por bug no polyglossia
+\setkeys{polyglossia}{localmarks=off}
+
+\makeatletter
+\let\my@xfloat\@xfloat
+\makeatother
+\usepackage{ic-tese}
+\makeatletter
+\def\@xfloat#1[#2]{
+   \my@xfloat#1[#2]%
+   \def\baselinestretch{1}%
+   \@normalsize \normalsize
+}
+\makeatother
+
+\usepackage{lmodern}
+
+\usepackage[xetex]{graphicx}
+
+%Fonts
+\usepackage{xltxtra}  % provides some fixes/extras 
+%\defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
+%\setmainfont[Mapping=tex-text]{Baskerville}
+%\setsansfont[Mapping=tex-text]{Skia} 
+%\setmonofont{Courier} 
+
+%For printing - few ink
+%\setmainfont{Spranq Eco Sans}
+%\setsansfont{Spranq Eco Sans}
+%\setmonofont{Andale Mono}
+
+\usepackage{amsmath}
+
+\usepackage{multicol}
+\setlength{\columnseprule}{0.1pt}
+
+%Bibliography
+\usepackage{natbib}
+\setcitestyle{numbers,square}
+%\bibliographystyle{plainnat}
+\bibliographystyle{abbrvnat}
+%\bibliographystyle{unsrtnat}
+
+\usepackage{url}
+
+%Sets line space
+\usepackage{setspace}
+%\singlespacing
+%\onehalfspacing
+%\doublespace
+
+%For Appendix
+\usepackage{appendix}
+
+%relsize: for font resizing
+\usepackage{relsize}
+
+%fancyvrb: for customizable verbatim env.
+\usepackage{fancyvrb}
+\fvset{fontsize=\relsize{-1}}
+
+% My macros
+% Macro for citing Appendix
+\newcommand{\citeAppendix}[1]{Apêndice~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Specification
+\newcommand{\citeSpec}[1]{Especificação~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Proof Excerpt
+\newcommand{\citeProof}[1]{Excerto de Prova do Isabelle~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing Full Proof Excerpt
+\newcommand{\citePScript}[1]{Prova do Isabelle~\ref{#1}, na página~\pageref{#1}}
+%Macro for citing figure
+\newcommand{\citeFig}[1]{Figura~\ref{#1}, na página~\pageref{#1}}
+% Macro for referencing axiom
+\newcommand{\axiom}[1]{{\tt \%(#1)\%}}
+% Macro for referencing Haskell Code
+\newcommand{\citeHaskell}[1]{Código-fonte Haskell~\ref{#1}, na página~\pageref{#1}}
+
+\usepackage{xspace}
+\newcommand{\HasCASL}{\textsc{HasCasl}\xspace}
+\newcommand{\CASL}{\textsc{Casl}\xspace}
+\newcommand{\Hets}{\textsc{Hets}\xspace}
+\newcommand{\Haskell}{\textsc{Haskell}\xspace}
+\newcommand{\ML}{\textsc{ML}\xspace}
+\newcommand{\HOL}{\textsc{HOL}\xspace}
+\newcommand{\Isabelle}{\textsc{Isabelle}\xspace}
+\newcommand{\Prelude}{\textsc{Prelude}\xspace}
+\newcommand{\HOLCF}{\textsc{HOLCF}\xspace}
+\newcommand{\SML}{\textsc{SML}\xspace}
+\newcommand{\EML}{\textsc{EML}\xspace}
+\newcommand{\Maude}{\textsc{Maude}\xspace}
+\newcommand{\Larch}{\textsc{Larch}\xspace}
+\newcommand{\Z}{\textsc{Z}\xspace}
+\newcommand{\BMethod}{\textsc{Método B}\xspace}
+\newcommand{\AMN}{\textsc{AMN}\xspace}
+
+\newcommand{\sort}{tipo (\textit{sort})\xspace}
+\newcommand{\sorts}{tipos (\textit{sorts})\xspace}
+
+\newcommand{\kind}{tipo (\textit{kind})\xspace}
+\newcommand{\kinds}{tipos (\textit{kinds})\xspace}
+
+\newcommand{\type}{tipo (\textit{type})\xspace}
+\newcommand{\types}{tipos (\textit{types})\xspace}
+
+% Está conflitando com as figuras. Não usar!
+%%For XeLaTeX, insert xetex option inside hyperref
+\usepackage[xetex, final=true, colorlinks=false, breaklinks=true, bookmarks=true, bookmarksnumbered=true, pdftitle={Criação de uma Biblioteca Padrão para a Linguagem HasCASL}, pdfauthor={Glauber M. Cabral}]{hyperref}
+\usepackage[all]{hypcap}
+
+\begin{document}
+
+\title{Criação de uma Biblioteca Padrão para a Linguagem HasCASL}
+\author{Glauber Módolo Cabral}
+\degreesought{Mestrado} % Mestrado
+\titlesought{Mestre} % Doutora/Mestre
+\principaladvisor{Prof. Dr. Arnaldo Vieira Moura\\
+Instituto de Computação - UNICAMP}
+\advisortitle{Orientador} % Orientadora
+\firstreader{Prof. Dr. Luciano Silva\\
+Faculdade de Computação e Informática - Mackenzie}
+\secondreader{Prof. Dr. João Meidanis\\
+Instituto de Computação - UNICAMP}
+\thirdreader{Prof. Dr. Nizam Omar\\
+Faculdade de Computação e Informática - Mackenzie (Suplente Externo)}
+\fourthreader{Prof. Dr. Luiz Eduardo Buzato\\
+Instituto de Computação - UNICAMP (Suplente Interno)}
+\grants{{\rm Suporte financeiro do CNPq (processo 132039/2007-9)}} % Pode ser omitido.
+%
+\submitdate{Abril de 2010} % Pode ser omitido.
+\date{26 de Abril de 2010} % Pode ser omitido.
+%
+%   Se pretende utilizar \copyrighttrue, consulte antes seu orientador ou a CPG!!!
+%   Este ponto envolve quest{\~o}es legais complexas e de graves conseq{\"u}{\^e}ncias.
+\copyrightfalse % Caso nao queira que apareca a pagina de Copyright.
+%\copyrighttrue % Caso queira que apareca a pagina de Copyright.
+%
+\finalversiontrue % Caso seja a versao final.
+%\finalversionfalse % Caso nao seja a versao final ainda.
+%
+%\tablespagetrue % Caso queira que apareca a Lista de Tabelas.
+\tablespagefalse % Caso nao queira que apareca a Lista de Tabelas.
+%
+\figurespagetrue % Caso queira que apareca o Lista de Figuras.
+%\figurespagefalse % Caso nao queira que apareca o Lista de Figuras.
+%
+
+\onehalfspacing
+
+\beforepreface
+\prefacesection{Resumo}
+Métodos formais são ferramentas da Engenharia de Software que empregam formalismos matemáticos na construção de programas.
+Em geral, são compostos por uma ou mais linguagens de especiﬁcação e algumas ferramentas auxiliares.
+A linguagem de especiﬁcação algébrica \textit{Common Algebraic Speciﬁcation Language (\CASL)} foi concebida para ser a linguagem padrão na área de especiﬁcação algébrica.
+A linguagem \HasCASL é a extensão da linguagem \CASL responsável por suportar lógica de segunda ordem e possui um subconjunto de sua sintaxe que se assemelha à linguagem de programação \Haskell e que pode ser executado.
+O uso prático de uma linguagem de especiﬁcação depende da disponibilidade de uma biblioteca padrão de especiﬁcações pré-deﬁnidas.
+Embora \CASL possua tal biblioteca, esta não disponibiliza propriedades e tipos de dados de segunda ordem.
+Esta dissertação descreve a especiﬁcação de uma biblioteca para a linguagem \HasCASL com funções e tipos de dados de segunda ordem, tendo como referência a biblioteca \Prelude da linguagem \Haskell.
+Os tipos de dados especificados incluem o tipo booleano, listas, caracteres e cadeias de caracteres, além de classes e funções presentes na biblioteca \Prelude.
+Uma primeira versão da biblioteca faz uso de tipos de dados com avaliação estrita, devido à complexidade de iniciar o processo de especificação com o uso de tipos com avaliação preguiçosa.
+Um refinamento posterior da biblioteca incluiu o suporte a tipos de dados com avaliação preguiçosa.
+A veriﬁcação de ambas as versões da biblioteca foi realizada com o uso da ferramenta \Hets, responsável por traduzir as especiﬁcações escritas na linguagem \HasCASL para a linguagem \HOL e gerar necessidades de prova veriﬁcadas com o auxílio do provador de teoremas \Isabelle.
+Para ilustrar o uso dos tipos de dados especificados foram incluídas algumas especiﬁcações de exemplo envolvendo listas e tipos booleanos.
+Algumas sugestões de extensão à biblioteca são propostas, tais como o suporte à recursão e às estruturas infinitas, além do aperfeiçoamento do suporte a provas relacionadas a especificações importadas da biblioteca da linguagem \CASL.
+
+\textbf{Palavras-chave:} \textit{Especificação Algébrica, HasCASL, Haskell}
+
+\prefacesection{Abstract}
+Formal methods can be used as software engineering tools that employ mathematical formalisms for building and verifying  programs.
+They are usually composed of one or more specification languages and some auxiliary tools. 
+The \textit{Common Algebraic Specification Language (\CASL)} is designed to be the standard language in the area of algebraic specification, taking tecnical elements from other specification languages. 
+The \HasCASL language is the extention of the \CASL language that is responsible for supporting second-order logic, which has a subset of its syntax resembling the \Haskell programming language.
+The practical use of a specification language depends on the availability of a standard library of pre-defined specifications. 
+CASL has such a library and its specifications can be imported by specifications developed in \HasCASL. 
+However, the library of the \CASL language does not provide higer order properties and data types. 
+This dissertation describes the specification of a library for the language \HasCASL based on the \Prelude library from the \Haskell programming language. 
+The library created here provides second-order functions and data types.
+It does so by specifying data types and functions existing in \Haskell language, such as boolean, list, character and string types. 
+The first version of our library uses types with strict evaluation. 
+The second version of the library has been refined to support types with lazy evaluation. 
+Verification of both libraries was performed using the \Hets tool, which translates specifications to the \HOL language, producing proof needs that were discharged  with the help of the \Isabelle theorem prover. 
+To illustrate the use of our library, some example specifications using lists and boolean types are included.
+Some suggestions for extension of the library are proposed, dealing with support for infinite structures and numeric data types.
+
+\textbf{Keywords:} \textit{Algebraic Specification, HasCASL, Haskell}
+
+\prefacesection{Agradecimentos}
+O Mestrado foi uma grande experiência pessoal que propiciou, além de um engrandecimento técnico, um enorme amadurecimento pessoal.
+A construção da dissertação exigiu, além de grande dedicação pessoal, a compreensão e a colaboração das pessoas ao meu redor.
+Presto, aqui, uma homenagem especial a algumas pessoas que foram fundamentais para esta etapa.
+Os amigos que se envolveram e não foram citados, sintam-se igualmente agradecidos pelo apoio.
+
+À minha mãe, Apolônia, ao meu pai, Aparecido, e à minha irmã, Greice, agradeço o suporte emocional, a paciência, o carinho e o amor incondicional. Sem vocês, eu não teria chegado até aqui!
+
+Ao meu orientador, Prof. Dr. Arnaldo Moura, meu muito obrigado pelo voto de confiança e pelos ensinamentos que recebi.
+
+Ao CNPq, meus agradecimentos pelo suporte financeiro recebido.
+
+Aos membros da banca sou grato pelas sugestões e pelos elogios. Em especial ao Dr. Luciano Silva, meus agradecimentos por ter me apresentado à facinante área de pesquisa em que fiz uma iniciação científica e o mestrado.
+
+Aos meus amigos Cícero dos Santos, André Constantino, Cristian Viana, Elaine Hayashi, Fábio Takahashi, Raoni Fassina, Tarsício Costa e Vânia Neris por serem minha segunda família e propiciarem inenarráveis horas de felicidade e aprendizado. Nossa amizade não se dissipará com o tempo, tenho certeza!
+
+Ao meu amigo Rachid Rebira sou grato pelo ajuda técnica, pelas incontáveis palavras de ânimo e por me fazer enxergar o real valor do meu trabalho. Seu apoio teve um valor inestimável para o meu trabalho.
+
+À Prof. Dr. Heloísa da Rocha meu obrigado pela acolhida no projeto TIDIA-Ae durante meu terceiro ano de mestrado e pelas grandes lições ensinadas em uma área totalmente desconhecida para mim.
+
+Aos meus amigos do Laboratório de Otimização Combinatória (LOCo), Bruno Azevedo, André Ciré, Tony Lopes, Breno Piva, dentre outros, meu agradecimento pela amizade, pela paciência e pelo esforço em fazer com que eu me sentisse parte da turma a todo momento.
+
+Por fim, mas não com menor importância, agradeço às minhas avós, que partiram pouco antes da defesa desta dissertação, e que sempre me apoiaram e torceram pelo meu sucesso.
+
+\afterpreface % Gera: Conteudo, Lista de Tabelas, Lista de Figuras.
+
+\include{Introducao}
+\include{RevisaoBibliografica}
+\include{HasCASLTutorial}
+\include{HasCASLBiblioteca}
+\include{Laziness}
+\include{HetsEIsabelle}
+\include{Conclusao}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Referências Bibliográficas}
+\bibliography{Dissertacao}%,cofi}
+
+%Apêndices
+\appendix
+\singlespacing
+\renewcommand{\appendixpagename}{Apêndices}
+%\appendixpage
+
+\include{HasCASLLibraryStrict}
+\include{IsabelleProofsStrict}
+\include{HasCASLLibraryLazy}
+\include{IsabelleProofsLazy}
+
+\end{document}

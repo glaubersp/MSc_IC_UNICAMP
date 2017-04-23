@@ -1,0 +1,604 @@
+\chapter{A Linguagem de Especificação Algébrica HasCASL}
+\label{chap:HasCASLTutorial}
+
+Neste capítulo, apresenta-se um tutorial introdutório à linguagem de especificação algébrica \HasCASL.
+O material aqui apresentado teve como base o manual da linguagem \CASL \citep{CoFI:2004:CASL-RM} e o documento que descreve a linguagem \HasCASL \cite{SchroderMossakowski08}.
+Para uma referência completa, os documentos citados devem ser consultados.
+
+\section{Introdução}
+A linguagem de especificação algébrica \textit{Common Algebraic Specification Language (\CASL)} foi concebida para ser a linguagem padrão na área de especificação algébrica.
+As características da linguagem foram extraídas de outras linguagens de forma a obter uma linguagem que pudesse abranger a maioria das funcionalidades presentes nas demais linguagens de especificação algébrica.
+Como uma só linguagem não conseguiria captar todas as funcionalidades existentes, \CASL foi projetada para permitir extensões e sublinguagens, permitindo, assim, que características que exijam outros paradigmas ou a ausência de determinadas características pudessem ser incorporadas.
+As sublinguagens são criadas por restrições semânticas ou sintáticas à linguagem \CASL e suas extensões servem para implementar diferentes paradigmas de programação.
+
+A linguagem \HasCASL é uma extensão à linguagem \CASL para incluir suporte à logica de segunda ordem.
+Seu núcleo consiste em uma lógica de segunda ordem de funções parciais construídas sobre o $\lambda$-cálculo de Moggi.
+Este núcleo é estendido com subtipos e polimorfismo baseado em classes de tipos, incluindo-se construtores de tipos de segunda ordem e construtores de classes.
+Devido a vários atalhos sintáticos (\textit{syntax sugar}), existe um subconjunto da linguagem que pode ser executado e se assemelha intimamente com a linguagem de programação \Haskell.
+
+Os elementos sintáticos da linguagem \CASL estão presentes em todas as suas extensões, dentre elas, a linguagem \HasCASL.
+Algumas características semânticas possuem sintaxe diferente, mas equivalente, nas linguagens \CASL e \HasCASL.
+Alguns elementos, ainda, possuem a mesma finalidade embora possuam diferenças semânticas importantes nas duas linguagens.
+
+O presente tutorial concentra-se em apresentar a linguagem \HasCASL, citando, quando existentes, as equivalências e diferenças com elementos da sintaxe de \CASL, além de introduzir a sintaxe de \CASL que deve ser utilizada pelas suas extensões.
+As características da linguagem \CASL, quando não informado o contrário, continuam válidas para a linguagem \HasCASL.
+
+\section{Tipos de especificações em \CASL}
+
+As especificações escritas em \CASL podem ser de quatro tipos:
+\begin{itemize}
+\item Especificações Básicas: contêm declarações -- de tipos e de funções --, axiomas -- definindo e relacionando operações -- e propriedades -- definidas através de teoremas e que restringem o comportamento de tipos e funções;
+\item Especificações Estruturais: permitem que as especificações básicas sejam combinadas para formar especificações mais complexas;
+\item Especificações Arquiteturais: definem como devem ser separadas as várias especificações na implementação, de forma que seja possível o reuso de especificações dependentes entre si;
+\item Especificações de Bibliotecas: definem conjuntos de especificações, com funcionalidades que permitem controle de versão e de bibliotecas distribuídas pela Internet.
+\end{itemize}
+
+Como este trabalho não contempla implementação de especificações, as especificações arquiteturais não foram abordadas.
+As demais especificações são detalhadas em seções individuais a seguir.
+
+É importante salientar que a semântica das especificações básicas e estruturais é independente da instituição empregada, ou seja, independe da lógica empregada para as especificações básicas.
+Desta forma, para definir extensões da linguagem \CASL basta definir a lógica da nova linguagem na forma de uma estrutura categórica conhecida como instituição.
+Isto significa definir as noções de assinatura, modelo, sentença e satisfação (de predicados).
+
+\section{Modelos de interpretação de especificações escritas em \CASL}
+A linguagem \CASL permite três modelos de interpretação semântica para as especificações, a saber: modelo \textit{loose}, modelo \textit{generated} e modelo \textit{free}.
+O modelo padrão utilizado é o modelo \textit{loose}.
+Para indicar os outros dois modelos de interpretação, \CASL utiliza, respectivamente, os modificadores de tipos \Verb.generated. e \Verb.free.
+
+O modelo \textit{loose} permite que os modelos de uma especificação abranjam todos aqueles modelos nos quais as funções declaradas possuam as propriedades especificadas, sem fazer restrições aos conjuntos de valores do domínio das funções.
+Já o modelo \textit{generated} exige que todos os possíveis elementos dos tipos pertencentes ao domínio das funções sejam formados apenas pelos construtores dos respetivos tipos, proibindo a existência de elementos inatingíveis no domínio.
+Por sua vez, o modelo \textit{free} requer que os valores dos elementos dos tipos do domínio sejam diferentes entre si, exceto se a igualdade dos mesmos for expressa por axiomas.
+Isto impede a coincidência acidental entre elementos dos tipos do domínio.
+
+Embora os três modelos presentes em \CASL estejam presentes em todas as suas extensões ou sublinguagens, os tipos de dados expressos em \HasCASL são frequentemente modelados por teorias do modelo \textit{free}.
+Um tipo de dado declarado neste modelo possui a propriedade \textit{no junk, no confusion}, ou seja, só há elementos do tipo em questão formados pelos construtores declarados e todos os elementos são diferentes entre si.
+Este modelo provê a semântica inicial de interpretação de especificações e, dessa forma, evita a necessidade de se criar axiomas que neguem a igualdade entre construtores de tipo diferentes.
+
+Predicados definidos em modelos \textit{free} são verdadeiros apenas se decorrem dos axiomas declarados na especificação, sendo falsos nos demais casos.
+%%Este comportamento equivale aos princípios de {\Huge\textit{negation by failure} ou \textit{closed world assumption}} de programação lógica.
+Como decorrência deste comportamento, apenas os casos para os quais o predicado deve ser verdadeiro precisam ser axiomatizados; os demais casos serão considerados falsos automaticamente.
+
+Nos modelos \textit{free}, pode-se definir predicados e funções por indução nos construtores dos tipos de dados de forma segura. Uma boa prática para defini-los é axiomatizar as funções para cada um dos construtores do(s) tipo(s) do(s) parâmetro(s). Este processo é conhecido como \textit{case distinction}.
+
+\section{Especificações Básicas}
+\label{sec:basicspec}
+
+A semântica de uma especificação básica possui dois elementos:
+\begin{itemize}
+	\item uma assinatura composta pelos símbolos introduzidos pela especificação; e
+	\item uma classe de modelos correspondendo às interpretações da assinatura que satisfazem os axiomas e as restrições da especificação.
+\end{itemize}
+
+A assinatura contém as definições dos símbolos de tipos e de funções, dos axiomas e das propriedades.
+Geralmente, os símbolos são declarados e restringidos em uma mesma declaração, embora seja possível declarar um símbolo e restringir o seu comportamento posteriormente.
+
+Por serem as especificações mais comuns, serão tratadas no texto apenas por especificações; os demais tipos de especificações serão explicitados, quando não puderem ser distinguidos pelo contexto.
+
+\subsection{\CASL}
+\CASL possui sintaxe específica para declaração de \sorts, subtipos (\textit{subsorts}), operações e predicados.
+Em \CASL, um \sort é interpretado como um conjunto cujos elementos são representações abstratas de dados processados por programas.
+Este conjunto é chamado \textit{carrier set}.
+Dessa forma, um \sort equivale a um tipo em uma linguagem de programação.
+Pode-se declarar tipos simples, como inteiros (\Verb.Int.) e listas (\Verb.List.); e tipos compostos, como listas de inteiros (\Verb.List [Int].).
+
+A relação de subtipos (\textit{subsorts}) é interpretada como uma função injetiva que mapeia cada um dos elementos do subtipo para um único elemento do supertipo e recebe o nome de \textit{embedding}.
+Por exemplo, cada número natural pode ser mapeado para o inteiro positivo correspondente, no caso dos tipos \Verb.Nat. e \Verb.Int., e um caractere pode ser mapeado para uma cadeira de caracteres formada apenas pelo caractere mapeado, no caso dos tipos \Verb.Char. e \Verb.String..
+
+Uma operação é formada por um nome e por um perfil, o qual indica o número e os \sorts dos argumentos e o \sort do resultado da operação.
+Operações podem ser totais -- definidas para todos os elementos dos \sorts{} -- ou parciais -- definidas para um subconjuntos de elementos dos \sorts.
+A aplicação de uma operação sobre um parâmetro indefinido sempre resulta em um valor indefinido, independente da função ser total ou parcial.
+Quando não há parâmetros, a operação é considerada uma constante e representa um elemento do \sort a que pertence.
+
+Um predicado, assim como uma operação, consiste de um nome e um perfil, sendo que este último não possui um \sort para resultado.
+Predicados são interpretados como uma relação sobre o produto cartesiano entre os \textit{carrier sets} dos \sorts dos parâmetros do predicado e são utilizados para formar fórmulas atômicas ao invés de termos.
+Um predicado é verdadeiro quando a tupla formada pelos seus parâmetros está contida na relação que define o predicado.
+
+Diferentemente das funções, quando o valor de algum dos parâmetros de um predicado é indefinido, o predicado é falso.
+Desta forma, a lógica continua apresentando apenas dois valores, \textit{verdadeiro} e \textit{falso}.
+Em contraste, uma operação booleana poderia apresentar três valores possíveis, já que resultaria em um valor indefinido quando algum de seus parâmetros fosse indefinido.
+Uma outra diferença entre predicados e operações diz respeito ao conceito de modelo inicial.
+Predicados com lógicas de dois valores podem ser representados por operações parciais com um \sort resultante formado por apenas um elemento, sendo que o predicado é verdadeiro sempre que estiver definido para os parâmetros recebidos.
+
+Operações e predicados podem ser sobrecarregados, ou seja, um mesmo nome pode possuir diferentes perfis associados.
+No entanto, a sobrecarga precisa ser compatível no que diz respeito ao \textit{embedding} entre subtipos.
+Isto significa que, dados os \sorts \Verb.A. e \Verb.B., com \Verb.A. sendo subtipo de \Verb.B., uma operação \Verb.operação. e um predicado \Verb.predicado., definidos sobre ambos os \sorts, a interpretação de \Verb.operação. deve ser tal que não faça diferença aplicar a função de \textit{embedding} nos argumentos de \Verb.operação. ou no resultado de \Verb.operação. e a interpretação de \Verb.predicado. deve ser tal que não faça diferença aplicar ou não a função de \textit{embedding} aos argumentos de \Verb.predicado..
+
+% Axiomas
+Os axiomas em \CASL são formulas de lógica de primeira ordem, com as interpretações padrões para os quantificadores e conectivos lógicos.
+As variáveis das fórmulas representam qualquer elemento dos conjuntos \textit{carrier sets} dos \sorts especificados.
+Os axiomas são introduzidos por um ponto final antes de sua declaração.
+
+% Teoremas
+Certas fórmulas denotam propriedades, que devem decorrer de outros axiomas.
+Estas fórmulas são consideradas teoremas e devem ser anotadas com \Verb.% implied. a fim de indicar a necessidade de prova da fórmula.
+Tal necessidade de prova irá gerar um teorema a ser verificado pela ferramenta de verificação de teoremas escolhida.
+
+Além da aplicação usual de predicados, fórmulas escritas em \CASL podem representar equações (universais ou existenciais), assertivas de definição e assertivas de pertinência em \sorts.
+Uma equação existencial é verdadeira quando os valores dos seus termos são definidos e iguais.
+Já uma equação universal é verdadeira também quando ambos os seus termos são indefinidos.
+Assim como nos predicados, as equações e assertivas de definição e de pertinência em \sorts são falsas quando um de seus termos são indefinidos, mantendo apenas dois valores na lógica.
+
+\subsection{\HasCASL}
+Em \HasCASL, a sintaxe permite declarar \types, subtipos (\textit{subtypes}) e funções.
+Os predicados são considerados um caso particular de funções.
+Por questões de compatibilidade, \HasCASL trata \sorts e \types como equivalentes.
+Já operações e funções diferem apenas quanto ao comportamento em relação a subtipos.
+A visibilidade das declarações na linguagem é linear, ou seja, os elementos precisam ser definidos antes de serem utilizados.
+
+% Tipos
+Os tipos são construídos a partir de tipos básicos declarados através da palavra-chave \Verb.type. e, por padrão, como em \CASL, os tipos são interpretados pela semântica \textit{loose}.
+A partir dos tipos básicos e do tipo unitário \Verb.Unit., os tipos são gerados de forma indutiva através do produto entre tipos ($t_{1} * t_{2} * \ldots * t_{n}$) e de funções com tipos parciais ($s \rightarrow?\ t$) e totais ($s \rightarrow\ t$).
+
+% Sinônimos de tipos
+Pode-se abreviar um tipo através de um \textit{sinônimo}, criado com a palavra-chave \Verb.type., e o tipo a que o sinônimo se refere é chamado uma expansão.
+Embora a mesma palavra-chave seja utilizada, sinônimos não são tipos básicos.
+Eles podem ser definidos apenas uma vez e definições recursivas não são permitidas.
+A título de exemplo, a seguir são definidos dois tipos básicos -- \Verb.S. e \Verb.T. -- e um sinônimo -- \Verb.LongType..
+O tipo \Verb.WrongLongType., recursivamente definido, é um exemplo de tipo inválido e aparece precedido do caractere de comentário de linha nas declarações a seguir:
+
+\begin{Verbatim}
+type S,T
+type LongType := (S * S * S) -> T
+%% type WrongLongType := LongType * T -> S
+\end{Verbatim}
+
+% Termos
+Termos são formados por variáveis ou operações e, internamente, são sempre anotados com o tipo a que pertencem.
+Um termo \Verb.t. do tipo \Verb.T. com o seu tipo anotado explicitamente resulta no termo \Verb.t: T..
+Quando um termo não possui uma anotação de tipo, o tipo do mesmo é inferido pelo contexto, que compreende todas as definições de variáveis e funções alcançáveis no ponto em que o termo aparece.
+Desta forma, só é necessário anotar o tipo de um termo explicitamente quando o mesmo não puder ser inferido sem ambiguidade pelo contexto.
+
+% Variáveis globais
+A declaração de variáveis pode ser local ou global e é sempre universalmente quantificada.
+Variáveis globais são introduzidas pela palavra-chave \Verb.var..
+Esta declaração inicia uma seção onde mais de uma variável de um único tipo podem ser definidas ao mesmo tempo, separando-as por uma vírgula, e variáveis de diferentes tipos podem ser declaradas dentro da mesma seção de declaração, separando-se as declarações com um ponto e vírgula.
+As variáveis podem ser redeclaradas ao longo da especificação, passando a assumir o outro tipo a partir do ponto onde foram redeclaradas.
+Abaixo, exemplifica-se a declaração de algumas variáveis globais de dois tipos diferentes em uma mesma declaração.
+A variável \Verb.c. possui o tipo \Verb.S * S. após a execução da declaração.
+
+\begin{Verbatim}
+var a,c: S;
+    b,c: S * S
+\end{Verbatim}
+
+% Variáveis locais
+Variáveis locais são definidas pela palavra-chave \Verb.forall. e introduzidas antes dos axiomas, separando-se dos mesmos por um ponto final. Por exemplo, o axioma
+
+\begin{Verbatim}
+.forall z,r: T . r = z
+\end{Verbatim}
+define as variáveis \Verb.z. e \Verb.r., ambas do tipo \Verb.T. e as utiliza em uma igualdade.
+Após o axioma, ambas as variáveis não estão mais presentes no contexto.
+
+% Funções constantes
+Uma função sem parâmetros, também chamada constante, pode ser definida pelas palavras-chave \Verb.op. ou \Verb.fun..
+Embora as duas palavras-chave definam funções, elas apresentam comportamento diferente com respeito aos subtipos, como será visto mais adiante.
+Uma constante \Verb.c. do tipo \Verb.S. pode ser definida por uma das seguintes declarações:
+
+\begin{Verbatim}
+op c: S
+fun c: S
+\end{Verbatim}
+
+% Função com 1 parâmetro
+Ao substituir o tipo da constante por um tipo de função (total ou parcial), cria-se uma declaração de função com um parâmetro, como na declaração a seguir, que define uma função \Verb.f. que deve ser aplicada a um termo do tipo \Verb.S., resultando em um termo do tipo \Verb.T.:
+
+\begin{Verbatim}
+fun f: S -> T
+\end{Verbatim}
+
+% Função com vários parâmetros
+A substituição indutiva de tipos por tipos de função dá origem a funções de mais de um parâmetro.
+Se o tipo \Verb.S. na função \Verb.f. anterior for substituído pelo tipo de função \Verb.S -> S., define-se uma nova função que recebe dois parâmetros do tipo \Verb.S. e retorna um termo do tipo \Verb.T., como visto na declaração da função \Verb.g. a seguir:
+
+\begin{Verbatim}
+fun g: S -> S -> T
+\end{Verbatim}
+
+% Aplicação e associação de funções
+Uma função é aplicada aos seus parâmetros por justaposição, ou seja, a aplicação da função \Verb.g: S -> S -> T. aos parâmetros \Verb.a: S. e \Verb.b: S. resulta no termo \Verb.g a b: T., que representa um termo do tipo \Verb.T..
+A associação de termos na definição de tipos ocorre à direita e a associação de termos na aplicação de funções ocorre à esquerda.
+Assim, o tipo da função \Verb.g: S -> S -> T. é interpretado internamente como \Verb.g: (S -> (S -> T)). e a aplicação da função, \Verb.g a b: T., é interpretada como \Verb.((g a) b): T..
+
+% Aplicação parcial
+Funções definidas com tipos de função permitem a aplicação parcial de funções.
+A aplicação da função \Verb.g: S -> S -> T. a um parâmetro \Verb.a: S. resulta no termo \Verb.g a:S -> T., que representa uma função que recebe um parâmetro do tipo \Verb.S. e retorna um termo do tipo \Verb.T..
+A aplicação da função \Verb.g a: S -> T. a um parâmetro \Verb.b: S. origina o termo \Verb.g a b: T..
+
+% Sobrecarga de funções
+As funções podem ser sobrecarregadas bastando-se definir um novo perfil para um mesmo nome de função.
+A função \Verb.g. anteriormente definida pode ser sobrecarregada com um perfil que utilize produtos de tipos da seguinte forma:
+
+\begin{Verbatim}
+fun g: S * S -> T
+\end{Verbatim}
+
+% Produto de tipos como tipo de função
+Uma outra forma de definir o tipo de funções consiste em usar produto de tipos.
+Nesta forma de definição, é possível definir a posição dos parâmetros em relação ao nome da função.
+Para tanto, indica-se a posição de cada parâmetro através do posicionador \Verb.__., formado por dois caracteres sublinhado seguidos.
+
+Os termos de um tipo definido com produto de tipos devem ser construídos na forma de tuplas.
+Desta forma, um elemento do tipo $(t_{1} * \ldots * t_{n})$ deve ser escrito sob a forma $(s_{1}: t_{1}, \ldots, s_{n}: t_{n})$.
+A tupla vazia, \Verb.(). é o elemento (único) do tipo unitário \Verb.Unit..
+
+A seguir, ilustram-se alguns perfis de funções e as respectivas formas de aplicação da função sobre variáveis, sem e com as respectivas anotações de tipos.
+\begin{itemize}
+
+\item Declaração de variáveis:
+\begin{Verbatim}
+type S,T
+var a,b: S
+    x: T
+\end{Verbatim}
+
+\item Função definida com tipos de função:
+\begin{Verbatim}
+fun g1: S -> S -> T
+. g1 a b = x
+. (g1: S -> S -> T) (a:S) (b:S) = (x:T)
+\end{Verbatim}
+
+\item Função definida com produto de tipos sem posicionador de variáveis:
+\begin{Verbatim}
+fun g2: S * S -> T
+. g2 (a, b) = x
+. (g2: S * S -> T) (a:S, b:S) = (x:T)
+\end{Verbatim}
+
+\item Função prefixa definida com produto de tipos:
+\begin{Verbatim}
+fun g3 __ __: S * S -> T
+. g3 a b = x
+. (g3 __ __: S * S -> T) (a:S, b:S) = (x:T)
+\end{Verbatim}
+
+\item Função infixa definida com produto de tipos:
+\begin{Verbatim}
+fun __gi__: S * S -> T
+. a gi b = x
+. (__gi__: S * S -> T) (a:S, b:S) = (x:T)
+\end{Verbatim}
+
+\item Função pós-fixada definida com produto de tipos:
+\begin{Verbatim}
+fun __ __ gp: S * S -> T
+. a b gp = x
+. (__ __ gp: S * S -> T) (a:S, b:S) = (x:T)
+\end{Verbatim}
+
+\end{itemize}
+
+% Funções parciais; Avaliação Strict
+As funções parciais são avaliadas de forma estrita, ou seja, todos os parâmetros são avaliados antes que a aplicação da função seja avaliada.
+Isto pode ser descrito pelo axioma \Verb.def f(a) => def a., ou seja, a definição da aplicação de uma função sempre implica que seus parâmetros estão definidos.
+
+% Avaliação preguiçosa
+Tipos com avaliação preguiçosa podem ser simulados em ambientes de avaliação estrita.
+Para simular a avaliação preguiçosa de um tipo \Verb.s., basta movê-lo para o tipo \Verb.Unit ->? s..
+Assim, obtém-se funções com tipos com avaliação preguiçosa tais como \Verb.?s -> ?t..
+
+Há duas regras para a aplicação de funções com avaliação preguiçosa e para a aplicação de funções com avaliação estrita sobre termos de tipos com avaliação preguiçosa, a saber:
+
+\begin{itemize}
+	\item Sejam os termos \Verb.a: ?S -> ?T. ou \Verb.a: ?S -> ?T. e o termo \Verb.b: S.. A aplicação de \Verb.a. sobre \Verb.b. resulta no termo \Verb.a b: t., no qual o termo \Verb.b. é implicitamente substituído por \Verb_\ . b_;
+	\item Sejam os termos \Verb.a: S -> ?T. ou \Verb.a: S -> T. e o termo \Verb.b: ?S.. A aplicação de \Verb.a. sobre \Verb.b. resulta no termo \Verb.a b: t., no qual o termo \Verb.b. é implicitamente substituído por \Verb.b ().;
+\end{itemize}
+
+% Predicados
+Funções parciais sobre o tipo \Verb.Unit. podem ser interpretadas como predicados (ou fórmulas), onde a definição do predicado corresponde à satisfação da função.
+Para facilitar a declaração de predicados, o sinônimo de tipos \Verb.Pred s := s ->? Unit. foi criado.
+O operador de igualdade interna \Verb. =e=: Pred (T * T)., onde \Verb.T. é um tipo, é um exemplo de função parcial interpretada como predicado.
+
+% Assertivas de definição
+As assertivas de definição são fórmulas atômicas na forma \Verb.def t., onde t é um termo, e servem para verificar se o termo em questão está ou não definido.
+Por exemplo, a fórmula \Verb.def t => t = x. indica que a igualdade entre os termos \Verb.t. e \Verb.x. ocorre sempre que o termo \Verb.t. está definido.
+
+% Igualdade entre termos
+Há duas formas de igualdade entre termos.
+Uma equação universal \Verb.a = b. é verdadeira quanto ambos os termos estão definidos e são iguais e, também, quando ambos os termos são indefinidos.
+Uma equação existencial \Verb.a =e= b., é verdadeira apenas quando ambos os termos estão definidos e são iguais.
+A relação entre as duas igualdades pode ser resumida pelo axioma \Verb.a =e= b <=> def a /\ def b /\ a = b., onde o símbolo \Verb.<=>. denota equivalência entre termos e o símbolo \Verb./\. representa a conjunção entre termos.
+Pode-se verificar, então, que a assertiva de definição \Verb.def a. equivale ao termo \Verb.a =e= a..
+
+% Abstrações
+A formação da $\lambda$-abstração parcial que leva uma variável \Verb.s: S. a um termo \Verb.t: T. pode ser escrita na forma \Verb_\ s:S . t:T_.
+Caso o termo \Verb.t. esteja definido para todos os possíveis valores da variável \Verb.s., pode-se construir uma $\lambda$-abstração total na forma \Verb_\ s:S .! t:T_.
+Se o termo \Verb.t. não estiver definido para todos os valores de \Verb.s., a $\lambda$-abstração total, embora sintaticamente correta, não representa um valor válido.
+Em oposição, a $\lambda$-abstração parcial sempre está definida.
+
+A aplicação de sucessivas $\lambda$-abstrações podem ser combinadas na forma \Verb_\ x y z . t_ simplificando o termo \Verb_\ x .! \ y .! \ z . t_, onde \Verb.t. é um termo.
+A abstração sobre uma variável não utilizada do tipo \Verb.Unit. pode ser escrita na forma \Verb_\ . t_.
+
+% Let / Where
+A associação local de variáveis pode ser escrita na forma \Verb.let x = t in z., onde \Verb.t. e \Verb.z. são termos e \Verb.x. é uma variável.
+Uma outra forma equivalente pode ser usada, a saber: \Verb. z where x = t..
+Associações consecutivas podem ser realizadas listando-se as mesmas com um separador, na forma: \Verb_let x1 = t1; x2 = t2; ... ; xn = tn in z_.
+
+% Casamento de padrões
+É possível utilizar casamento de padrões para associação de variáveis como nas linguagens funcionais de programação.
+Variáveis podem ser associadas por casamento de padrões a componentes de tuplas ou a construtores de tipos e podem ser arbitrariamente encadeados.
+Por exemplo, pode-se utilizar casamento de padrões em associações locais de variáveis, como em \Verb_let (x,y) = (t,z) in x_, onde a variável \Verb.x. é associada ao termo \Verb.t. e a variável \Verb.y. é associada ao termo \Verb.z..
+Como a linguagem não possui funções de projeção para elementos de tuplas, a maneira padrão de ter acesso a esses elementos é através do casamento de padrões.
+
+% Restrição
+A associação anteriormente descrita, \Verb_let (x,y) = (t,z) in x_, também pode ser escrita pelo atalho sintático \Verb.t res z..
+O termo \Verb.t res z. está definido se, e somente se, \Verb.t. e \Verb.z. estão definidos e, neste caso, são iguais a \Verb.t..
+Um caso particular desta expressão ocorre quando o termo \Verb.z. for um predicado; neste caso, a expressão estará definida se, e somente se, \Verb.t. estiver definido e o predicado \Verb.z. valer.
+
+% Classes
+\HasCASL permite polimorfismo através de classes de tipos, permitindo que tipos e funções dependam de variáveis de tipos (incluindo variáveis de construtores de tipos) e que axiomas sejam universalmente quantificados sobre tipos no nível mais externo da abstração.
+As variáveis de tipo podem assumir qualquer tipo declarado na especificação, podendo-se restringir o intervalo de valores a uma classe de tipos, como em \Haskell.
+
+O Universo de \kinds em \HasCASL é formado pela gramática
+\begin{Verbatim}
+	K ::= C | K -> K
+\end{Verbatim}
+onde \Verb.K. é o conjunto de \kinds e \Verb.C. é o conjunto de classes, no qual está contida a classe \Verb.Type. representando o universo de todos os tipos.
+
+Os \kinds da forma \Verb.K1 -> K2. são chamados \kinds construtores e um \kind é chamado primitivo (\textit{raw}) se utilizar apenas a classe \Verb.Type. em sua formação.
+A relação de subclasse é uma relação entre classes e \kinds tal que cada classe de equivalência de uma dada classe \Verb.Cl. gerada pela relação de subclasse possui apenas um \kind primitivo, indicado por \Verb.raw(Cl). e denotado \kind primitivo da classe \Verb.Cl..
+Isto significa que cada \kind \Verb.K. é equivalente a um único \kind primitivo, denotado \Verb.raw(K)., o qual pode ser obtido substituindo-se todo \kind de \Verb.K. pelo respectivo \kind primitivo.
+
+Dessa forma, a classe \Verb.Type. é o universo de todos os tipos, os \kinds construtores são o universo dos construtores de tipos e as classes são subconjuntos desse universos de acordo com as regras da relação de subclasse.
+
+Declara-se uma classe \Verb.C. como subclasse de um \kind \Verb.K. pela sentença \Verb.class C < K..
+Uma classe pode ser declarada subclasse de várias outras classes desde que todas possuam o mesmo \kind primitivo.
+Subclasses dos \kinds construtores são chamadas classes construtoras e classes declaradas sem um supertipo (\textit{superkind}) explicito são consideradas subclasses da classe \Verb.Type..
+Uma classe pode ser declarada subclasse de várias classes, desde que todas possuam o mesmo tipo primitivo.
+
+Variáveis de tipo podem ser declaradas com o seu respectivo \kind da mesma forma que variáveis comuns são declaradas.
+Estas variáveis são utilizadas no lugar de tipos ou construtores de tipos tornando as entidades (tipos, funções ou axiomas) onde são utilizadas polimórficas sobre o \kind da variável.
+Com o uso de variáveis de tipo, pode-se obter construtores de tipos, da forma:
+\begin{Verbatim}
+	type t p1 .. pn: K
+\end{Verbatim}
+onde \Verb_p1 ... pn_ são variáveis de tipo com \kinds \Verb_K1, ... , Kn_, respectivamente.
+Tal declaração introduz um construtor de tipo \Verb.t. do tipo \Verb_K1 -> ... -> Kn -> K_.
+Em particular, quando o construtor não possui variáveis, seu tipo é \Verb.K..
+
+Funções polimórficas são rotuladas com esquemas de tipo onde os tipos são quantificados sobre as variáveis de tipo no nível mais externo da declaração.
+Os axiomas polimórficos, por sua vez, são universalmente quantificados de forma implícita sobre as variáveis não associadas (varáveis livres).
+
+Os construtores de tipo padrão compreendem os construtores para tipos de função e de produto de tipos -- \Verb.*., \Verb.->. e \Verb.->?. que possuem \kind \Verb.Type -> Type -> Type. -- e construtor do tipo unitário \Verb.()., que possui \kind \Verb.Type..
+Os demais construtores de tipos são todos definidos pelo usuário.
+
+Construtores de tipos são entidades diferentes dos sinônimos de tipos parametrizados.
+A declaração
+\begin{Verbatim}
+var a: Type
+type DList a := List(List a)
+\end{Verbatim}
+introduz o sinônimo de tipo parametrizado \Verb.DList., com \kind \Verb.Type -> Type., que não deve ser confundido com um possível construtor de tipo.
+
+Os \kinds são estruturas sintáticas apenas, não possuindo nenhuma semântica associada.
+O conjunto de tipos e subtipos derivado de um \kind é governado pelos \kinds associados aos construtores de tipos e pelas relações de subclasse.
+Dessa forma,
+\begin{Verbatim}
+var a: Ord
+type List a, Nat: Ord
+\end{Verbatim}
+declara o tipo \Verb.Nat. como pertencente à classe \Verb.Ord. e o construtor de tipo \Verb.List a. como tendo o \kind \Verb.Ord -> Ord., ou seja, o tipo \Verb.List t. pertence à classe \Verb.Ord. sempre que o tipo \Verb.t. pertencer à classe \Verb.Ord..
+
+Embora funções e axiomas não façam parte da definição de uma classe, os mesmos podem ser associados a uma classe através de um bloco identificado por parênteses após a declaração da classe.
+Esta declaração funciona como uma interface para a classe.
+A seguir, transcreve-se um trecho da especificação \Verb.Ord. (ver especificação completa no \citeAppendix{appendix:strictSpec:ord}), que mostra a declaração da função \Verb.__<__. com seus axiomas dentro da interface da classe \Verb.Ord.:
+\begin{Verbatim}
+class Ord < Eq
+{
+ var a: Ord
+ fun __<__ : a * a -> Bool
+ var    x, y, z, w: a
+ . (x == y) = True => (x < y) = False                      %(LeIrreflexivity)%
+ . (x < y) = True => y < x = False                         %(LeTAsymmetry)% %implied
+ . (x < y) = True /\ (y < z) = True => (x < z) = True      %(LeTTransitive)%
+ . (x < y) = True \/ (y < x) = True \/ (x == y) = True     %(LeTTotal)%
+\end{Verbatim}
+
+Subclasses ou tipos de dados que devam obedecer à interface podem ser declarados como instâncias de uma classe com o uso da palavra-chave \Verb.instance.. No primeiro caso, ela é incluída na declaração de uma classe, entre a palavra-chave \Verb.class. e a definição de subclasse, na forma \Verb.class instance subclass_name < class_name.. No segundo caso, ela é incluída entre a palavra-chave \Verb.type. e a declaração do tipo, na forma \Verb.type instance type_name : class_name..
+A declaração inclui, ainda, axiomas que definam o comportamento de funções da classe sobre variáveis de tipo da subclasse ou do tipo que estão sendo declarados.
+Tal declaração gera uma obrigação de prova que garante que os axiomas da interface decorrem dos axiomas da subclasse ou do tipo que foram declarados instâncias da classe.
+O tipo de dado \Verb.Ordering. é declarado instância da classe \Verb.Ord. e são adicionados axiomas relativos ao comportamento da função definida anteriormente em relação ao tipo de dados, como visto à seguir:
+\begin{Verbatim}
+type instance Ordering: Ord
+. (LT < EQ) = True                     %(IOO13)%
+. (EQ < GT) = True                     %(IOO14)%
+. (LT < GT) = True                     %(IOO15)%
+\end{Verbatim}
+
+\HasCASL suporta polimorfismo sobre tipos de ordens superiores.
+A especificação \Verb.Monad., da biblioteca da linguagem \CASL, serve de exemplo para a especificação de classes construtoras e construtores de tipos de ordens superiores.
+No momento, a tradução de especificações com este tipo de polimorfismo para a linguagem do provador de teoremas ainda não é suportada.
+
+\section{Especificações Estruturais}
+Sistemas complexos possuem vários componentes com lógicas complexas.
+A modularização destes sistemas é uma peça fundamental para facilitar a sua manutenção.
+As especificações básicas definem a lógica dos sistemas, criando módulos auto-contidos que expressam um componente ou uma funcionalidade.
+Por sua vez, as especificações estruturais permitem unir ou estender estes módulos, renomeando ou ocultando símbolos enquanto especificações complexas são construídas.
+
+Pode-se unir especificações básicas através do conectivo \Verb.and..
+A união de especificações é associativa e comutativa, ou seja, a especificação resultante independe da ordem em que as especificações são unidas.
+Por exemplo, as especificações \Verb.Spec1., \Verb.Spec2. e \Verb.Spec3. podem ser unidas para formar a especificação \Verb.Spec4. da seguinte forma:
+\begin{Verbatim}
+spec Spec1 = ...
+end
+spec Spec2 = ....
+end
+spec Spec3 = ...
+end
+spec Spec4 =
+ 	Spec1 and Spec2 and Spec3
+end
+\end{Verbatim}
+
+Especificações básicas também podem ser estendidas com a inclusão de novos símbolos.
+Para tanto, utiliza-se o conectivo \Verb.then., que pode ser aplicado mais de uma vez na definição de uma mesma especificação, separando a mesma em subespecificações.
+As subespecificações diferem de especificações por serem criadas localmente, ou seja, elas não são nomeadas e, dessa forma, não podem ser referenciadas.
+Apenas a especificação formada por todas as extensões recebe um nome e pode ser estendida ou unida à outras especificações.
+A seguir, estende-se uma especificação \Verb.Spec1. com o conteúdo da especificação \Verb.Spec2..
+A subespecificação resultante é estendida com a especificação \Verb.Spec3., formando, finalmente, a especificação \Verb.Spec4..
+\begin{Verbatim}
+spec Spec4 =
+ 	Spec1
+then
+ 	Spec2
+then
+ 	Spec3
+end
+\end{Verbatim}
+
+É comum utilizar as duas operações conjuntamente ao se definir novas especificações que utilizem símbolos de outras especificações previamente definidas.
+Isto pode ser verificado em quase todas as especificações da biblioteca apresentada no \citeAppendix{appendix:strictSpec}, uma vez que existe dependência entre as várias especificações que passam a utilizar tipos e funções definidos em especificações anteriores.
+
+Por padrão, ambas as operações exportam todas as funções e tipos definidos para as especificações resultantes (variáveis não são consideradas símbolos e não são exportadas).
+Dessa forma, todos os tipos com mesmo nome serão tratados como sendo o mesmo tipo e funções com mesmo nome mas perfis diferentes serão automaticamente sobrecarregadas.
+Ambas as operações podem combinar especificações de qualquer um dos modelos semânticos existentes (\textit{loose}, \textit{generated} ou \textit{free}), misturando-os sem perda de propriedades.
+
+Em alguns casos, especificações combinadas podem exportar símbolos com o mesmo nome e perfil, mas que possuem comportamentos diferentes, representando entidades diferentes.
+É possível renomear os símbolos (tipos e funções) existentes em uma especificação através da palavra-chave \Verb.with., com o auxílio do símbolo \Verb.|->. para indicar a renomeação de cada símbolo.
+O exemplo a seguir mostra a criação da especificação \Verb.Bool. a partir da especificação \Verb.Boolean., que foi importada da biblioteca de \CASL.
+A palavra-chave \Verb.with. introduz a seção de renomeação de símbolos e o uso das palavras-chave \Verb.sort. e \Verb.op. é opcional, embora seu uso ajude na leitura da especificação.
+\begin{Verbatim}
+from Basic/SimpleDatatypes get Boolean
+spec Bool = {Boolean with 
+         sort Boolean |-> Bool,
+         op Not__ |-> not__,
+         op __And__ |-> __&&__,
+         op __Or__ |-> __||__
+        }
+then
+op otherwise: Bool
+. otherwise = True
+\end{Verbatim}
+
+A renomeação de um tipo também é realizada nos perfis das funções importadas, sejam elas renomeadas ou não, de forma automática.
+Pode-se apenas indicar a origem de um dado símbolo, sem efetivamente renomeá-lo, bastando apenas citar o seu nome após a palavra-chave \Verb.with. ou renomeando-o para o mesmo nome atual.
+Esta indicação permite deixar claro a existência de símbolos sobrecarregados ao indicar que um mesmo símbolo provêm de duas ou mais especificações que estão sendo unidas ou estendidas.
+
+Ainda é possível ocultar símbolos que se deseje manter local a uma determinada especificação.
+Este é o caso de funções auxiliares criadas para facilitar as especificações de funções mais complexas e que não devem ser utilizadas por outras especificações que venham a estender ou utilizar a especificação atual em uma união.
+Pode-se ocultar símbolos de uma especificação escolhendo-se os símbolos a serem escondidos ou escolhendo-se os símbolos que se deseje exportar.
+Para tanto, são utilizadas as palavras-chave \Verb.hide. e \Verb.reveal., respectivamente, após a definição de uma especificação.
+Na especificação a seguir, duas funções auxiliares (\Verb.sum'. e \Verb.product'.) foram ocultadas da especificação.
+\begin{Verbatim}
+spec ListWithNumbers = ListNoNumbers and NumericClasses then {
+     vars a,b: Type;
+          c,d: Num;
+          x,y : a;
+          xs,ys : List a;
+          n,nx : Int;
+          z,w: Int;
+          zs,ws: List Int
+     fun length: List a -> Int;
+     fun take: Int -> List a -> List a
+     fun drop: Int -> List a -> List a
+     fun splitAt: Int -> List a -> (List a * List a)
+     fun sum: List c -> c
+     fun sum': List c -> c -> c
+     fun product: List c -> c
+     fun product': List c -> c -> c
+...
+} hide sum', product'
+end
+\end{Verbatim}
+
+Há ainda uma terceira facilidade para transformar símbolos em símbolos locais.
+Esta facilidade equivale a definir uma especificação e depois ocultar símbolos explicitamente com o uso da palavra-chave \Verb.hide..
+Sua vantagem é tornar implícito o processo de ocultar os símbolos, indicando que os mesmos devem ser locais.
+A construção consiste em definir os símbolos locais entre as palavras-chave \Verb.local. e \Verb.within., seguidos dos símbolos que serão exportados, da seguinte forma:
+\begin{Verbatim}
+spec Spec1 = 
+local 
+	sort tipoLocal
+	op operacaoLocal: ...
+within
+	sort tipoExportado
+	op operacaoExportada
+end
+\end{Verbatim}
+
+\section{Bibliotecas de Especificações}
+A criação de bibliotecas é um dos requisitos para o reuso de código.
+O suporte a bibliotecas em \CASL inclui suporte a bibliotecas locais e distribuídas, com versionamento.
+A linguagem permite, ainda, anotações de precedência e associatividade de operadores e anotações que indicam a apresentação de operadores nos formatos \LaTeX, \textit{HTML} e \textit{RTF}.
+
+Uma biblioteca local é uma coleção auto-contida e nomeada de especificações.
+A visibilidade de especificações é linear, exigindo a declaração de especificações antes que possam ser referenciadas.
+Todos os demais tipos de especificação podem ser agregados em bibliotecas de forma a permitir que sejam importados por novas especificações.
+
+As bibliotecas podem ser colocadas à disposição em servidores, através dos quais podem ser remotamente acessadas, quando necessário.
+Para tanto, basta que elas possuam uma \textit{URL} que obedeça a uma hierarquia de pastas através da qual se consiga alcançar a biblioteca desejada de forma única.
+
+Além dos diferentes tipos de especificação, as bibliotecas possuem sintaxe específica para indicar o nome pelo qual serão referenciadas, o nome dos autores e a data de criação ou modificação.
+Estas duas últimas anotações permitem a declaração de mais de um item e podem se referir a toda a biblioteca, quando colocadas no começo do arquivo, ou a uma particular especificação, quando inseridas antes da especificação em questão.
+A sintaxe para essas anotações é ilustrada pelo exemplo fictício abaixo.
+\begin{Verbatim}
+library Diretório/Subdiretório/NomeDaBiblioteca
+%authors( Autor1 < autor1@host> , Autor2 <autor2@host> )%
+%dates 25 Jan 2009, 25 Nov 2009
+
+spec Spec1 = ...
+
+%autors Autor3 <autor3@host>
+%dates 25 Ago 2009
+spec Spec2 = ...
+\end{Verbatim}
+
+No exemplo, é criada uma biblioteca com o nome \Verb.NomeDaBiblioteca., e que reside na estrutura de diretório \Verb.${HETS_LIB}/Diretório/Subdiretório., onde \Verb.{HETS_LIB}. é uma variável de ambiente do sistema operacional que indica o caminho do repositório local das bibliotecas da ferramenta \Hets, a qual é responsável por analisar as especificações.
+Caso a biblioteca seja distribuída, a estrutura de diretórios deverá ser substituída pela \textit{URL} com o caminho remoto completo de onde a biblioteca \Verb.NomeDaBiblioteca. será encontrada.
+Dois autores e duas datas, sendo uma delas de revisão, são associados à biblioteca.
+Logo abaixo, um terceiro autor e uma nova data são associados à uma particular especificação.
+
+Operações podem ser associadas a caracteres específicos em um determinado ambiente de exibição.
+Atualmente, pode-se indicar como um operador deve ser exibido em arquivos de tipos \LaTeX, \textit{HTML} e \textit{RTF}.
+A indicação para cada tipo de ambiente é opcional, podendo-se indicar a exibição em todos ou em apenas alguns ambientes.
+Quando não houver indicação para um ambiente, o nome da operação será utilizado naquele ambiente, como seria esperado.
+O exemplo a seguir define que a operação \Verb.__<=__. será exibida com o uso do caractere `$\leq$' em arquivos \LaTeX.
+As anotações para \textit{HTML} e \textit{RTF} seriam feitas adicionando-se as anotações \Verb.%HTML. e \Verb.%RTF., respecticamente, após a anotação \Verb.%LATEX..
+\begin{Verbatim}
+%display __<=__     %LATEX __\leq__
+\end{Verbatim}
+
+As anotações que permitem indicar a precedência de operadores e a sua associatividade são mostradas a seguir.
+No exemplo, as funções \Verb.__op1__. e \Verb.__op2__. são definidas com uma precedência menor em relação à função \Verb.__op3__., ou seja, o termo \Verb.a op1 (b op3 c)., onde \Verb.a., \Verb.b. e \Verb.c. são variáveis, pode ser escrito na forma \Verb.a op1 b op3 c..
+Já as funções \Verb.__op1__. e \Verb.__op3__. são declaradas associativas à esquerda, ou seja, o termo \Verb.a op1 b op1 c. é equivalente ao termo \Verb.(a op1 b) op1 c..
+\begin{Verbatim}
+%prec {__op1__, __op2__} < {__op3__}
+%left_assoc __op1__ , __op3__
+\end{Verbatim}
+
+Números na linguagem \CASL são definidos com o auxílio de anotações.
+Os dígitos são definidos como constantes e são concatenados através da operação \Verb.__@@__., definida na especificação \Verb.Nat. da biblioteca de \CASL.
+O conjunto de anotações a seguir permite que os números sejam escritos na forma comum que sejam tranformados na concatenação de caracteres de forma transparente.
+Dessa forma, pode-se utilizar o inteiro ``145'' e as ferramentas da linguagem farão a tradução do mesmo para o termo ``1@@4@@5''.
+\begin{Verbatim}
+%left_assoc __@@__
+%number __@@__
+\end{Verbatim}
+
+Ainda para ajudar na definição de números, as anotações a seguir permitem o uso de números de ponto flutuante com o separador `.', como em \Verb.2.743., e de números com expoentes, como em \Verb.10E-12..
+Os números serão convertidos automaticamente para \Verb.2:::7@@4@@3. e \Verb.1@@0E-1@@2., respectivamente.
+As funções \Verb.__:::__. e \Verb.__E__. também estão definidas nas especificações numéricas da biblioteca da linguagem \CASL.
+\begin{Verbatim}
+%floating __:::__, __E__
+%prec {__E__} < {__:::__}
+\end{Verbatim}
+
+Para que as especificações de uma biblioteca distribuída possam ser utilizadas, é necessário que as mesmas sejam importadas pelo arquivo onde serão utilizadas.
+Também é possível renomear uma especificação no momento de sua importação, com uma sintaxe parecida à da renomeação de símbolos em especificações.
+A sintaxe para a importação de especificações é ilustrada a seguir, onde são importadas as especificações \Verb.Spec1. e \Verb.Spec2. da biblioteca fictícia criada anteriormente, com a renomeação da especificação \Verb.Spec2. para \Verb.Spec4..
+\begin{Verbatim}
+from Diretório/Subdiretório/NomeDaBiblioteca get Spec1, Spec2 |-> Spec4
+\end{Verbatim}
+
+O uso de versões permite que mudanças sejam introduzidas em especificações sem que as primeiras alterem o comportamento de códigos que importavam uma versão anterior das bibliotecas.
+Para tanto, é possível indicar a versão da biblioteca tanto na sua declaração quando no momento de importá-la, indicando qual versão da biblioteca se deseja importar e permitindo que várias versões coexistam no mesmo repositório.
+A indicação de versão é realizada pela palavra-chave \Verb.version. seguida do número associado à versão.
+Esta indicação deve ser incluída na declaração e na importação de uma biblioteca seguindo a sintaxe:
+\begin{Verbatim}
+library Diretório/Subdiretório/NomeDaBiblioteca version 1.0
+...
+from Diretório/Subdiretório/NomeDaBiblioteca version 1.0 get Spec1
+\end{Verbatim}
+
+Embora seja possível utilizar as anotações para importar especificações em qualquer local de uma biblioteca, deve-se preferir incluir todas as anotações no começo do arquivo de forma a tornar clara a visualização das dependências da biblioteca sendo especificada.

@@ -1,0 +1,1307 @@
+% This file was created with JabRef 2.6b2.
+% Encoding: ISO8859_1
+
+@INBOOK{MaudeLib,
+  chapter = {9},
+  pages = {231-305},
+  title = {{Predefined Data Modules}},
+  publisher = {Springer},
+  year = {2007},
+  author = {Manuel Clavel and Francisco Dur{\'a}n and Steven Eker and Patrick
+	Lincoln and Narciso Mart{\'\i}-Oliet and Jos{\'e} Meseguer and Carolyn
+	Talcott},
+  volume = {4350},
+  series = {Lecture Notes in Computer Science},
+  month = {July},
+  abstract = {Maude has a standard library of predefined modules that, by default,
+	are entered into the system at the beginning of each session, so
+	that any of these predefined modules can be imported by any other
+	module defined by the user. Also, by default, the predefined functional
+	module BOOL is automatically imported (in including mode) as a submodule
+	of any user-defined module, unless such importation is explicitly
+	disabled. These modules can be found in the file prelude.maude that
+	is part of the Maude distribution.
+	
+	We describe below those predefined modules that provide commonly used
+	data types, including Booleans, numbers, strings, and quoted identifiers.
+	The relationships among these modules are shown in the importation
+	graph in Figure 9.1, where all the importations are in protecting
+	mode.
+	
+	We also describe typical parameterized collections of data types such
+	as lists and sets, and associations such as maps and arrays. The
+	chapter ends introducing the built-in linear Diophantine equation
+	solver, defined in the file linear.maude that is also part of the
+	Maude distribution.
+	
+	Other predefined modules, also in the prelude.maude file, are discussed
+	later; more specifically, the META-LEVEL module is discussed in Chapter
+	14, the LOOP-MODE module in Section 17.1, and the CONFIGURATION module
+	in Sections 11.1 and 11.4.
+	
+	Furthermore, this chapter also describes a predefined module MACHINE-INT
+	for machine integers, which is obtained from the module INT of (arbitrary
+	size) integers, but is distributed in a separate file machine-int.maude.},
+  bdsk-url-1 = {http://www.springerlink.com/content/d04x717n54562031/?p=215e4d3d15eb4b5a84b22ff05307789e&pi=8},
+  bdsk-url-2 = {http://dx.doi.org/10.1007/978-3-540-71999-1},
+  booktitle = {All About Maude - A High-Performance Logical Framework},
+  crossref = {MaudeBook},
+  doi = {10.1007/978-3-540-71999-1_9},
+  owner = {glauber},
+  timestamp = {2009.01.14},
+  url = {http://www.springerlink.com/content/d04x717n54562031/?p=215e4d3d15eb4b5a84b22ff05307789e&pi=8}
+}
+
+@INBOOK{Roggenbach:2004:CASL-Libraries,
+  chapter = {V},
+  pages = {163-171},
+  title = {{\textsc{Casl} Libraries}},
+  publisher = {Springer},
+  year = {2004},
+  author = {Markus Roggenbach and Till Mossakowski and Lutz Schr{\"o}der},
+  volume = {2960},
+  abstract = {This part of the \textsc{Casl} reference manual describes a library
+	of elementary specifications called the Basic Datatypes. This library
+	has been developed with two main purposes in mind: on the one hand,
+	it provides the user with a handy set of off-the-shelf specifications
+	to be used as building blocks in the same way as library functions
+	in a programming language, thus avoiding continuous reinvention of
+	the wheel. On the other hand, it serves as a large reservoir of example
+	specifications that illustrate both the use of \textsc{Casl} at the
+	level of basic and structured specifications. \par The name Basic
+	\emph{Datatypes} is actually slightly misleading in that there are
+	both monomorphic specifications of typical datatypes \emph{and} loose
+	specifications that express properties e.g.\ of an algebraic or order
+	theoretic nature. The first type of specification includes simple
+	datatypes like numbers and characters as well as structured datatypes
+	(typically involving type parameters) such as lists, sets, arrays,
+	or matrices. The second type of specification is oriented more closely
+	towards traditional mathematical concepts; e.g.\ there are specifications
+	of monoids and rings, as well as equivalence relations or partial
+	orders. The library is structured partly along precisely these lines;
+	an overview of the sublibraries is given in Sect.~1.1. \par In the
+	design of a library of basic specifications, there is a certain amount
+	of tension between the contradicting goals of \begin{itemize} \item
+	keeping specifications simple and readable also for novice users,
+	and \item making them economical, concise, and amenable for tool
+	support. \end{itemize} This concerns in particular the degree of
+	structuring, with parametrized specifications being most prominent
+	as on the one hand increasing elegance and reusability and on the
+	other hand placing on the reader the burden of looking up imported
+	specifications and keeping track of signature translations. With
+	the exception of the library of numbers, the libraries exhibit a
+	certain bias towards more extensive use of structuring operations.
+	Several measures have been undertaken to enhance readability of the
+	specifications, one of them being the facility to have the signatures
+	for the specifications in a library explicitly listed by the \textsc{Casl}
+	tools. \par The specifications make use of a set of annotations concerning
+	semantics and operator precedences; moreover, we use the \textsc{Casl}
+	syntax for literals. The details of these annotations and syntax
+	extensions are explained in Chap.~II:5. of the \textsc{Casl} Language
+	Syntax. \par The material is organized as follows. After the above-mentioned
+	descriptions of the component libraries (Section~1.1), the actual
+	content of the libraries is presented in Chaps.~2--11. Chapter~12
+	contains graphical representations of the dependencies between the
+	specifications. Moreover, there is an index of all library and specification
+	names at the end of the book.},
+  annote = {Provides libraries of basic datatypes in \textsc{Casl}, including
+	order-theoretic and basic algebraic concepts, simple and structured
+	datatypes, and graphs.},
+  crossref = {CoFI:2004:CASL-RM},
+  doi = {10.1007/b96103},
+  isbn = {978-3-540-21301-7},
+  owner = {glauber},
+  timestamp = {2010.02.10}
+}
+
+@MISC{Aspinall2002,
+  author = {Aspinall, D. and Sannella, D.},
+  title = {{F}rom {S}pecifications {T}o {C}ode {I}n {CASL}},
+  year = {2002},
+  abstract = {The status of the Common Framework Initiative (CoFI) and the Common
+	Algebraic Specification Language (Casl) are briefly presented.},
+  citeulike-article-id = {1206687},
+  keywords = {no-tag},
+  priority = {3},
+  url = {\url{http://citeseer.ist.psu.edu/aspinall02from.html}}
+}
+
+@ARTICLE{Astesiano2002,
+  author = {Egidio Astesiano and Michel Bidoit and Hélène Kirchner and Bernd
+	Krieg-Brückner and Peter D. Mosses and Donald Sannella and Andrzej
+	Tarlecki},
+  title = {{CASL: The Common Algebraic Specification Language}},
+  journal = {Theoretical Computer Science},
+  year = {2002},
+  volume = {286},
+  pages = {153 - 196},
+  number = {2},
+  abstract = {The Common Algebraic Specification Language (C) is an expressive language
+	for the formal specification of functional requirements and modular
+	design of software. It has been designed by CFI, the international
+	Common Framework Initiative for algebraic specification and development.
+	It is based on a critical selection of features that have already
+	been explored in various contexts, including subsorts, partial functions,
+	first-order logic, and structured and architectural specifications.
+	C should facilitate interoperability of many existing algebraic prototyping
+	and verification tools. This paper gives an overview of the C design.
+	The major issues that had to be resolved in the design process are
+	indicated, and all the main concepts and constructs of C are briefly
+	explained and illustrated -- the reader is referred to the C Language
+	Summary for further details. Some familiarity with the fundamental
+	concepts of algebraic specification would be advantageous.},
+  doi = {10.1016/S0304-3975(01)00368-1},
+  issn = {0304-3975},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  url = {http://www.sciencedirect.com/science/article/B6V1G-44J1KNN-1/2/2684b27bfc05737dda005305d01c9b09}
+}
+
+@INPROCEEDINGS{BadeauA05,
+  author = {Fr{\'e}d{\'e}ric Badeau and Arnaud Amelot},
+  title = {{Using B as a High Level Programming Language in an Industrial Project:
+	Roissy VAL}},
+  booktitle = {{ZB} 2005: Formal Specification and Development in {Z} and {B}},
+  year = {2005},
+  volume = {3455},
+  series = {Lecture Notes in Computer Science},
+  pages = {334-354},
+  publisher = {Springer},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  date-added = {2010-01-30 15:18:32 -0200},
+  date-modified = {2010-02-10 21:32:23 -0200},
+  doi = {10.1007/11415787_20},
+  ee = {http://dx.doi.org/10.1007/11415787_20},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  url = {http://www.springerlink.com/content/x8mcgk2p8r82e2gl/}
+}
+
+@INCOLLECTION{Barendregt1992,
+  author = {Barendregt, Henk P.},
+  title = {{L}ambda {C}alculi {W}ith {T}ypes},
+  booktitle = {Handbook Of Logic In Computer Science, Volumes 1 (Background: Mathematical
+	Structures) And 2 (Background: Computational Structures)},
+  publisher = {Clarendon},
+  year = {1992},
+  editor = {Maibaum, Abramsky \& Gabbay \&},
+  volume = {2},
+  address = {Arlington, VA, USA},
+  url = {\url{http://citeseer.ist.psu.edu/barendregt92lambda.html}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@INPROCEEDINGS{Barendregt1988,
+  author = {H. P. Barendregt},
+  title = {{I}ntroduction to {L}ambda {C}alculus},
+  booktitle = {Aspen{\ae}s Workshop on Implementation of Functional Languages, G{\"o}teborg},
+  year = {1988},
+  publisher = {Programming Methodology Group, University of G{\"o}teborg and Chalmers
+	University of Technology},
+  url = {citeseer.ist.psu.edu/barendregt94introduction.html}
+}
+
+@INPROCEEDINGS{Berghofer1999,
+  author = {Berghofer, Stefan and Wenzel, Markus },
+  title = {{I}nductive {D}atatypes in {HOL} - {L}essons {L}earned in {F}ormal-{L}ogic
+	{E}ngineering},
+  booktitle = {Theorem Proving in Higher Order Logics},
+  year = {1999},
+  pages = {19--36},
+  abstract = {. Isabelle/HOL has recently acquired new versions of definitional
+	packages for inductive datatypes and primitive recursive functions.
+	In contrast to its predecessors and most other implementations, Isabelle/HOL
+	datatypes may be mutually and indirect recursive, even infinitely
+	branching. We also support inverted datatype definitions for characterizing
+	existing types as being inductive ones later. All our constructions
+	are fully definitional according to established HOL tradition. Stepping
+	back...},
+  citeulike-article-id = {1206719},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/280111.html}
+}
+
+@INPROCEEDINGS{Bidoit1999,
+  author = {Bidoit, Michel and Sannella, Don and Tarlecki, Andrzej },
+  title = {{A}rchitectural {S}pecifications in {CASL}},
+  booktitle = {Proc.\ 7th Int.\ Conf.\ Algebraic Methodology and Software Technology
+	(AMAST'98), Amazonia, Brazil, Jan.\ 1999},
+  year = {1999},
+  volume = {1548},
+  pages = {341--357},
+  publisher = {Springer},
+  abstract = {One of the most novel features of Casl, the Common Algebraic Specification
+	Language, is the provision of so-called architectural specifications
+	for describing the modular structure of software systems. A brief
+	discussion of refinement of Casl specifications provides the setting
+	for a presentation of the rationale behind architectural specifications.
+	This is followed by some details of the features provided in Casl
+	for architectural specifications, hints concerning their semantics,
+	and simple...},
+  citeulike-article-id = {1206700},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/501891.html}
+}
+
+@ARTICLE{Bortin2006,
+  author = {Bortin, Maksym and Johnsen, Einar B. and L\&\#252;th, Christoph },
+  title = {{S}tructured formal development in {I}sabelle},
+  journal = {Nordic J. of Computing},
+  year = {2006},
+  volume = {13},
+  pages = {2--21},
+  number = {1},
+  month = {June},
+  address = {, Finland},
+  citeulike-article-id = {1014748},
+  issn = {1236-6064},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  publisher = {Publishing Association Nordic Journal of Computing},
+  timestamp = {2007.04.06},
+  url = {http://portal.acm.org/citation.cfm?id=1161595}
+}
+
+@INPROCEEDINGS{Borzyszkowski1999,
+  author = {Borzyszkowski, Tomasz },
+  title = {{H}igher-{O}rder {L}ogic and {T}heorem {P}roving for {S}tructured
+	{S}pecifications},
+  booktitle = {Workshop on Algebraic Development Techniques},
+  year = {1999},
+  pages = {401--418},
+  abstract = {In this paper we present the higher-order logic used in theorem-provers
+	like the HOL system (see [GM 93]) or Isabelle HOL logic (see [Paul
+	94]) as an institution. Then we show that for maps of institutions
+	into HOL that satisfy certain technical conditions we can reuse the
+	proof system of the higher-order logic to reason about structured
+	specifications built over the institutions mapped into HOL. We also
+	show some maps of institutions underlying the CASL specification
+	formalism (see [CASL 99])...},
+  citeulike-article-id = {1206718},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/465001.html}
+}
+
+@TECHREPORT{Spectrum,
+  author = {M. Broy and C. Facchi and R. Grosu and R. Hettler and H. Hussmann
+	and D. Nazareth and F. Regensburger and O. Slotosch and K. St{\o}len},
+  title = {{The Requirement and Design Specification Language \textsc{Spectrum}.
+	An Informal Introduction. Version 1.0. Part I}},
+  institution = {Technische Universit{\"a}t M{\"u}nchen. Institut f{\"u}r Informatik},
+  year = {1993},
+  number = {TUM-I9311},
+  month = {May},
+  bdsk-url-1 = {http://www4.informatik.tu-muenchen.de/proj/korso/papers/v10.html},
+  owner = {glauber},
+  timestamp = {2009.01.16},
+  url = {http://www4.informatik.tu-muenchen.de/proj/korso/papers/v10.html}
+}
+
+@BOOK{MaudeBook,
+  title = {{All About Maude - A High-Performance Logical Framework}},
+  publisher = {Springer},
+  year = {2007},
+  author = {Manuel Clavel and Francisco Dur{\'a}n and Steven Eker and Patrick
+	Lincoln and Narciso Mart{\'\i}-Oliet and Jos{\'e} Meseguer and Carolyn
+	Talcott},
+  volume = {4350},
+  series = {Lecture Notes in Computer Science},
+  month = {July},
+  bdsk-url-1 = {http://www.springerlink.com/content/p6h32301712p/?p=77806856e47d4a03847df0c8625abefa&pi=0},
+  bdsk-url-2 = {http://dx.doi.org/10.1007/978-3-540-71999-1},
+  date-modified = {2010-02-10 21:13:53 -0200},
+  doi = {10.1007/978-3-540-71999-1},
+  isbn = {978-3-540-71940-3},
+  owner = {glauber},
+  timestamp = {2009.01.16},
+  url = {http://www.springerlink.com/content/p6h32301712p/?p=77806856e47d4a03847df0c8625abefa&pi=0}
+}
+
+@BOOK{CoFI:2004:CASL-RM,
+  title = {{\textsc{Casl} Reference Manual}},
+  publisher = {Springer},
+  year = {2004},
+  author = {{CoFI (The Common Framework Initiative)}},
+  volume = {2960},
+  series = {Lecture Notes in Computer Science},
+  abstract = {\textsc{Casl}, the \emph{Common Algebraic Specification Language},
+	has been designed by CoFI, the \emph{Common Framework Initiative}
+	for algebraic specification and development. \textsc{Casl} is an
+	expressive language for specifying requirements and design for conventional
+	software. It is algebraic in the sense that models of \textsc{Casl}
+	specifications are algebras; the axioms can be arbitrary first-order
+	formulas. \par \textsc{Casl} is a major new algebraic specification
+	language. It has been carefully designed by a large group of experts
+	as a general-purpose language for practical use in software development
+	-- in particular, for specifying both requirements and design. \textsc{Casl}
+	includes carefully-selected features from many previous specification
+	languages, as well as some novel features that allow algebraic specifications
+	to be written much more concisely and perspicuously than hitherto.
+	It may ultimately replace most of the previous languages, and provide
+	a common basis for future research and development. \par \textsc{Casl}
+	has already attracted widespread interest within the algebraic specification
+	community, and is generally regarded as a de facto standard. Various
+	sublanguages of \textsc{Casl} are available -- primarily for use
+	in connection with existing tools that were developed in connection
+	with previous languages. Extensions of \textsc{Casl} provide languages
+	oriented toward development of particular kinds of software (reactive,
+	concurrent, etc.) \par Major libraries of validated \textsc{Casl}
+	specifications are freely available on the Internet, and the specifications
+	can be reused simply by referring to their names. Tools are provided
+	to support practical use of \textsc{Casl}: checking the correctness
+	of specifications, proving facts about them, and managing the formal
+	software development process. \par This reference manual gives a
+	detailed presentation of the \textsc{Casl} specification formalism.
+	It reviews the main underlying concepts, and carefully summarizes
+	the intended meaning of each construct of \textsc{Casl}. It formally
+	defines both the syntax and semantics of \textsc{Casl}, and presents
+	a logic for reasoning about \textsc{Casl} specifications. It also
+	provides extensive libraries of \textsc{Casl} specifications of basic
+	datatypes, and an annotated bibliography of CoFI publications.},
+  annote = {Gives full details of the design of \textsc{Casl}: an informal language
+	summary, concrete and abstract syntax, well-formedness and model-class
+	semantics, and proof rules. Includes the libraries of basic datatypes.},
+  doi = {10.1007/b96103},
+  owner = {glauber},
+  timestamp = {2010.02.10},
+  url = {http://springerlink.metapress.com/content/f8cn4lpc6qhv/}
+}
+
+@UNPUBLISHED{Daum'e2002,
+  author = {Daum{\'e} III, Hal},
+  title = {{Y}et {A}nother {H}askell {T}utorial},
+  year = {2002},
+  pages = {220},
+  url = {\url{http://pub.hal3.name/daume02yaht.pdf}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@BOOK{CafeOBJReport,
+  title = {{\textsf{CafeOBJ} Report: The Language, Proof Techniques, and Methodologies
+	for Object-Oriented Algebraic Specification}},
+  publisher = {World Scientific Publishing Co.},
+  year = {1998},
+  author = {R\u{a}zvan Diaconescu and Kokichi Futatsugi},
+  volume = {6},
+  pages = {196},
+  series = {AMAST Series in Computing},
+  address = {Singapure},
+  month = {July},
+  abstract = {CafeOBJ is an industrial strength modern algebraic specification language,
+	a successor of the famous OBJ language, and directly incorporating
+	new paradigms such as behavioural concurrent specification and rewriting
+	logic. CafeOBJ is the core of an environment supporting the systems
+	(mainly software but not only) development process at several levels,
+	including prototyping, specification, and formal verification.
+	
+	
+	This book presents the formal definition of the language and its semantics,
+	but also methodologies for specification and verification in CafeOBJ,
+	with emphasize on concurrent object composition and modularity.
+	
+	
+	The presentation of the CafeOBJ concepts is supported by many examples,
+	and an appendix illustrates the power of the language and its methodologies
+	by a larger CASE study including specification, testing, and verification.
+	
+	
+	The book might be used both by software engineers interested in algebraic
+	methodologies, and by students and researchers in software engineering
+	and/or theoretical computing science as a fast introduction to state-of-the-art
+	algebraic specification.},
+  owner = {glauber},
+  timestamp = {2009.01.14}
+}
+
+@OTHER{AtelierB,
+  author = {ClearSy System Engineering},
+  bdsk-url-1 = {http://www.atelierb.eu},
+  date-added = {2010-01-23 13:13:39 -0200},
+  date-modified = {2010-02-10 21:10:16 -0200},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  title = {{Atelier B}},
+  url = {http://www.atelierb.eu}
+}
+
+@MISC{Gagnon2006,
+  author = {Gagnon, Etienne M.},
+  title = {{SableCC} {P}arser {G}enerator},
+  year = {2006},
+  url = {\url{http://www.sablecc.org}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@BOOK{Gamma1995,
+  title = {{D}esign {P}atterns: {E}lements {O}f {R}eusable {O}bject-{O}riented
+	{S}oftware},
+  publisher = {Addison-Wesley Professional},
+  year = {1995},
+  author = {Gamma, Erich and Helm, Richard and Johnson, Ralph and Vlissides,
+	John},
+  pages = {395},
+  edition = {1st},
+  booktitle = {Design Patterns: Elements Of Reusable Object-Oriented Software},
+  isbn = {0-201-63361-2}
+}
+
+@BOOK{MLLib,
+  title = {{The Standard ML Basis Library}},
+  publisher = {Cambridge University Press},
+  year = {2002},
+  author = {Gansner, Emden R. and Reppy, John H.},
+  bdsk-url-1 = {http://www.standardml.org/Basis/},
+  date-modified = {2010-02-10 21:56:40 -0200},
+  isbn = {0-52179-478-1},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  url = {http://www.standardml.org/Basis/}
+}
+
+@PROCEEDINGS{Gaudel1994,
+  title = {{F}ormal {S}pecification {T}echniques ({E}xtended {A}bstract)},
+  year = {1994},
+  address = {USA},
+  publisher = {IEEE Computer Society Press},
+  author = {Gaudel, Marie C.},
+  journal = {ICSE '94: Proceedings Of The 16th International Conference On Software
+	Engineering},
+  location = {Los Alamitos, USA},
+  pages = {223 - 227},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@BOOK{RaiseSpecification,
+  title = {{The RAISE Specification Language}},
+  publisher = {Prentice-Hall, Inc.},
+  year = {1993},
+  author = {The RAISE Language Group},
+  pages = {397},
+  series = {The BCS Practitioners Series},
+  month = {January},
+  isbn = {0-13-752833-7},
+  owner = {glauber},
+  timestamp = {2009.01.14}
+}
+
+@BOOK{LarchBook,
+  title = {{Larch: Languages and Tools for Formal Specifications}},
+  publisher = {Springer},
+  year = {1993},
+  author = {John V. Guttag and James J. Horning},
+  pages = {250},
+  bdsk-url-1 = {http://nms.lcs.mit.edu/Larch/pub/larchBook.ps},
+  date-modified = {2010-02-10 21:56:19 -0200},
+  isbn = {0-387-94006-5},
+  owner = {glauber},
+  timestamp = {2009.01.14},
+  url = {http://nms.lcs.mit.edu/Larch/pub/larchBook.ps}
+}
+
+@INPROCEEDINGS{ProgramaticaOverview,
+  author = {Thomas Hallgren and James Hook and Mark P. Jones and Richard B. Kieburtz},
+  title = {{An Overview of the Programatica ToolSet}},
+  booktitle = {High Confidence Software and Systems Conference (HCSS04)},
+  year = {2004},
+  bdsk-url-1 = {http://www.cse.ogi.edu/~hallgren/%20Programatica/HCSS04},
+  owner = {glauber},
+  timestamp = {2009.01.14},
+  url = {http://www.cse.ogi.edu/~hallgren/ Programatica/HCSS04}
+}
+
+@MISC{learnHaskell,
+  author = {{Haskell Team}},
+  title = {{Learning Haskell}},
+  year = {2007},
+  bdsk-url-1 = {http://www.haskell.org/haskellwiki/Learning%5C_Haskell},
+  owner = {glauber},
+  timestamp = {2009.01.11},
+  url = {http://www.haskell.org/haskellwiki/Learning\_Haskell}
+}
+
+@MISC{Hill,
+  author = {Hill, Jonathan M. D. and Clarke, Keith},
+  title = {{A}n {I}ntroduction {T}o {C}ategory {T}heory, {C}ategory {T}heory
+	{M}onads, {A}nd {T}heir {R}elationship {T}o {F}unctional {P}rogramming},
+  abstract = {Incorporating imperative features into a purely functional language
+	has become an active area of research within the functional programming
+	community [10, 7, 12]. One of the techniques gaining widespread acceptance
+	as a model for imperative functional programming is monads [13, 9].
+	The purpose of this technical report is to give a category theoretic
+	introduction to monads, and to explore the relationship to what functional
+	programmers term a monad. Keywords: Monads; Category theory; Kleisli...},
+  citeulike-article-id = {1190619},
+  keywords = {no-tag},
+  priority = {2},
+  url = {\url{http://citeseer.ist.psu.edu/62964.html}}
+}
+
+@INPROCEEDINGS{VSE,
+  author = {Dieter Hutter and Heiko Mantel and Georg Rock and Werner Stephan
+	and Andreas Wolpers and Michael Balser and Wolfgang Reif and Gerhard
+	Schellhorn and Kurt Stenzel8},
+  title = {{VSE: Controlling the Complexity in Formal Software Developments}},
+  booktitle = {Applied Formal Methods - FM-Trends 98 -- International Workshop on
+	Current Trends in Applied Formal Method},
+  year = {1998},
+  editor = {Dieter Hutter and Werner Stephan and Paolo Traverso and Markus Ullmann},
+  volume = {1641},
+  series = {Lecture Notes in Computer Science},
+  pages = {351-358},
+  publisher = {Springer},
+  bdsk-url-1 = {http://www.springerlink.com/content/51rg550q1061q005/},
+  bdsk-url-2 = {http://dx.doi.org/10.1007/3-540-48257-1_26},
+  doi = {10.1007/3-540-48257-1_26},
+  owner = {glauber},
+  timestamp = {2009.01.14},
+  url = {http://www.springerlink.com/content/51rg550q1061q005/}
+}
+
+@MISC{IsabelleSite,
+  author = {{Isabelle Comunity}},
+  title = {{Isabelle Overview}},
+  year = {2007},
+  bdsk-url-1 = {http://isabelle.in.tum.de/overview.html},
+  owner = {glauber},
+  timestamp = {2009.01.11},
+  url = {http://isabelle.in.tum.de/overview.html}
+}
+
+@BOOK{VDM,
+  title = {{Systematic software development using VDM}},
+  publisher = {Prentice-Hall, Inc.},
+  year = {1990},
+  author = {Cliff B. Jones},
+  pages = {333},
+  edition = {2nd},
+  isbn = {0-13-880733-7},
+  owner = {glauber},
+  timestamp = {2009.01.14}
+}
+
+@TECHREPORT{MLDef,
+  author = {Stefan Kahrs and Donald Sannella and Andrzej Tarlecki},
+  title = {{The Definition of Extended ML}},
+  institution = {Laboratory for Foundations of Computer Science, University of Edinburgh},
+  year = {1997},
+  number = {ECS-LFCS-94-300},
+  date-added = {2009-11-16 23:23:53 -0200},
+  date-modified = {2010-02-10 21:33:53 -0200},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  url = {http://homepages.inf.ed.ac.uk/dts/eml/eml-final.ps}
+}
+
+@ARTICLE{MLDefIntro,
+  author = {Stefan Kahrs and Donald Sannella and Andrzej Tarlecki},
+  title = {{The Definition of Extended ML: A Gentle Introduction}},
+  journal = {Theoretical Computer Science},
+  year = {1997},
+  volume = {173},
+  pages = {445 - 484},
+  number = {2},
+  abstract = {Extended ML (EML) is a framework for the formal development of modular
+	Standard ML (SML) software systems. Development commences with a
+	specification of the behaviour required and proceeds via a sequence
+	of partial solutions until a complete solution, an executable SML
+	program, is obtained. All stages in this development process are
+	expressed in the EML language, an extension of SML with axioms for
+	describing properties of module components. This is an overview of
+	the formal definition of the EML language. To complement the full
+	technical details presented elsewhere, it provides an informal explanation
+	of the main ideas, gives the rationale for certain design decisions,
+	and outlines some of the technical issues involved. EML is unusual
+	in being built around a #real# programming language having a syntax
+	and semantics formally defined. Interesting and complex problems
+	arise both from the nature of this relationship and from interactions
+	between the features of the language.},
+  bdsk-url-1 = {http://www.sciencedirect.com/science/article/B6V1G-3SNTKND-1V/2/716415b6c5c8885d02928dbfe56624c7},
+  bdsk-url-2 = {http://dx.doi.org/10.1016/S0304-3975(96)00163-6},
+  date-modified = {2010-02-10 21:34:42 -0200},
+  doi = {10.1016/S0304-3975(96)00163-6},
+  issn = {0304-3975},
+  owner = {glauber},
+  timestamp = {2009.11.01},
+  url = {http://www.sciencedirect.com/science/article/B6V1G-3SNTKND-1V/2/716415b6c5c8885d02928dbfe56624c7}
+}
+
+@BOOK{Loeckx1996,
+  title = {{S}pecification of {A}bstract {D}ata {T}ypes},
+  publisher = {John Wiley \& Sons, Inc.},
+  year = {1996},
+  author = {Loeckx, Jacques and Ehrich, Hans-Dieter and Wolf, Markus},
+  series = {Wiley/Teubner Computing Series},
+  address = {New York, NY, USA},
+  isbn = {0-471-95067-X}
+}
+
+@OTHER{BToolkit,
+  author = {B-Core (UK) Ltd},
+  bdsk-url-1 = {http://www.b-core.com/btoolkit.html},
+  date-added = {2010-01-23 13:15:26 -0200},
+  date-modified = {2010-02-10 21:35:46 -0200},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  title = {{B} Toolkit},
+  url = {http://www.b-core.com/btoolkit.html}
+}
+
+@BOOK{McCluskey1994,
+  title = {{T}he {C}onstruction of {F}ormal {S}pecifications: an {I}ntroduction
+	to the {M}odel-{B}ased and {A}lgebraic {A}pproaches},
+  publisher = {Mcgraw Hill Book Co Ltd},
+  year = {1994},
+  author = {McCluskey, T. L. and Turner, J. L.},
+  series = {McGraw Hill Software Engineering Series},
+  address = {Columbus, OH, USA},
+  isbn = {0-07-707735-0}
+}
+
+@INCOLLECTION{Mossakowskia,
+  author = {Mossakowski, T. },
+  title = {{R}elating {CASL} with {O}ther {S}pecification {L}anguages: the {I}nstitution
+	{L}evel},
+  booktitle = {Theoretical Computer Science},
+  abstract = {In this work, we investigate various specification languages and their
+	relation to Casl, the recently developed Common Algebraic Specification
+	Language. In particular, we consider the languages Larch, OBJ3, CafeOBJ,
+	ACT ONE, ASF, and HEP-theories, as well as various sublanguages of
+	Casl that more or less directly correspond to these. All these languages
+	are translated to an appropriate sublanguage of Casl. The translation
+	mainly concerns the level of specification in-the-small: the logics...},
+  citeulike-article-id = {1206702},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/mossakowski00relating.html}
+}
+
+@INPROCEEDINGS{Mossakowski2000,
+  author = {Mossakowski, Till },
+  title = {{CASL}: {F}rom {S}emantics to {T}ools},
+  booktitle = {Tools and Algorithms for Construction and Analysis of Systems},
+  year = {2000},
+  pages = {93--108},
+  abstract = {CASL, the common algebraic specification language, has been developed
+	as a language that subsumes many previous algebraic specification
+	frameworks and also provides tool interoperability. CASL is a complex
+	language with a complete formal semantics. It is therefore a challenge
+	to build good tools for CASL. In this work, we present and discuss
+	the Bremen HOL-CASL system, which provides parsing, static checking,
+	conversion to LaTeX and theorem proving for CASL specifications.
+	To make tool...},
+  citeulike-article-id = {1206705},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/250245.html}
+}
+
+@ARTICLE{Mossakowski2006,
+  author = {Till Mossakowski and Serge Autexier and Dieter Hutter},
+  title = {{D}evelopment graphs - {P}roof management for structured specifications},
+  journal = {Journal of Logic and Algebraic Programming},
+  year = {2006},
+  volume = {67},
+  pages = {114-145},
+  number = {1-2},
+  bdsk-url-1 = {http://www.informatik.uni-bremen.de/~till/papers/dgh_journal.ps},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+  ee = {http://dx.doi.org/10.1016/j.jlap.2005.09.005},
+  owner = {glauber},
+  timestamp = {2009.01.11},
+  url = {http://www.informatik.uni-bremen.de/~till/papers/dgh_journal.ps}
+}
+
+@MISC{Mossakowski,
+  author = {Mossakowski, Till and Haxthausen, Anne and Sanella, Donald and Tarlecki,
+	A.},
+  title = {{CASL} - {T}he {C}ommon {A}lgebraic {S}pecification {L}anguage: {S}emantics
+	{A}nd {P}roof {T}heory},
+  abstract = {Casl is an expressive speci cation language that has been designed
+	to supersede many existing algebraic speci cation languages and provide
+	a standard. Casl consists of several layers, including basic (unstructured)
+	speci cations, structured speci cations and architectural speci cations
+	(the latter are used to prescribe the structure of implementations).},
+  citeulike-article-id = {1206701},
+  keywords = {no-tag},
+  priority = {3},
+  url = {\url{http://citeseer.ist.psu.edu/mossakowski03casl.html}}
+}
+
+@INPROCEEDINGS{Mossakowski1997,
+  author = {Mossakowski, Till and Kolyang and Bruckner, Bernd K. },
+  title = {{S}tatic semantic analysis and theorem proving for {CASL}},
+  booktitle = {Workshop on Algebraic Development Techniques},
+  year = {1997},
+  pages = {333--348},
+  abstract = {. This paper presents a static semantic analysis for CASL, the Common
+	Algebraic Specification Language. Abstract syntax trees are generated
+	including subsorts and overloaded functions and predicates. The static
+	semantic analysis, through the implementation of an overload resolution
+	algorithm, checks and qualifies these abstract syntax trees. The
+	result is a fully qualified CASL abstract syntax tree where the overloading
+	has been resolved. This abstract syntax tree corresponds to a theory
+	in the ...},
+  citeulike-article-id = {1206717},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/mossakowski98static.html}
+}
+
+@INCOLLECTION{MossakowskiEtAl07b,
+  author = {Till Mossakowski and Christian Maeder and Klaus L{\"u}ttich},
+  title = {{The Heterogeneous Tool Set}},
+  booktitle = {VERIFY 2007, 4th International Verification Workshop},
+  year = {2007},
+  editor = {Bernhard Beckert},
+  volume = {259},
+  series = {CEUR Workshop Proceedings},
+  pages = {119-135},
+  abstract = {Heterogeneous specification becomes more and more important because
+	complex systems are often specified using multiple viewpoints, involving
+	multiple formalisms. Moreover, a formal software development process
+	may lead to a change of formalism during the development. However,
+	current research in integrated formal methods only deals with ad-hoc
+	integrations of different formalisms.
+	
+	The heterogeneous tool set (Hets) is a parsing, static analysis and
+	proof management tool combining various such tools for individual
+	specification languages, thus providing a tool for heterogeneous
+	multi-logic specification. Hets is based on a graph of logics and
+	languages (formalized as so-called institutions), their tools, and
+	their translations. This provides a clean semantics of heterogeneous
+	specifications, as well as a corresponding proof calculus. For proof
+	management, the calculus of development graphs (known from other
+	large-scale proof management systems) has been adapted to heterogeneous
+	specification. Development graphs provide an overview of the (heterogeneous)
+	specification module hierarchy and the current proof state, and thus
+	may be used for monitoring the overall correctness of a heterogeneous
+	development.
+	
+	We illustrate the approach with a sample heterogeneous proof proving
+	the correctness of the composition table of a qualitative spatial
+	calculus. The proof involves two different provers and logics: an
+	automated first-order prover solving the vast majority of the goals,
+	and an interactive higher-order prover used to prove a few bridge
+	lemmas.},
+  bdsk-url-1 = {http://CEUR-WS.org/Vol-259},
+  keywords = {heterogeneous theorem proving tools logic proofs},
+  owner = {glauber},
+  pdfurl = {http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-259/paper11.pdf},
+  status = {Reviewed},
+  timestamp = {2009.01.11},
+  url = {http://CEUR-WS.org/Vol-259}
+}
+
+@BOOK{ZMoura,
+  title = {{Especificações em Z: Uma Introdução}},
+  publisher = {Editora da Unicamp},
+  year = {2001},
+  author = {Arnaldo Vieira Moura},
+  volume = {3},
+  series = {Títulos em Engenharia de Software},
+  date-added = {2010-01-17 15:37:14 -0200},
+  date-modified = {2010-02-10 21:35:28 -0200},
+  isbn = {85-268-0575-4},
+  owner = {glauber},
+  rating = {0},
+  read = {Yes},
+  timestamp = {2010.02.20}
+}
+
+@MISC{Nipkow,
+  author = {Nipkow, Tobias and Paulson, Lawrence},
+  title = {{I}sabelle {HOL} - {T}he {T}utorial},
+  citeulike-article-id = {1206712},
+  keywords = {no-tag},
+  priority = {3},
+  url = {\url{http://citeseer.ist.psu.edu/481559.html}}
+}
+
+@BOOK{Nipkow-Paulson-Wenzel:2002,
+  title = {{I}sabelle/{HOL} --- A Proof Assistant for Higher-Order Logic},
+  publisher = {Springer},
+  year = {2002},
+  author = {Tobias Nipkow and Lawrence C. Paulson and Markus Wenzel},
+  volume = {2283},
+  pages = {218},
+  series = {Lecture Notes in Computer Science},
+  date-modified = {2010-02-10 21:58:05 -0200},
+  doi = {10.1007/3-540-45949-9},
+  isbn = {978-3-540-43376-7},
+  owner = {glauber},
+  timestamp = {2009.01.11}
+}
+
+@INPROCEEDINGS{Paulson1990,
+  author = {Paulson, Lawrence C.},
+  title = {{I}sabelle: {T}he next seven hundred theorem provers},
+  booktitle = {Proceedings of the Tenth International Conference on Automated Deduction
+	(Kaiserslautern, West Germany)},
+  year = {1990},
+  editor = {Stickel, M. },
+  volume = {449},
+  pages = {7??--7??},
+  address = {Berlin},
+  abstract = {This manual describes how to use the theorem prover Isabelle. For
+	
+	beginners, it explains how to perform simple single-step proofs in
+	the built-in logics. These include first-order logic, a classical
+	sequent calculus, zf set theory, Constructive Type Theory, and higher-order
+	logic. Each of these logics is described. The manual then explains
+	how to develop advanced tactics and tacticals and how to derive rules.
+	Finally, it describes how to define new logics within Isabelle.},
+  citeulike-article-id = {1206710},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/paulson90isabelle.html}
+}
+
+@MISC{Paulson,
+  author = {Paulson, Lawrence C. },
+  title = {{A} {F}ormulation of the {S}imple {T}heory of {T}ypes (for {I}sabelle)},
+  abstract = {Simple type theory is formulated for use with the generic theorem
+	prover
+	
+	Isabelle. This requires explicit type inference rules. There are function,
+	product,
+	
+	and subset types, which may be empty. Descriptions (the #-operator)
+	
+	introduce the Axiom of Choice. Higher-order logic is obtained through
+	reflection
+	
+	between formulae and terms of type bool . Recursive types and functions
+	
+	can be formally constructed.},
+  citeulike-article-id = {1206713},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/paulson89formulation.html}
+}
+
+@TECHREPORT{Paulson1993,
+  author = {Paulson, Lawrence C. },
+  title = {{T}he {I}sabelle {R}eference {M}anual},
+  year = {1993},
+  number = {283},
+  abstract = {syntax trees . . . . . . . . . . . . . . . . . . . . . . . . . 81
+	8.2 Transforming parse trees to asts . . . . . . . . . . . . . .
+	. . . . 82 8.3 Transforming asts to terms . . . . . . . . . . . .
+	. . . . . . . . . 84 8.4 Printing of terms . . . . . . . . . . .
+	. . . . . . . . . . . . . . . . 84 8.5 Macros: syntactic rewriting
+	. . . . . . . . . . . . . . . . . . . . . 86 8.5.1 Specifying macros
+	. . . . . . . . . . . . . . . . . . . . . . . 87 8.5.2 Applying rules
+	. . . . . . . . . . . . . . . . ...},
+  citeulike-article-id = {1206711},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/paulson95isabelle.html}
+}
+
+@INPROCEEDINGS{Regensburger1995,
+  author = {Regensburger, Franz },
+  title = {{HOLCF}: {Higher} {Order} {Logic} of {Computable} {Functions}},
+  booktitle = {Proceedings of the 8th International Workshop on Higher Order Logic
+	Theorem Proving and Its Applications},
+  year = {1995},
+  editor = {Schubert, E. T. and Windley, P. J. and Foss, Alves J. },
+  address = {Aspen Grove, Utah},
+  publisher = {Springer-Verlag LNCS 971},
+  abstract = {. This paper presents a survey of HOLCF, a higher order logic
+	
+	of computable functions. The logic HOLCF is based on HOLC, a variant
+	
+	of the well known higher order logic HOL, which offers the additional
+	
+	concept of type classes.
+	
+	HOLCF extends HOLC with concepts of domain theory such as complete
+	
+	partial orders, continuous functions and a fixed point operator. With
+	the
+	
+	help of type classes the extension can be formulated in a way such
+	that
+	
+	the logic LCF constitutes a proper sublanguage of...},
+  citeulike-article-id = {1206720},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/314052.html}
+}
+
+@INPROCEEDINGS{BMethod,
+  author = {Robinson, Ken},
+  title = {{The B Method and the B Toolkit}},
+  booktitle = {AMAST '97: Proceedings of the 6th International Conference on Algebraic
+	Methodology and Software Technology},
+  year = {1997},
+  pages = {576--580},
+  address = {London, UK},
+  publisher = {Springer},
+  date-added = {2010-01-23 13:18:31 -0200},
+  date-modified = {2010-01-23 13:18:39 -0200},
+  isbn = {3-540-63888-1},
+  owner = {glauber},
+  timestamp = {2010.02.20}
+}
+
+@MISC{Roggenbach1999,
+  author = {Roggenbach, M. and Mossakowski, T.},
+  title = {{B}asic {D}atatypes {I}n {C}asl},
+  year = {1999},
+  abstract = {The CoFI-workshop in Cachan, November 1998, stated: {"}There should
+	be (a) standard predefined library/ies for numbers, characters, strings
+	(possibly more). For pragmatic usability of Casl, there also needs
+	to be a special syntax for literals, similar to programming languages.{"}[Kol98]
+	This note is a proposal for such a standard library.},
+  citeulike-article-id = {1206699},
+  keywords = {no-tag},
+  priority = {3},
+  url = {\url{http://citeseer.ist.psu.edu/roggenbach00basic.html}}
+}
+
+@ARTICLE{Sannella2001,
+  author = {Sannella, Donald },
+  title = {{T}he {C}ommon {F}ramework {I}nitiative for {A}lgebraic {S}pecification
+	and {D}evelopment of {S}oftware: {R}ecent {P}rogress},
+  journal = {Lecture Notes in Computer Science},
+  year = {2001},
+  volume = {2267},
+  pages = {328--??},
+  abstract = {. The Common Framework Initiative (CoFI) is an open international
+	collaboration which aims to provide a common framework for algebraic
+	specification and development of software. The central element of
+	the Common Framework is a specification language called Casl for
+	formal specification of functional requirements and modular software
+	design which subsumes many previous algebraic specification languages.
+	This paper is a brief summary of past and present work on CoFI.},
+  citeulike-article-id = {1206688},
+  keywords = {no-tag},
+  owner = {glauber},
+  priority = {3},
+  timestamp = {2007.04.06},
+  url = {http://citeseer.ist.psu.edu/211762.html}
+}
+
+@MISC{Sannella1999,
+  author = {Sannella, Donald},
+  title = {{S}pecification {L}anguages},
+  year = {1999},
+  url = {\url{http://homepages.inf.ed.ac.uk/dts/pub/spec-lang.pdf}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@UNPUBLISHED{Sannella2006,
+  author = {Sannella, Donald and Tarlecki, Andrzej},
+  title = {{F}oundations of {A}lgebraic {S}pecification and {F}ormal {P}rogram
+	{D}evelopment},
+  note = {A ser publicado},
+  year = {2006},
+  address = {Cambridge, UK},
+  booktitle = {Foundations Of Algebraic Specificatios And Formal Program Development},
+  publisher = {Cambridge University Press}
+}
+
+@ARTICLE{MLSurvay,
+  author = {Sannella, Donald and Tarlecki, Andrzei},
+  title = {{Algebraic methods for specification and formal development of programs}},
+  journal = {ACM Computing Surveys},
+  year = {1999},
+  volume = {31},
+  pages = {10},
+  number = {3},
+  month = {September},
+  address = {New York, NY, USA},
+  bdsk-url-1 = {http://doi.acm.org/10.1145/333580.333589},
+  doi = {10.1145/333580.333589},
+  issn = {0360-0300},
+  owner = {glauber},
+  publisher = {ACM},
+  timestamp = {2009.11.01}
+}
+
+@PHDTHESIS{Schroder2006,
+  author = {Lutz Schr{\"o}der},
+  title = {{Higher Order and Reactive Algebraic Specification and Development}},
+  year = {2006},
+  month = {Feb},
+  bdsk-url-1 = {http://www.informatik.uni-bremen.de/~lschrode/papers/Summary.ps},
+  owner = {glauber},
+  timestamp = {2009.01.11},
+  url = {http://www.informatik.uni-bremen.de/~lschrode/papers/Summary.ps}
+}
+
+@INPROCEEDINGS{SchroderMossakowski02,
+  author = {Lutz Schr{\"o}der and Till Mossakowski},
+  title = {{HasCASL}: Towards Integrated Specification and Development of Functional
+	Programs},
+  booktitle = {Algebraic Methodology And Software Technology (AMAST 2002)},
+  year = {2002},
+  editor = {H{\'e}l{\`e}ne Kirchner and Christophe Ringeissen},
+  volume = {2422},
+  series = {Lecture Notes in Computer Science},
+  pages = {153--180},
+  month = {September},
+  publisher = {Springer},
+  abstract = {The development of programs in modern functional languages such as
+	Haskell calls for a wide-spectrum specification formalism that supports
+	the type system of such languages, in particular higher order types,
+	type constructors, and parametric polymorphism, and that contains
+	a functional language as an executable subset in order to facilitate
+	rapid prototyping. We lay out the design of HasCASL, a higher order
+	extension of the algebraic specification language CASL that is geared
+	towards precisely this purpose. Its semantics is tuned to allow program
+	development by specification refinement, while at the same time staying
+	close to the set-theoretic semantics of first order CASL. The number
+	of primitive concepts in the logic has been kept as small as possible;
+	we demonstrate how various extensions to the logic, in particular
+	general recursion, can be formulated within the language itself.},
+  bdsk-url-1 = {http://www.springerlink.com/content/r0kvr9r2aek7kdyw/?p=61b6f018bc104444a13ab5153afdcba0&pi=7},
+  bdsk-url-2 = {http://dx.doi.org/10.1007/3-540-45719-4_8},
+  doi = {10.1007/3-540-45719-4_8},
+  keywords = {CASL HasCASL general recursion functional programming partial lambda-calculus},
+  owner = {glauber},
+  psurl = {http://www.informatik.uni-bremen.de/~lschrode/hascasl/recursion.ps},
+  status = {Reviewed},
+  timestamp = {2009.01.11},
+  url = {http://www.springerlink.com/content/r0kvr9r2aek7kdyw/?p=61b6f018bc104444a13ab5153afdcba0&pi=7}
+}
+
+@ARTICLE{SchroderMossakowski08,
+  author = {Lutz Schr{\"o}der and Till Mossakowski},
+  title = {{HasCASL}: Integrated Higher-Order Specification and Program Developments},
+  journal = {Theoretical Computer Science},
+  year = {2009},
+  volume = {410},
+  pages = {1217-1260},
+  number = {12-13},
+  abstract = {We lay out the design of HasCASL, a higher order extension of the
+	algebraic specification language CASL that serves both as a wide-spectrum
+	language for the rigorous specification and development of software,
+	in particular but not exclusively in modern functional programming
+	languages, and as an expressive standard language for higher-order
+	logic. Distinctive features of HasCASL include partial higher order
+	functions, higher order subtyping, shallow polymorphism, and an extensive
+	type-class mechanism. Moreover, HasCASL provides dedicated specification
+	support for monad-based functional-imperative programming with generic
+	side effects, including a monad-based generic Hoare logic.},
+  date-added = {2009-08-03 23:02:10 -0300},
+  date-modified = {2009-08-03 23:02:10 -0300},
+  keywords = {Algebraic specification higher order logic functional programming
+	type classes polymorphism CASL monads Hoare logic},
+  owner = {glauber},
+  pdfurl = {http://www.informatik.uni-bremen.de/~lschrode/papers/HasCASL.pdf},
+  status = {Reviewed},
+  timestamp = {2009.11.01}
+}
+
+@UNPUBLISHED{SchroderEtAl03,
+  author = {Lutz Schr{\"o}der and Till Mossakowski and Christian Maeder},
+  title = {{HasCASL} - Integrated functional specification and programming.
+	(Language Summary)},
+  month = {March},
+  year = {2004},
+  abstract = {The development of programs in modern functional languages such as
+	Haskell calls for a wide-spectrum specification formalism that supports
+	the type system of such languages, in particular higher order types,
+	type constructors, and polymorphism, and that contains a functional
+	language as an executable subset in order to facilitate rapid prototyping.
+	We lay out the design of HasCASL, a higher order extension of CASL
+	that is geared towards precisely this purpose. Its semantics is tuned
+	to allow program development by specification refinement, while at
+	the same time staying close to the set-theoretic semantics of first
+	order CASL. The number of primitive concepts in the logic has been
+	kept as small as possible; advanced concepts, in particular general
+	recursion, can be formulated within the language itself. This document
+	provides a detailed definition of the HasCASL syntax and an informal
+	description of the semantics, building on the existing CASL Summary.},
+  bdsk-url-1 = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.pdf},
+  owner = {glauber},
+  pdfurl = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.pdf},
+  psurl = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.ps},
+  status = {Other},
+  timestamp = {2009.01.11},
+  url = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.pdf}
+}
+
+@MISC{SchröderEtAl03,
+  author = {L. Schr{\"o}der and T. Mossakowski and C. Maeder},
+  title = {HasCASL - Integrated functional specification and programming. Language
+	summary.},
+  year = {2003},
+  abstract = {The development of programs in modern functional languages such as
+	Haskell calls for a wide-spectrum specification formalism that supports
+	the type system of such languages, in particular higher order types,
+	type constructors, and polymorphism, and that contains a functional
+	language as an executable subset in order to facilitate rapid prototyping.
+	We lay out the design of HasCASL, a higher order extension of CASL
+	that is geared towards precisely this purpose. Its semantics is tuned
+	to allow program development by specification refinement, while at
+	the same time staying close to the set-theoretic semantics of first
+	order CASL. The number of primitive concepts in the logic has been
+	kept as small as possible; advanced concepts, in particular general
+	recursion, can be formulated within the language itself. This document
+	provides a detailed definition of the HasCASL syntax and an informal
+	description of the semantics, building on the existing CASL Summary.},
+  pdfurl = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.pdf},
+  psurl = {http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/HasCASL/hascasl_summary.ps},
+  status = {Other}
+}
+
+@BOOK{ZNotation,
+  title = {{The Z Notation: a Reference Manual}},
+  publisher = {Prentice-Hall},
+  year = {1992},
+  author = {John Michael Spivey},
+  pages = {158},
+  edition = {2},
+  month = {June},
+  bdsk-url-1 = {http://spivey.oriel.ox.ac.uk/mike/zrm/},
+  date-modified = {2010-02-10 21:36:28 -0200},
+  isbn = {0-13-983768-X},
+  owner = {glauber},
+  timestamp = {2009.01.14},
+  url = {http://spivey.oriel.ox.ac.uk/mike/zrm/}
+}
+
+@MISC{Team1995,
+  author = {CafeOBJ Team},
+  title = {{CafeOBJ} {O}fficial {H}omepage},
+  year = {1995},
+  url = {\url{http://www.ldl.jaist.ac.jp/cafeobj}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@MISC{Team2006,
+  author = {Haskell Team},
+  title = {{L}earning {H}askell},
+  year = {2006},
+  url = {\url{http://www.haskell.org/haskellwiki/Learning\_Haskell}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@MISC{Team2006a,
+  author = {Haskell Team},
+  title = {{T}he {G}lasgow {H}askell {C}ompiler},
+  year = {2006},
+  url = {\url{http://haskell.org/ghc/}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@ELECTRONIC{CoqManual,
+  author = {{The Coq Development Team}},
+  year = {2006},
+  title = {{The Coq Proof Assistant -- Reference Manual, v8.1.}},
+  organization = {INRIA},
+  url = {http://coq.inria.fr/doc-eng.html},
+  bdsk-url-1 = {http://coq.inria.fr/doc-eng.html},
+  owner = {glauber},
+  timestamp = {2009.01.14}
+}
+
+@BOOK{Thompson1999,
+  title = {{Haskell: The Craft of Functional Programming}},
+  publisher = {Addison Wesley},
+  year = {1999},
+  author = {Thompson, Simon},
+  edition = {2},
+  month = {March},
+  bdsk-url-1 = {http://www.amazon.ca/exec/obidos/redirect?tag=citeulike09-20%5C&amp;path=ASIN/0201342758},
+  citeulike-article-id = {167577},
+  howpublished = {Paperback},
+  isbn = {0201342758},
+  keywords = {functional-programming, haskell},
+  owner = {glauber},
+  posted-at = {2005-08-09 12:11:47},
+  priority = {0},
+  timestamp = {2009.01.11},
+  url = {http://www.amazon.ca/exec/obidos/redirect?tag=citeulike09-20\&amp;path=ASIN/0201342758}
+}
+
+@ARTICLE{Tucker2002,
+  author = {Tucker, J. V. and Zucker, J. I.},
+  title = {{A}bstract {C}omputability {A}nd {A}lgebraic {S}pecification},
+  journal = {ACM Trans. Comput. Logic},
+  year = {2002},
+  volume = {3},
+  pages = {279 - 333},
+  number = {2},
+  address = {New York, NY, USA},
+  issn = {1529 - 3785},
+  publisher = {ACM Press}
+}
+
+@MISC{Von2000,
+  author = {Von Lamsweerde, Axel},
+  title = {{F}ormal {S}pecification: {A} {R}oadmap},
+  year = {2000},
+  booktitle = {ICSE - Future Of SE Track},
+  pages = {147-159},
+  url = {\url{http://citeseer.ist.psu.edu/vanlamsweerde00formal.html}},
+  urlaccessdate = {14 nov. 2006}
+}
+
+@OTHER{FMWikiZ,
+  author = {Formal Methods Wiki},
+  bdsk-url-1 = {http://formalmethods.wikia.com/wiki/Z#Tool_support},
+  date-added = {2010-01-17 15:55:11 -0200},
+  date-modified = {2010-01-17 15:59:00 -0200},
+  owner = {glauber},
+  timestamp = {2010.02.20},
+  url = {http://formalmethods.wikia.com/wiki/Z#Tool_support}
+}
+
+@INPROCEEDINGS{Circus,
+  author = {J.~C.~P.~Woodcock and A.~L.~C.~Cavalcanti},
+  title = {{A Concurrent Language for Refinement}},
+  booktitle = {IWFM'01:~5th Irish Workshop in Formal Methods},
+  year = {2001},
+  editor = {A.~Butterfield and C. Pahl},
+  series = {BCS Electronic Workshops in Computing},
+  address = {Dublin, Ireland},
+  month = {July},
+  date-added = {2010-01-17 16:11:44 -0200},
+  date-modified = {2010-01-17 16:12:06 -0200},
+  file = {wc01.pdf:./docs/wc01.pdf:PDF},
+  group = {refinement-calculus},
+  owner = {glauber},
+  timestamp = {2010.02.20}
+}
+
+@BOOK{ObjectZ,
+  title = {{The Object-Z specification language}},
+  publisher = {Kluwer Academic Publishers},
+  year = {2000},
+  address = {Norwell, MA, USA},
+  date-added = {2010-01-17 16:02:37 -0200},
+  date-modified = {2010-01-17 16:03:03 -0200},
+  isbn = {0-7923-8684-1},
+  owner = {glauber},
+  timestamp = {2010.02.20}
+}
+

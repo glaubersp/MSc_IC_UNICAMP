@@ -1,0 +1,39 @@
+\section{Isabelle}
+Esta seção descreve o provador de teoremas Isabelle baseando-se na documentação presente em seu \textit{site} na Internet \cite{IsabelleSite}; uma descrição completa pode ser encontrada no manual do provador \cite{Nipkow-Paulson-Wenzel:2002}.
+
+Isabelle é um provador de teoremas genérico que permite o uso de várias lógicas como cálculo formal na prova de teoremas. Hets utiliza Isabelle para provar teoremas em lógica de segunda ordem, mas o provador permite , por exemplo, o uso de teoria de conjuntos axiomatizada, dentre outras lógicas. O suporte a várias lógicas é uma das características de destaque da ferramenta.
+
+O provador possui um excelente suporte à notação matemática: novas notações podem ser incluídas utilizando-se símbolos matemáticos comuns e as provas podem ser descritas de forma estruturada ou, mais facilmente, como seqüência de comandos. As definições e provas podem incluir códigos na linguagem de formatação TeX, de forma que documentos formatados possam ser gerados diretamente do código fonte.
+
+A maior limitação de provadores de teorema é a necessidade de grande esforço e experiência por parte dos usuários para que as provas sejam realizadas. Visando a facilitar este processo, Isabelle possui algumas ferramentas que automatizam alguns trechos de provas, tais como equações, aritmética básica e fórmulas matemáticas.
+
+A lógica de segunda ordem HOL é utilizada na codificação das teorias. Sua sintaxe assemelha-se muito às linguagens de programação funcional por ser baseada em cálculo lambda tipificado. Esta lógica permite construções de tipos de dados, tipos de funções e outras construções comuns em linguagens funcionais. A traadução de HasCASL para HOL é feita pela ferramenta Hets de forma automática.
+
+Isabelle possui uma extensão, chamada Isar, que permite descrever as provas de forma que tanto humanos possam lê-las como computadores possam interpretá-las facilmente. O provador possui uma extensa biblioteca de teorias matemáticas já provadas (por exemplo, nas áreas de Álgebra e Teoria de Conjuntos) e, também, muitos exemplos de provas realizadas em Verificação Formal.
+
+A seguir, apresenta-se a codificação em Isar do Teorema de Cantor, que afirma a existência de mais subconjuntos do que elementos em um conjunto qualquer. O código descreve como a prova deve ser realizada, porém, poderia ter sido escrito de forma que Isabelle efetuasse uma prova automática.
+
+\begin{verbatim}
+theory Cantor imports Main begin
+
+theorem "EX S. S ~: range (f :: 'a => 'a set)"
+proof
+  let ?S = "{x. x ~: f x}"
+  show "?S ~: range f"
+  proof
+    assume "?S : range f"
+    then obtain y where "?S = f y" ..
+    then show False
+    proof (rule equalityCE)
+      assume "y : f y"
+      assume "y : ?S" then have "y ~: f y" ..
+      with `y : f y` show ?thesis by contradiction
+    next
+      assume "y ~: ?S"
+      assume "y ~: f y" then have "y : ?S" ..
+      with `y ~: ?S` show ?thesis by contradiction
+    qed
+  qed
+qed
+
+\end{verbatim}

@@ -1,0 +1,850 @@
+\chapter{Especificação de uma Biblioteca para a Linguagem HasCASL}
+\label{chap:desenvBiblioteca}
+
+\section{Considerações iniciais}
+
+Para capturar todas as características da linguagem \Haskell, a biblioteca deveria utilizar os conceitos de avaliação preguiçosa e funções contínuas, permitindo tipos de dados infinitos.
+O uso de tais conceitos exigiria o emprego das construções mais avançadas da linguagem \HasCASL e um profundo conhecimento prévio da linguagem \HOL, para que pudessem ser escritas as provas dos teoremas gerados a serem verificados pelo provador \Isabelle.
+Tais exigências inviabilizaram o uso destes conceitos no primeiro contato com a metodologia de especificação algébrica utilizada no projeto.
+Decidiu-se, então, iniciar a especificação com tipos de dados com avaliação estrita e, em um refinamento posterior, incluir o uso de tipos com avaliação preguiçosa.
+
+A decisão anterior exigiu que os tipos de dados fossem totalmente reescritos.
+Com isso, uma especificação foi criada para representar o tipo booleano.
+Desta forma, não foi mais possível utilizar o tipo de dados padrão para \textit{verdadeiro} e \textit{falso}, e nem seus operadores para negação, conjunção e disjunção.
+Isto resultou na necessidade de se comparar o resultado de cada sentença com os construtores do novo tipo booleano, tornando a sintaxe visualmente carregada.
+Para eliminar estas comparações, seria necessário que o tipo booleano fosse definido a partir do tipo \Verb.Unit., de \CASL, com avaliação preguiçosa.
+Dessa forma, tal eliminação foi, também, deixada para um refinamento posterior.
+
+A nomenclatura de tipos e funções da biblioteca \Prelude foi utilizada sempre que possível.
+Ao importar um tipo de dado já definido na biblioteca da linguagem \CASL, o mesmo teve seu nome alterado para o respectivo nome na biblioteca \Prelude através do uso da sintaxe apropriada presente em \HasCASL.
+Quando novas funções foram especificadas, utilizou-se o nome empregado na biblioteca \Prelude sempre que possível.
+No entanto, em alguns casos o nome utilizado na biblioteca \Prelude conflitava com palavras reservadas da linguagem \HasCASL; neste caso, o sufixo \textit{H} foi adicionado ao nome.
+
+As especificações escritas em \HasCASL são orientadas a propriedades, ou seja, as especificações modelam um problema e propriedades são verificadas através da criação e verificação de teoremas.
+As especificações são definidas por operadores e predicados, que juntos constituem uma assinatura, e axiomas que governam os elementos da assinatura.
+As propriedades da especificação que se deseja verificar são incluídas como teoremas a serem provados utilizando-se um provador de teorema.
+
+As provas escritas em \HOL para \Isabelle frequentemente requerem que axiomas sejam reescritos de forma que possam ser utilizados pelo provador em operações automáticas.
+Tais axiomas devem ser reescritos na forma de lemas e devem ser provados da mesma forma que os teoremas.
+Alguns dos lemas foram adicionados diretamente às especificações, sendo transformados em teoremas pela ferramenta \Hets; outros, no entanto, foram escritos diretamente em \HOL, por questões de praticidade.
+Todos os teoremas, lemas e axiomas foram nomeados para facilitar o uso dos mesmos nas provas geradas para o \Isabelle.
+
+Operadores, tais como $+$, $-$, $*$, $/$, $<$, entre outros, são definidos em \CASL e \Haskell de forma infixa e com tipos \textit{curried}.
+Em \Haskell, no entanto, é possível transformar um operador em uma função com tipos \textit{uncurried}, bastando colocar o operador entre parênteses.
+A função resultante recebe o nome de seção, em \Haskell.
+Para obter o mesmo efeito em \HasCASL, é preciso criar uma $\lambda$-abstração envolvendo o operador, de forma que esta possa ser passada como parâmetro.
+Este mecanismo foi utilizado para passar os operadores $<$ e $==$ como parâmetros para funções de segunda ordem que operam sobre listas.
+
+O capítulo apresenta, a seguir, a descrição de cada uma das especificações em uma seção específica.
+O código completo das especificações foi agrupado no \citeAppendix{appendix:strictSpec} para que possa ser facilmente consultado.
+
+\section{Bool, a primeira especificação}
+
+Inicialmente, o tipo de dado \Verb.Bool., representando o tipo booleano com construtores para \textit{verdadeiro} e \textit{falso}, foi criado através da importação do tipo de dado \Verb.Boolean. da biblioteca de \CASL, renomeando-se o tipo e as funções para os nomes utilizados na biblioteca \Prelude, como visto a seguir:
+
+\begin{Verbatim}
+from Basic/SimpleDatatypes get Boolean
+spec Bool = {Boolean with 
+         sort Boolean |-> Bool,
+         op Not__ |-> not__,
+         op __And__ |-> __&&__,
+         op __Or__ |-> __||__
+        }
+then
+op otherwise: Bool
+. otherwise = True
+\end{Verbatim}
+
+Tendo em vista o refinamento para inclusão de tipos com avaliação preguiçosa, decidiu-se recriar o tipo de dado deste o início, uma vez que o tipo importado da biblioteca \CASL possuía apenas tipos com avaliação estrita.
+Foram adicionados teoremas que, embora simples, eram necessários para simplificar provas geradas para o \Isabelle.
+A especificação final pode ser vista abaixo:
+
+\begin{Verbatim}
+spec Bool = %mono
+free type Bool ::= True | False 
+fun Not__ : Bool -> Bool
+fun __&&__ : Bool * Bool -> Bool
+fun __||__ : Bool * Bool -> Bool
+fun otherwiseH: Bool      
+...
+end
+\end{Verbatim}
+
+\section{\textit{Eq}: especificando a relação de equivalência}
+Classes em \HasCASL são similares às de \Haskell.
+A declaração de uma classe inclui funções e axiomas sobre variáveis de tipo da classe em questão, representando a interface desta classe.
+Uma declaração de instância de tipo obriga um tipo a pertencer a uma classe.
+Isto significa que o tipo deve obedecer a todas as declarações de funções da interface da classe, assim como a todos os axiomas.
+
+A especificação \Verb.Eq. (ver \citeAppendix{appendix:strictSpec:eq}), para funções de igualdade e desigualdade, iniciou o uso de classes.
+A declaração da classe \Verb.Eq., a qual inclui uma função de igualdade e axiomas para simetria, reflexividade e transitividade desta operação, pode ser vista a seguir.
+
+\begin{Verbatim}
+spec Eq = Bool then
+class Eq {
+var a: Eq
+fun __==__ : a * a -> Bool
+fun __/=__ : a * a -> Bool
+vars x,y,z: a
+. x = y => (x == y) = True                   %(EqualTDef)%
+. x == y = y == x                            %(EqualSymDef)%
+. (x == x) = True                            %(EqualReflex)%
+. (x == y) = True /\ (y == z)                
+    = True => (x == z) = True                %(EqualTransT)%
+. (x /= y) = Not (x == y)                    %(DiffDef)%
+...
+}                                            
+type instance Bool: Eq                       
+...
+. (False == True) = False                    %(IBE3)%
+...
+type instance Unit: Eq                       
+...
+end
+\end{Verbatim}
+
+A função de desigualdade é definida usando-se a função de igualdade.
+Evitou-se definir a equivalência entre a função de igualdade definida e a função de igualdade padrão de \HasCASL para permitir com que cada tipo de dado definisse o escopo da igualdade.
+Foram criados axiomas para verificar o comportamento da função de diferença e teoremas para auxiliar no processo de provas geradas para o \Isabelle.
+
+Os tipos \Verb.Bool. e \Verb.Unit. foram declarados como instâncias da classe \Verb.Eq..
+Foi necessário axiomatizar a negação da igualdade entre dois construtores diferentes do tipo \Verb.Bool. porque a igualdade da classe não é equivalente à igualdade padrão de \HasCASL, e é esta última a igualdade utilizada para criar axiomas entre os construtores dos tipos declarados como \Verb.free..
+Os demais teoremas puderam ser provados a partir do axioma anterior.
+Não foi necessário incluir nenhum axioma na declaração envolvendo o tipo \Verb.Unit. porque este tipo possui apenas um construtor, e as provas decorrem diretamente dos axiomas da classe.
+
+\section{A Especificação \textit{Ord}, para Ordenação}
+A próxima especificação criada foi a de relações de ordenação, nomeada \Verb.Ord..
+Inicialmente, tentou-se importar a especificação \Verb.Ord. presente na biblioteca de \CASL em \HasCASL/Metatheory/Ord.
+No entanto, a especificação existente faz uso de avaliação preguiçosa e, desta forma, não poderia ser importada.
+A especificação, então, foi escrita desde o início (ver \citeAppendix{appendix:strictSpec:ord}).
+
+Para criar a especificação \Verb.Ord., o tipo de dado \Verb.Ordering. foi especificado e declarado como instância da classe \Verb.Eq..
+Novamente, foi preciso axiomatizar a negação da igualdade entre os três construtores do tipo, dois a dois.
+
+\begin{Verbatim}
+spec Ord = Eq and Bool then
+free type Ordering ::= LT | EQ | GT
+type instance Ordering: Eq
+. (LT == EQ) = False  %(IOE04)%
+. (LT == GT) = False  %(IOE05)%
+. (EQ == GT) = False  %(IOE06)%
+\end{Verbatim}
+
+A classe \Verb.Ord. foi criada como subclasse da classe \Verb.Eq., como em \Haskell.
+Especificou-se uma relação de ordenação total (\Verb.__<__.), com axiomas para irreflexividade e transitividade, um teorema para assimetria, decorrente dos axiomas anteriores, e um axioma para totalidade, como visto a seguir.
+
+\begin{Verbatim}
+class Ord < Eq
+{
+ var a: Ord
+ fun compare: a -> a -> Ordering
+ fun __<__ : a * a -> Bool
+ fun __>__ : a * a -> Bool
+ fun __<=__ : a * a -> Bool
+ fun __>=__ : a * a -> Bool
+ fun min: a -> a -> a
+ fun max: a -> a -> a
+ var    x, y, z, w: a
+. (x == y) = True => (x < y) = False                      %(LeIrreflexivity)%
+. (x < y) = True => y < x = False                   %(LeTAsymmetry)% %implied
+. (x < y) = True /\ (y < z) = True                 
+=> (x < z) = True                                        %(LeTTransitive)%
+. (x < y) = True \/ (y < x) = True                 
+\/ (x == y) = True                                            %(LeTTotal)%
+\end{Verbatim}
+
+As demais funções de ordenação foram definidas usando-se a relação de ordenação total e a relação de equivalência, quando aplicável, como visto abaixo.
+As propriedades de irreflexividade, assimetria, transitividade e totalidade foram definidas como teoremas.
+
+\begin{Verbatim}
+ . (x > y) = (y < x)                                                 %(GeDef)%
+ . (x <= y) = (x < y) || (x == y)                                   %(LeqDef)%
+ . (x >= y) = ((x > y) || (x == y))                                 %(GeqDef)%
+\end{Verbatim}
+
+Os axiomas a seguir foram definidos para relacionar as quatro funções de ordenação e a função de equivalência entre sim, para ambos os construtores do tipo de dado \Verb.Bool..
+Adicionalmente, foram criados teoremas para verificar que as funções de ordenação se comportam da maneira esperada.
+
+\begin{Verbatim}
+%% Relates == and ordering
+ . (x == y) = True <=> (x < y) = False /\ (x > y) = False       %(EqTSOrdRel)%
+ . (x == y) = False <=> (x < y) = True \/ (x > y) = True        %(EqFSOrdRel)%
+ . (x == y) = True <=> (x <= y) = True /\ (x >= y) = True        %(EqTOrdRel)%
+ . (x == y) = False <=> (x <= y) = True \/ (x >= y) = True       %(EqFOrdRel)%
+ . (x == y) = True /\ (y < z) = True => (x < z) = True       %(EqTOrdTSubstE)%
+ . (x == y) = True /\ (y < z) = False => (x < z) = False     %(EqTOrdFSubstE)%
+ . (x == y) = True /\ (z < y) = True => (z < x) = True       %(EqTOrdTSubstD)%
+ . (x == y) = True /\ (z < y) = False => (z < x) = False     %(EqTOrdFSubstD)%
+ . (x < y) = True <=> (x > y) = False /\ (x == y) = False     %(LeTGeFEqFRel)%
+ . (x < y) = False <=> (x > y) = True \/ (x == y) = True      %(LeFGeTEqTRel)%
+\end{Verbatim}
+
+Finalizando a definição da classe, foram definidas as funções de comparação, máximo e mínimo, como visto a seguir.
+
+\begin{Verbatim}
+%% Definitions to compare, max and min using relational operations.
+ . (compare x y == LT) = (x < y)                                  %(CmpLTDef)%
+ . (compare x y == EQ) = (x == y)                                 %(CmpEQDef)%
+ . (compare x y == GT) = (x > y)                                  %(CmpGTDef)%
+%% Define min, max                                               
+ . (max x y == y) = (x <= y)                                       %(MaxYDef)%
+ . (max x y == x) = (y <= x)                                       %(MaxXDef)%
+ . (min x y == x) = (x <= y)                                       %(MinXDef)%
+ . (min x y == y) = (y <= x)                                       %(MinYDef)%
+ . (max x y == y) = (max y x == y)                         %(MaxSym)% %implied
+ . (min x y == y) = (min y x == y)                         %(MinSym)% %implied
+\end{Verbatim}
+
+As declarações de instância dos tipos \Verb.Ordering. e \Verb.Bool., para a classe \Verb.Ord., seguiram o mesmo padrão das demais: definiu-se o funcionamento da função de ordenação total sobre os construtores de cada tipo; as demais funções foram escritas como teoremas.
+O tipo \Verb.Unit., por possuir apenas um construtor, teve todas as funções declaradas como teoremas porque as mesmas podem ser provadas diretamente dos axiomas.
+
+\section{Especificações \textit{Maybe}, \textit{Either}, \textit{MaybeMonad} e \textit{EitherFunctor}}
+Os tipos de dado \Verb.Maybe a. e \Verb.Either a b., onde \Verb.a. e \Verb.b. são variáveis de tipo, foram desenvolvidos em duas fases.
+
+No primeiro passo, o tipo de dado \textit{Maybe} (ver \citeAppendix{appendix:strictSpec:maybe}) foI especificado, acompanhado de uma função de mapeamento e declarações de instância para as classes \Verb.Eq. e \Verb.Ord..
+
+\begin{Verbatim}
+spec Maybe = Eq and Ord then
+var a,b,c : Type;
+    e : Eq;
+    o : Ord;
+free type Maybe a ::= Just a | Nothing
+var x : a;
+    y : b;
+    ma : Maybe a;
+    f : a -> b
+...
+type instance Maybe e: Eq
+var x,y : e; 
+. (Just x == Just y) = True <=> (x == y) = True        %(IME01)%
+...
+. Just x == Nothing = False                            %(IME03)%
+type instance Maybe o: Ord
+var x,y : o;
+. (Nothing < Just x) = True                            %(IMO01)%
+. (Just x < Just y) = (x < y)                          %(IMO02)%
+...
+end
+\end{Verbatim}
+
+
+
+As declarações de classes foram feitas através da aplicação das funções das classes sobre elementos de um mesmo construtor, para os dois construtores existentes em cada tipo, e em seguida, entre dois elementos de construtores diferentes.
+As aplicações  da função \Verb.__==__. entre construtores com variáveis de tipo e da função \Verb.__<__. foram inseridas como axiomas.
+A igualdade entre construtores sem variáveis de tipo e as demais funções de ordenação foram definidas como teoremas porque seu comportamento pode ser deduzido a partir dos axiomas anteriores.
+
+Tratamento parecido foi utilizado na especificação do tipo de dado \textit{Either} (ver \citeAppendix{appendix:strictSpec:either}).
+
+\begin{Verbatim}
+spec Either = Eq and Ord then
+var a, b, c : Type; e, ee : Eq; o, oo : Ord;
+free type Either a b ::= Left a | Right b     
+...
+type instance Either e ee: Eq
+var x,y : e; z,w : ee;
+. ((Left x : Either e ee) == 
+   (Left y : Either e ee)) = (x == y)                    %(IEE01)%
+. ((Right z : Either e ee) ==
+   (Right w : Either e ee)) = (z == w)                   %(IEE02)%
+. ((Left x : Either e ee) ==
+   (Right z : Either e ee)) = False                      %(IEE03)%
+type instance Either o oo: Ord
+var x,y : o; z,w : oo;
+. ((Left x : Either o oo) < (Right z : Either o oo))
+     = True                                              %(IEO01)%
+. ((Left x : Either o oo) < (Left y : Either o oo))
+     = (x < y)                                           %(IEO02)%
+. ((Right z : Either o oo) < (Right w : Either o oo))
+     = (z < w)                                           %(IEO03)%
+...
+end
+\end{Verbatim}
+
+Na segunda fase, as especificações foram estendidas para incluir declarações para classes envolvendo functores e mônadas.
+O tipo \Verb.Maybe a. (ver \citeAppendix{appendix:strictSpec:maybeMonad}) foi declarado como instância das classes \Verb.Functor. e \Verb.Monad..
+
+\begin{Verbatim}
+spec MaybeMonad = Maybe and Monad then
+var a,b,c : Type;
+         e : Eq;
+         o : Ord;
+type instance Maybe: Functor
+vars  x: Maybe a;
+      f: a -> b;
+      g: b -> c
+. map (\ y: a .! y) x = x                            %(IMF01)% %implied
+. map (\ y: a .! g (f y)) x = map g (map f x)        %(IMF02)% %implied
+type instance Maybe: Monad
+vars  x, y: a;
+      p: Maybe a;
+      q: a ->? Maybe b;
+      r: b ->? Maybe c;
+      f: a ->? b
+. def q x => ret x >>= q = q x                       %(IMM01)% %implied
+. p >>= (\ x: a . ret (f x) >>= r)
+     = p >>= \ x: a . r (f x)                        %(IMM02)% %implied
+. p >>= ret = p                                      %(IMM03)% %implied
+. (p >>= q) >>= r = p >>= \ x: a . q x >>= r         %(IMM04)% %implied
+. (ret x : Maybe a) = ret y => x = y                 %(IMM05)% %implied
+var x : Maybe a;
+    f : a -> b;
+. map f x = x >>= (\ y:a . ret (f y))                 %(T01)% %implied
+end
+\end{Verbatim}
+
+Já o tipo \Verb.Either a b. (ver \citeAppendix{appendix:strictSpec:eitherFunctor}) foi declarado como instância da classe \Verb.Functor..
+
+\begin{Verbatim}
+spec EitherFunctor = Either and Functor then
+var a, b, c : Type;
+    e, ee : Eq;
+    o, oo : Ord;
+type instance Either a: Functor
+vars x: Either c a;  
+     f: a -> b;
+     g: b -> c
+. map (\ y: a .! y) x = x                          %(IEF01)% %implied
+. map (\ y: a .! g (f y)) x = map g (map f x)      %(IEF02)% %implied
+end
+\end{Verbatim}
+
+Esta separação realizada foi necessária devido à falta de suporte, por parte da ferramenta \Hets, para tradução de construtores de classe de ordens superiores de \HasCASL para \HOL.
+Ela também permitiu que as provas que não envolviam funtores e mônadas pudessem ser escritas, já que a inclusão das declarações de instância para classes com construtores de segunda ordem impediria que os demais axiomas pudessem ser provados.
+
+\section{Especificando funções através das especificações \textit{Composition} e \textit{Function}}
+Antes de especificar funções da biblioteca \Prelude, fez-se necessário escolher entre importar ou recriar a especificação para composição de funções.
+Tendo em vista, novamente, que mudanças seriam necessárias quando a especificação fosse refinada para uso de avaliação preguiçosa, a mesma foi reescrita.
+Trocou-se o uso da $\lambda$-abstração pela aplicação direta da função porque a aplicação do axioma em questão nas provas geradas para o \Isabelle torna-se mais simples.
+Em seguida, foram especificadas funções básicas como a função identidade, funções para operar sobre tuplas e funções para transformar funções \textit{curried} em funções \textit{uncurried} e vice-versa, como visto a seguir.
+
+\begin{Verbatim}
+spec Composition =
+vars a,b,c : Type
+fun __o__ : (b -> c) * (a -> b) -> (a -> c);
+vars a,b,c : Type; y:a; f : b -> c; g : a -> b
+     . ((f o g) y) = f (g y)         %(Comp1)%
+end
+
+spec Function = Composition then
+var a,b,c: Type; x: a; y: b; f: a -> b -> c; g: (a * b) -> c
+fun id: a -> a
+fun flip: (a -> b -> c) -> b -> a -> c
+fun fst: (a * b) -> a
+fun snd: (a * b) -> b
+fun curry: ((a * b) -> c) -> a -> b -> c
+fun uncurry: (a -> b -> c) -> (a * b) -> c
+. id x = x                                         %(IdDef)%
+. flip f y x = f x y                             %(FlipDef)%
+. fst (x, y) = x                                  %(FstDef)%
+. snd (x, y) = y                                  %(SndDef)%
+. curry g x y = g (x, y)                        %(CurryDef)%
+. uncurry f (x,y) = f x y                     %(UncurryDef)%
+end
+\end{Verbatim}
+
+\section{Utilizando especificações numéricas}
+Quando do início deste trabalho, não era possível a tradução de um código escrito em \HasCASL para seu equivalente escrito em \HOL quando o primeiro importasse especificações que utilizassem subtipos, como é o caso das especificações numéricas existentes na biblioteca de \CASL.
+Reescrever todas as especificações estava fora do escopo do trabalho e geraria um retrabalho exaustivo e desnecessário.
+A solução inicial foi remover o uso de subtipos e criar funções de coerção de tipos.
+Posteriormente, como a ferramenta \Hets passou a tratar corretamente o uso de subtipos, foi possível abandonar tal estratégia em prol da importação direta das bibliotecas preexistentes em \CASL.
+
+As especificações numéricas escritas em \CASL, embora completas, geram especificações equivalentes em \HOL que não conseguem ser manipuladas pelo provador \Isabelle nos processos de reescrita.
+A manipulação destas especificações dependeria da criação de diversos lemas e teoremas auxiliares para que o provador \Isabelle pudesse usar os axiomas destas especificações em processos de reescrita.
+Uma outra abordagem seria a crianção de isomorfismos mapeando os tipos e funções destas especificações para os respectivos tipos e funções dos tipos primitivos da linguagem \HOL.
+Esta segunda abordagem, além de evitar a duplicação de tipos de dados com fins idênticos, ainda facilitaria as provas envolvendo tipos numéricos, uma vez que \Isabelle possui vários métodos automáticos para lidar com estes tipos.
+Embora já exista um isomorfismo no repositório de códigos de \CASL, não foi possível utilizá-lo para as provas por ter sido escrito para uma versão anterior da ferramenta \HOL.
+Uma nova versão encontra-se em desenvolvimento.
+
+O uso de especificações numéricas, devido ao exposto anteriormente, aumenta ainda mais a complexidade das provas escritas em \HOL.
+Como o projeto prioriza as especificações ao invés das provas, e como o desenvolvimento de provas envolvendo números, dada a complexidade das provas, consumia muito tempo, optou-se por não finalizá-las, concentrando-se os esforços em aumentar a quantidade de especificações escritas.
+
+As especificações numéricas de \CASL foram importadas e agrupadas para que classes numéricas fossem criadas tal qual existem na biblioteca \Prelude (ver \citeAppendix{appendix:strictSpec:numericClasses}).
+O primeiro passo consistiu em declarar os tipos numéricos como instâncias das classes \Verb.Eq. e \Verb.Ord., como é visto a seguir.
+
+\begin{Verbatim}
+from Basic/Numbers get Nat, Int, Rat
+
+spec NumericClasses = Ord and Nat and Int and Rat then
+type instance Pos: Eq
+type instance Pos: Ord
+type instance Nat: Eq
+type instance Nat: Ord
+type instance Int: Eq
+type instance Int: Ord
+type instance Rat: Eq
+type instance Rat: Ord
+\end{Verbatim}
+
+Criou-se uma classe \Verb.Num., subclasse de \Verb.Eq., com as operações esperadas para tipos numéricos.
+Um teorema envolvendo o valor absoluto e o sinal de elementos de tipos numéricos foi definido logo após a classe.
+
+\begin{Verbatim}
+class Num < Eq {
+ vars a: Num;
+ x,y : a
+ fun __+__: a * a -> a
+ fun __*__: a * a -> a
+ fun __-__: a * a -> a
+ fun negate: a -> a
+ fun abs: a -> a
+ fun signum: a -> a
+ fun fromInteger: Int -> a
+}
+vars a: Num;
+     x,y : a
+. (abs x) * (signum x) = x                            %(AbsSignumLaw)% %implied
+\end{Verbatim}
+
+Em seguida, para cada tipo numérico, efetuou-se a declaração de instância da classe \Verb.Num., mapeando-se as operações da classe para as operações definidas nas especificações importadas, fazendo conversões de tipo, quando necessário, através da função de coerção de tipos \Verb.__as__., como visto no caso do tipo \Verb.Nat., a seguir.
+\begin{Verbatim}
+type instance Nat: Num                                     
+vars a: Num;                                               
+     x,y: Nat;                                             
+     z: Int                                                
+. x + y = (__+__: Nat * Nat -> Nat) (x,y)                   %(INN01)%
+. x * y = (__*__: Nat * Nat -> Nat) (x,y)                   %(INN02)%
+. x - y = (__-!__: Nat * Nat -> Nat) (x,y)                  %(INN03)%
+. negate x = 0 -! x                                         %(INN04)%
+. (fun abs: a -> a) x = x                                   %(INN05)%
+. signum x = 1                                              %(INN06)%
+. fromInteger z = z as Nat                                  %(INN07)%
+\end{Verbatim}
+
+As classes \Verb.Integral., vista a seguir, e a classe \Verb.Fractional. também foram definidas, embora a primeira ainda não seja subclasse das classes \Verb.Real. e \Verb.Enum., que não foram incluídas na especificação pela complexidade envolvida na manipulação destas e do tipo inteiro de máquina, limitado pelo tamanho da palavra do processador.
+
+\begin{Verbatim}                                                 
+class Integral < Num
+{
+vars a: Integral;
+fun __quot__, __rem__, __div__, __mod__: a * a -> a
+fun quotRem, divMod: a -> a -> (a * a)
+fun toInteger: a -> Int
+}
+
+type instance Nat: Integral
+type instance Int: Integral
+type instance Rat: Integral
+
+vars a: Integral;
+     x,y,z,w,r,s: a;
+. (z,w) = quotRem x y => x quot y = z                       %(IRI01)%
+. (z,w) = quotRem x y => x rem y = w                        %(IRI02)%
+. (z,w) = divMod x y => x div y = z                         %(IRI03)%
+. (z,w) = divMod x y => x mod y = w                         %(IRI04)%
+. signum w = negate (signum y) /\ (z,w) = quotRem x y   
+    => divMod x y =                                     
+        (z - (fromInteger (toInteger (1:Nat))) , w + s)     %(IRI05)%
+. not (signum w = negate (signum y))                    
+    /\ (z,w) = quotRem x y                              
+        => divMod x y = (z, w)                              %(IRI06)%
+\end{Verbatim}
+
+\section{Especificando listas e operações associadas}
+A especificação de listas foi a primeira a necessitar de tipos numéricos.
+Com base na discussão apresentada anteriormente, decidiu-se dividir a especificação em duas outras, separando-se o tipo de dado e as funções que não necessitavam de tipos numéricos das funções que envolviam estes tipos.
+Assim, os teoremas da primeira especificação poderiam ser provados como nas especificações anteriores, e os que envolviam números poderiam não ser provados, provocando um comprometimento mínimo da especificação quanto à sua validação.
+
+A primeira especificação (ver \citeAppendix{appendix:strictSpec:listNoNumbers}) foi dividida em seis partes, a fim de agrupar funções relacionadas da mesma forma como é feito na biblioteca \Prelude.
+Primeiramente, definiu-se o tipo de dado \Verb.free type List a., dependente do tipo \Verb.a., com os construtores \Verb.Nil. e \Verb.Cons a (List a)..
+
+\begin{Verbatim}
+spec ListNoNumbers = Function and Ord then 
+var a : Type 
+free type List a ::= Nil | Cons a (List a) 
+\end{Verbatim}
+
+Em seguida, definiram-se algumas funções básicas, onde pela primeira vez foi necessário o uso de funções parciais, uma vez que as funções \Verb.head. e \Verb.tail. não são definidas para listas vazias.
+
+\begin{Verbatim}
+var a,b : Type 
+fun head : List a ->? a; 
+fun tail : List a ->? List a; 
+fun foldr : (a -> b -> b) -> b -> List a -> b; 
+fun foldl : (a -> b -> a) -> a -> List b -> a; 
+fun map : (a -> b) -> List a -> List b; 
+fun filter : (a -> Bool) -> List a -> List a; 
+fun __++__ : List a * List a -> List a; 
+fun zip : List a -> List b -> List (a * b); 
+fun unzip : List (a * b) -> (List a * List b) 
+\end{Verbatim}
+
+Na segunda parte da especificação estão as declarações de instância para as classes \Verb.Eq. e \Verb.Ord..
+As funções foram definidas de forma análoga às declarações de instância das especificações anteriormente descritas.
+
+\begin{Verbatim}
+var a : Eq; x,y: a; xs, ys: List a
+type instance List a: Eq
+. ((Cons x xs) == (Cons y ys)) = ((x == y) && (xs == ys))         %(ILE02)%
+var b : Ord; z,w: b; zs, ws: List b
+type instance List b: Ord
+. (z < w) = True => ((Cons z zs) < (Cons w ws)) = True            %(ILO05)%
+. (z == w) = True => ((Cons z zs) < (Cons w ws)) = (zs < ws)      %(ILO06)%
+. (z < w) = False /\ (z == w) = False                             
+     => ((Cons z zs) < (Cons w ws)) = False                       %(ILO07)%
+\end{Verbatim}
+
+A terceira parte concentra quatro teoremas que relacionam entre si algumas funções da primeira parte da especificação.
+Embora estes teoremas definam como as funções interagem, eles não devem ser axiomas porque são consequência da definição das funções.
+O uso da diretiva \Verb.%implies. indica que todas as equações definidas nesta subparte são consideradas teoremas.
+
+\begin{Verbatim}
+. foldl i e (ys ++ ts) 
+	= foldl i (foldl i e ys) ts       %(FoldlDecomp)% 
+. map f (xs ++ zs) 
+	= (map f xs) ++ (map f zs)        %(MapDecomp)% 
+. map (g o f) xs = map g (map f xs)   %(MapFunctor)% 
+. filter p (map f xs) 
+	= map f (filter (p o f) xs)       %(FilterProm)%
+\end{Verbatim}
+
+% TODO As funções init, last, null e reverse poderiam ser movidas para a primeira seção. Verificar isto em relação à especificação List de CASL.
+A quarta seção inclui algumas outras funções básicas, que complementam as funções da primeira seção, além de funções que mapeiam outras funções sobre elementos de uma lista.
+Novamente, algumas funções foram definidas como parciais por não serem definidas para listas vazias.
+\begin{Verbatim}
+fun init: List a ->? List a; 
+fun last: List a ->? a; 
+fun null: List a -> Bool; 
+fun reverse: List a -> List a; 
+fun foldr1: (a -> a -> a) -> List a ->? a; 
+fun foldl1: (a -> a -> a) -> List a ->? a; 
+fun scanl: (a -> b -> a) -> a -> List b -> List a 
+fun scanl1: (a -> a -> a) -> List a -> List a 
+fun scanr: (a -> b -> b) -> b -> List a -> List b 
+fun scanr1: (a -> a -> a) -> List a -> List a 
+\end{Verbatim}
+
+A quinta parte apresenta funções lógicas sobre listas e funções responsáveis pela criação de sub-listas, segundo um dado predicado.
+\begin{Verbatim}
+fun andL : List Bool -> Bool; 
+fun orL : List Bool -> Bool; 
+fun any : (a -> Bool) -> List a -> Bool; 
+fun all : (a -> Bool) -> List a -> Bool; 
+fun concatMap : (a -> List b) -> List a -> List b; 
+fun concat : List (List a) -> List a; 
+fun maximum : List d ->? d; 
+fun minimum : List d ->? d; 
+fun takeWhile : (a -> Bool) -> List a -> List a 
+fun dropWhile : (a -> Bool) -> List a -> List a 
+fun span : (a -> Bool) -> List a -> (List a * List a) 
+fun break : (a -> Bool) -> List a -> (List a * List a) 
+\end{Verbatim}
+
+A última seção da especificação apresenta funções sobre listas que não estão definidas na biblioteca \Prelude, mas estão presentes em outras bibliotecas de \Haskell e que foram necessárias para definir algumas especificações presentes neste trabalho.
+\begin{Verbatim}
+fun insert: d -> List d -> List d
+fun delete: e -> List e -> List e
+fun select: (a -> Bool) -> a -> (List a * List a) -> (List a * List a)
+fun partition: (a -> Bool) -> List a -> (List a * List a)
+\end{Verbatim}
+
+\section{Agrupando listas e funções com tipos numéricos}
+A especificação de listas envolvendo tipos numéricos (ver \citeAppendix{appendix:strictSpec:listWithNumbers}), como pode ser vista abaixo, inclui funções para tamanho de listas, criação de sub-listas de tamanho definido, divisão de lista em posição definida e soma e produto de todos os elementos de uma lista.
+Duas funções auxiliares, para soma e produto, foram criadas, de forma a facilitar a legibilidade da especificação.
+Como não deveriam ser utilizadas fora do escopo desta especificação, as funções foram tornadas invisíveis através da construção \Verb.hide sum', product'..
+No entanto, quando a ferramenta \Hets é utilizada para traduzir esta especificação, a mesma sugere que seja utilizada uma versão sem funções ocultas.
+Apesar do aviso, as especificações que importam a especificação com elementos ocultos são traduzidas normalmente pela ferramenta \Hets.
+
+\begin{Verbatim}
+spec ListWithNumbers = ListNoNumbers and NumericClasses then {
+vars a,b: Type;
+     c,d: Num;
+     x,y : a;
+     xs,ys : List a;
+     n,nx : Int;
+     z,w: Int;
+     zs,ws: List Int
+fun length: List a -> Int;
+fun take: Int -> List a -> List a
+fun drop: Int -> List a -> List a
+fun splitAt: Int -> List a -> (List a * List a)
+fun sum: List c -> c
+fun sum': List c -> c -> c
+fun product: List c -> c
+fun product': List c -> c -> c
+...
+} hide sum', product'
+end
+\end{Verbatim}
+
+\section{Adicionando funções numéricas}
+Uma abordagem semelhante à empregada para listas foi utilizada para incluir funções que utilizam tipos numéricos (ver \citeAppendix{appendix:strictSpec:numericFunctions}).
+Funções de paridade, exponenciação, cálculo de mínimo múltiplo comum e de máximo divisor comum foram definidas estendendo-se a especificação de funções.
+Novamente, foram usadas funções temporárias, escondidas das demais especificações, como visto a seguir.
+
+\begin{Verbatim}
+spec NumericFunctions = Function and NumericClasses then {
+var a: Num;
+    b: Integral;
+    c: Fractional
+fun subtract: a -> a -> a
+fun even: b -> Bool
+fun odd: b -> Bool
+fun gcd: b -> b ->? b
+fun lcm: b -> b -> b
+fun gcd': b -> b -> b
+fun __^__: a * b -> a
+fun f: a -> b -> a
+fun g: a -> b -> a -> a
+...
+} hide f,g
+end
+\end{Verbatim}
+
+\section{Suporte a caracteres e cadeias de caracteres}
+Para suportar caracteres e cadeias de caracteres, importou-se a especificação existente na biblioteca de \CASL e adicionaram-se declarações de instância de classes para as classes \Verb.Eq. e \Verb.Ord..
+A especificação \Verb.Char., de \CASL, foi renomeada ao ser importada para evitar conflitos de nomes.
+Esta especificação mapeia os códigos hexadecimais que representam caracteres no sistema \textit{Unicode} para um elemento identificado por um número natural.
+Em seguida, os caracteres propriamente ditos são relacionados com os seus respectivos códigos hexadecimais.
+As declarações de classe definem o funcionamento das funções \Verb.__==__. e \Verb.__<__. sobre o construtor do tipo de dado \Verb.Char..
+As demais funções, que decorrem das duas definições anteriores,foram marcadas como teoremas, como se vê abaixo.
+
+\begin{Verbatim}
+from Basic/CharactersAndStrings get Char |-> IChar
+
+spec Char = IChar and Ord and NumericClasses then
+vars x, y: Char
+type instance Char: Eq                             
+. (ord(x) == ord(y)) = (x == y)                                   %(ICE01)%
+. Not(ord(x) == ord(y)) = (x /= y)                       %(ICE02)% %implied
+type instance Char: Ord                                  
+. (ord(x) < ord(y)) = (x < y)                                     %(ICO04)%
+. (ord(x) <= ord(y)) = (x <= y)                          %(ICO05)% %implied
+. (ord(x) > ord(y)) = (x > y)                            %(ICO06)% %implied
+. (ord(x) >= ord(y)) = (x >= y)                          %(ICO07)% %implied
+. (compare x y == EQ) = (ord(x) == ord(y))               %(ICO01)% %implied
+. (compare x y == LT) = (ord(x) < ord(y))                %(ICO02)% %implied
+. (compare x y == GT) = (ord(x) > ord(y))                %(ICO03)% %implied
+. (ord(x) <= ord(y)) = (max x y == y)                    %(ICO08)% %implied
+. (ord(y) <= ord(x)) = (max x y == x)                    %(ICO09)% %implied
+. (ord(x) <= ord(y)) = (min x y == x)                    %(ICO10)% %implied
+. (ord(y) <= ord(x)) = (min x y == y)                    %(ICO11)% %implied
+end
+\end{Verbatim}
+
+A especificação de cadeias de caracteres define o tipo de dado \Verb.String. como um apelido para o tipo \Verb.List Char. através do operador \Verb.:=..
+Com esta definição, não foi criado um novo tipo de dado, mas um outro nome, mais simples, para se referenciar o tipo composto.
+Dessa forma, as operações definidas para o tipo \Verb.List. são válidas para o tipo \Verb.String. e nenhuma definição adicional é necessária para que o tipo esteja bem definido.
+Alguns teoremas simples foram criados para verificar se o comportamento deste tipo era o esperado.
+
+\begin{Verbatim}
+spec String = %mono
+     ListNoNumbers and Char then
+type String := List Char
+vars a,b: String; x,y,z: Char; xs, ys: String
+. x == y = True =>
+ 	((Cons x xs) == (Cons y xs)) = True                   %(StringT1)% %implied
+. xs /= ys = True => 
+	((Cons x ys) == (Cons y xs)) = False                  %(StringT2)% %implied
+. (a /= b) = True =>  (a == b) = False                    %(StringT3)% %implied
+. (x < y) = True => 
+	((Cons x xs) < (Cons y xs)) = True                    %(StringT4)% %implied
+. (x < y) = True /\ (y < z) = True => ((Cons x (Cons z Nil)) 
+         < (Cons x (Cons y Nil))) = False                 %(StringT5)% %implied
+end
+\end{Verbatim}
+
+\section{Definindo listas de tipos monádicos}
+Listas de tipos monádicos, muito utilizadas no sequenciamento de ações de entrada e saída em programas \Haskell, foram especificadas a partir das listas sem tipos numéricos.
+Funções para sequências de ações e mapeamento de funções monádicas sobre listas foram definidas tal qual na biblioteca \Prelude, como visto abaixo.
+
+\begin{Verbatim}
+spec MonadicList = Monad and ListNoNumbers then
+vars a,b: Type;
+     m: Monad;
+     f: a -> m b;
+     ms: List (m a);
+     k: m a -> m (List a) -> m (List a);
+     n: m a;
+     nn: m (List a);
+     x: a;
+     xs: List a;
+fun sequence: List (m a) -> m (List a)
+fun sequenceUnit: List (m a) -> m Unit
+fun mapM: (a -> m b) -> List a -> m (List b)
+fun mapMUnit: (a -> m b) -> List a -> m (List Unit)
+. sequence ms = let
+  k n nn = n >>= \ x:a. (nn >>= \ xs: List a . (ret (Cons x xs))) in
+    foldr k (ret (Nil: List a)) ms                      %(SequenceListDef)%
+end
+\end{Verbatim}
+
+\section{Exemplificando o uso da biblioteca desenvolvida}
+A fim de exemplificar o uso da biblioteca desenvolvida, foram criadas duas especificações envolvendo algoritmos de ordenação.
+Foram escolhidas funções de ordenação porque envolveriam listas e poderiam não envolver números.
+Desta forma, poder-se-ia tentar provar os teoremas, completando os exemplos.
+
+A primeira especificação (ver \citeAppendix{appendix:strictSpec:sortingPrograms}), mais simples, utilizou os algoritmos \textit{Insertion Sort} e \textit{Quick Sort}.
+As funções de ordenação foram definidas através de funções da biblioteca criada e de $\lambda$-abstrações totais, usadas como parâmetros para as aplicações da função \Verb.filter..
+Para verificar a correção da especificação, foram criados quatro teoremas que aplicam as funções de ordenação, como visto abaixo.
+
+\begin{Verbatim}
+spec ExamplePrograms = ListNoNumbers then
+var a: Ord;
+    x,y: a;
+    xs,ys: List a
+fun quickSort: List a -> List a
+fun insertionSort: List a -> List a
+. quickSort (Nil: List a) = Nil                                %(QuickSortNil)%
+. quickSort (Cons x xs)                                   
+    = ((quickSort (filter (\ y:a .! y < x) xs))           
+      ++ (Cons x Nil))                                    
+        ++ (quickSort (filter (\ y:a .! y >= x) xs))          %(QuickSortCons)%
+. insertionSort (Nil: List a) = Nil                        %(InsertionSortNil)%
+. insertionSort (Cons x xs)                               
+    = insert x (insertionSort xs)                     %(InsertionSortConsCons)%
+then %implies
+var a: Ord;
+    x,y: a;
+    xs,ys: List a
+. andL (Cons True (Cons True (Cons True Nil))) = True        %(Program01)%
+. quickSort (Cons True (Cons False (Nil: List Bool)))       
+     = Cons False (Cons True Nil)                            %(Program02)%
+. insertionSort (Cons True (Cons False (Nil: List Bool)))   
+     = Cons False (Cons True Nil)                            %(Program03)%
+. insertionSort xs = quickSort xs                            %(Program04)%
+end
+\end{Verbatim}
+
+Na segunda especificação (ver \citeAppendix{appendix:strictSpec:sortingPrograms}), um novo tipo de dado foi criado (\Verb.Split a b.) para ser usado como representação interna nas funções de ordenação.
+A ideia utilizada na especificação foi dividir uma lista e, em seguida, unir as suas partes de acordo com o algoritmo escolhido.
+
+\begin{Verbatim}
+spec SortingPrograms = ListWithNumbers then
+var a,b : Ord;
+free type Split a b ::= Split b (List (List a))
+\end{Verbatim}
+
+Em seguida, definiu-se uma função de ordenação genérica, chamada \Verb.GenSort., que aplica as funções de divisão e união sobre uma lista.
+
+\begin{Verbatim}
+fun genSort:(List a -> Split a b)-> (Split a b -> List a)-> List a -> List a
+...
+. xs = (Cons x (Cons y ys)) /\ split xs = Split r xxs 
+     => genSort split join xs
+          = join (Split r (map (genSort split join) xxs))         %(GenSortT1)%
+. xs = (Cons x (Cons y Nil)) /\ split xs = Split r xxs 
+     => genSort split join xs 
+          = join (Split r (map (genSort split join) xxs))         %(GenSortT2)%
+. xs = (Cons x Nil) \/ xs = Nil
+     => genSort split join xs = xs                                 %(GenSortF)%
+. splitInsertionSort (Cons x xs) 
+\end{Verbatim}
+
+O algoritmo \Verb.Insertion Sort. foi implementado com o auxílio de uma função responsável por inserir elementos em uma lista através da função \Verb.insert..
+
+\begin{Verbatim}
+fun splitInsertionSort: List b -> Split b b
+fun joinInsertionSort: Split a a -> List a
+fun insertionSort: List a -> List a
+...
+     = Split x (Cons xs (Nil: List (List a)))           %(SplitInsertionSort)%
+. joinInsertionSort (Split x (Cons xs (Nil: List (List a)))) 
+     = insert x xs                                        %(JoinInsertionSort)%
+. insertionSort xs 
+     = genSort splitInsertionSort joinInsertionSort xs    %(InsertionSort)%
+\end{Verbatim}
+
+O algoritmo \Verb.Quick Sort. utiliza uma função de divisão que particiona a lista em duas novas listas com o uso da função \Verb.__<__., passada como parâmetro através de uma $\lambda$-abstração total.
+
+\begin{Verbatim}
+fun splitQuickSort: List a -> Split a a
+fun joinQuickSort: Split b b -> List b
+fun quickSort: List a -> List a
+...
+. splitQuickSort (Cons x xs) 
+     = let (ys, zs) = partition (\t:a .! x < t) xs
+       in Split x (Cons ys (Cons zs Nil))                    %(SplitQuickSort)%
+. joinQuickSort (Split x (Cons ys (Cons zs Nil))) 
+     = ys ++ (Cons x zs)                                      %(JoinQuickSort)%
+. quickSort xs = genSort splitQuickSort joinQuickSort xs     %(QuickSort)%
+\end{Verbatim}
+
+O algoritmo \Verb.Selection Sort. faz uso de uma função de divisão que depende da função \Verb.minimum. para extrair o menor elemento de uma lista.
+
+\begin{Verbatim}
+fun splitSelectionSort: List a -> Split a a
+fun joinSelectionSort: Split b b -> List b
+fun selectionSort: List a -> List a
+...
+. splitSelectionSort xs = let x = minimum xs in
+	Split x (Cons (delete x xs) (Nil: List(List a)))    %(SplitSelectionSort)%
+. joinSelectionSort (Split x (Cons xs Nil)) =
+ 	(Cons x xs)                                           %(JoinSelectionSort)%
+. selectionSort xs
+     = genSort splitSelectionSort joinSelectionSort xs   %(SelectionSort)%
+\end{Verbatim}
+
+O algoritmo \Verb.Merge Sort. divide uma lista ao meio e, então, une as duas listas, ordenando-as recursivamente.
+
+\begin{Verbatim}
+fun splitMergeSort: List b -> Split b Unit
+fun joinMergeSort: Split a Unit -> List a
+fun merge: List a -> List a -> List a
+fun mergeSort: List a -> List a
+...
+. def((length xs) div 2) /\ n = ((length xs) div 2) 
+     => splitMergeSort xs = let (ys,zs) = splitAt n xs
+        in Split () (Cons ys (Cons zs Nil))                  %(SplitMergeSort)%
+. xs = (Nil: List a) => merge xs ys = ys                           %(MergeNil)%
+. xs = (Cons v vs) /\ ys = (Nil: List a) 
+     => merge xs ys = xs                                       %(MergeConsNil)%
+. xs = (Cons v vs) /\ ys = (Cons w ws) /\ (v < w) = True 
+     => merge xs ys = Cons v (merge vs ys)                   %(MergeConsConsT)%
+. xs = (Cons v vs) /\ ys = (Cons w ws) /\ (v < w) = False 
+     => merge xs ys = Cons w (merge xs ws)                   %(MergeConsConsF)%
+. joinMergeSort (Split () (Cons ys (Cons zs Nil))) 
+     = merge ys zs                                            %(JoinMergeSort)%
+. mergeSort xs = genSort splitMergeSort joinMergeSort xs    %(MergeSort)%
+\end{Verbatim}
+
+A fim de verificar propriedades acerca das definições das funções, foram definidos três predicados.
+O primeiro, \Verb.__elem__., verifica se um elemento pertence a uma lista;
+o predicado \Verb.isOrdereded. garante que uma lista está ordenada de forma correta;
+por fim, o predicado \Verb.permutation. verifica se uma lista é uma permutação de uma segunda lista, ou seja, verifica se ambas as listas possuem os mesmos elementos.
+Embora o predicado \Verb.%(PermutationCons)%. fosse desnecessário para definir o predicado \Verb.permutation., o primeiro se mostrou necessário nas provas envolvendo este último.
+
+\begin{Verbatim}
+vars a: Ord;
+     x,y: a;
+     xs,ys: List a
+preds __elem__ : a * List a;
+      isOrdered: List a;
+      permutation: List a * List a
+. not x elem (Nil: List a)                                          %(ElemNil)%
+. x elem (Cons y ys) <=> x = y \/ x elem ys                        %(ElemCons)%
+. isOrdered (Nil: List a)                                      %(IsOrderedNil)%
+. isOrdered (Cons x (Nil: List a))                            %(IsOrderedCons)%
+. isOrdered (Cons x (Cons y ys))                    
+     <=> (x <= y) = True /\ isOrdered(Cons y ys)       %(IsOrderedConsCons)%
+. permutation ((Nil: List a), Nil)                           %(PermutationNil)%
+. permutation (Cons x (Nil: List a),                
+ 	Cons y (Nil: List a)) <=> x=y                           %(PermutationCons)%
+. permutation (Cons x xs, Cons y ys) <=>            
+     (x=y /\ permutation (xs, ys)) \/ (x elem ys    
+          /\ permutation(xs, Cons y (delete x ys)))   %(PermutationConsCons)%
+\end{Verbatim}
+
+Foram criados teoremas para garantir que a aplicação dos algoritmos sobre uma mesma lista, dois a dois, obtivessem a mesma lista como resultado;
+para verificar que a aplicação de cada algoritmo em uma lista resultasse em uma lista ordenada;
+e para provar que uma lista de entrada seja permutação da lista resultante da aplicação de cada função de ordenação sobre a lista inicial.
+
+\begin{Verbatim}
+then %implies                                       
+var a,b : Ord;                                      
+    xs, ys : List a;                                
+. insertionSort xs = quickSort xs                                 %(Theorem01)%
+. insertionSort xs = mergeSort xs                                 %(Theorem02)%
+. insertionSort xs = selectionSort xs                             %(Theorem03)%
+. quickSort xs = mergeSort xs                                     %(Theorem04)%
+. quickSort xs = selectionSort xs                                 %(Theorem05)%
+. mergeSort xs = selectionSort xs                                 %(Theorem06)%
+. isOrdered(insertionSort xs)                                     %(Theorem07)%
+. isOrdered(quickSort xs)                                         %(Theorem08)%
+. isOrdered(mergeSort xs)                                         %(Theorem09)%
+. isOrdered(selectionSort xs)                                     %(Theorem10)%
+. permutation(xs, insertionSort xs)                               %(Theorem11)%
+. permutation(xs, quickSort xs)                                   %(Theorem12)%
+. permutation(xs, mergeSort xs)                                   %(Theorem13)%
+. permutation(xs, selectionSort xs)                               %(Theorem14)%
+end
+\end{Verbatim}

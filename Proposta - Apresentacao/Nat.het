@@ -1,0 +1,11 @@
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+  ops   __ + __  :   Nat * Nat ->  Nat;
+  forall m,n,k : Nat
+  . 0 + m = m                        %(add_0_Nat)%
+  . suc(n) + m = suc(n + m)          %(add_suc_Nat)%
+  . m + 0 = m                        %(add_0_Nat_right)% %implied
+  . m+(n+k) = (m+n)+k                %(add_assoc_Nat)%   %implied
+  . m+suc(n) = suc(m+n)              %(add_suc_Nat)%     %implied
+  . m+n = n+m                        %(add_comm_Nat)%    %implied
+end

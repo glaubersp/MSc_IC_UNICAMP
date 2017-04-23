@@ -1,0 +1,38 @@
+%Arrumar: PODEM-SE
+\section{CASL}
+A linguagem de especificação algébrica CASL surgiu como produto de uma iniciativa internacional para obter uma linguagem única de especificação que pudesse abranger o maior número de construções conhecidas. Esta seção descreve a linguagem CASL e está baseada em \cite{Astesiano2002}.
+
+ Com poucas exceções, as características de CASL estão presentes de alguma forma em outras linguagens de especificação algébrica. Porém, uma única linguagem não serve a todos os propósitos desejados: algumas características sofisticadas requerem paradigmas de programação específicos e aplicações especiais; já métodos de prototipação e geração de especificações funcionam apenas na ausência de certas características. Por exemplo, reescrita de termos requer especificações com axiomas equacionais (com quantificadores ou não).
+
+Desta, forma, CASL foi construída de forma a ser o núcleo de uma família de linguagens: algumas sub-linguagens são obtidas através de restrições semânticas ou sintáticas, enquanto extensões são criadas para dar suporte a vários paradigmas de programação. A criação da linguagem levou em conta extensões previamente planejadas, tal qual a que suporta funções de segunda ordem. Assim, CASL está dividida em várias partes que podem ser entendidas e usadas separadamente, a saber:
+\begin{itemize}
+\item Especificações Básicas: contêm declarações (de tipos e operações), definições (de operações) e axiomas (relacionando as operações);
+\item Especificações Estruturais: permitem que as Especificações Básicas sejam combinadas para formar especificações maiores ; 
+\item Especificações Arquiteturais: definem como devem ser separadas as várias especificações na implementação, de forma que o reuso de especificações dependentes entre si seja possível;
+\item Especificações de Bibliotecas: definem conjuntos de especificações, com construções que permitem controle de versão e de bibliotecas distribuídas pela Internet.
+\end{itemize}
+
+As Especificações Estruturais são independentes das Especificações Básicas; dessa forma, pode-se criar sub-linguagens ou extensões de CASL apenas restringindo ou extendendo as construções das Especificações Básicas, sem que seja necessário alterar os demais tipos. A seguir, descreve-se, sucintamente, as cosntruções mais importantes das Especificações Básicas.
+
+\subsection{Especificações Básicas}
+Uma Especificação Básica denota uma classe de modelos que são estruturas poli-sortidas parciais de primeira ordem; ou seja, álgebras poli-sortidas com funções parciais e totais e com predicados. Estes modelos são classificados por assinaturas, as quais listam: nomes de tipos, de funções (parciais e totais) e de predicados; e, também, definições (ou perfis) de funções e predicados.
+
+As especificações possuem: declarações, que introduzem componentes da assinatura (operações, ou funções, e predicados); e axiomas, que definem propriedades sobre as estruturas que devem servir de modelos para a especificação. As operações podem ser declaradas totais (usando-se `->') ou parciais(usando-se `->?'), e pode-se atribuir às mesmas propriedades comuns, tais como a associatividade, evitando a necessidade de axiomatizar tais propriedades.
+
+Operações parciais são uma maneira simples de tratar erros (como divisão por zero) e a propagação dos mesmos é direta, de tal forma que sempre que um argumento de uma operação não é definido, o resultado da operação também não é definido. Os erros e exceções também podem ser tratados por super-tipos de erros e sub-tipos. O domínio de uma função parcial pode ser definido como um sub-tipo do tipo do argumento da função, de forma a tornar esta função parcial uma função total sobre o sub-tipo. As funções podem ser declaradas totais em sua definição, ao invés de tratar a totalidade nos axiomas.
+
+Os predicados são parecidos com operações, mas não possuem tipo de retorno; apenas o tipo dos parâmetros é declarado. Eles podem ser declarados e definidos ao mesmo tempo, ao invés de terem suas declarações e definições em seções separadas.
+
+Os axiomas são escritos em lógica de primeira ordem sobre fórmulas atômicas. As variáveis a serem usadas nos axiomas podem ser declaradas globalmente, antes dos axiomas; ou podem ser declaradas localmente em relação a uma lista de fórmulas;ou, ainda, podem ser declaradas para cada fórmula, usando quantificação explícita.
+
+CASL permite que sejam incluídas anotações nos axiomas, colocando-se a anotação entre `\%(' e `)\%', de forma que eles possam ser facilmente referenciados ou utilizados por ferramentas; os comentários são incluídos após `\%\%'.
+
+As assertivas de definição são utilizadas para indicar, explicitamente, quando determinado termo está definido ou não. A definição de um termo via assertiva é equivalente a uma igualdade existencial do termo a ele mesmo. Uma igualdade existencial, declarada usando-se `=e=', entre dois termos do mesmo tipo é válida quando os dois termos estão definidos e são iguais; uma igualdade forte, declarada usando-se `=', é válida, também, quando os dois termos estão indefinidos. A interpretação das fórmulas segue a lógica de primeira ordem com dois valores (verdadeiro e falso). Existe, ainda, a assertiva de pertinência de sub-tipo, indicada por `in', que cria um predicado relacionando a pertinência de um elemento a um tipo. Como regra, é aconselhável usar equações existenciais quando definindo condições e propriedades e usar equações fortes quando definindo funções parciais de forma indutiva.
+
+Em CASL, usa-se semântica LOOSE para Especificações Básicas, ou seja, todas as estruturas que satisfazem os axiomas são selecionadas como modelos; esta semântica é interessante durante a análise de requisitos, de forma que estes últimos sejam abrangentes.
+
+Pode-se declarar um tipo de dado como livre, alterando a semântica LOOSE para a semântica inicial. Desta forma, valores de um mesmo tipo que diferem apenas na sequência da aplicação dos seus construtores são tratados como elementos diferentes deste tipo.
+
+A terceira semântica permitida em CASL força os tipos de dados a serem gerados apenas pelos seus construtores. Isto elimina a confusão entre termos, ou seja, a menos que axiomas forcem uma igualdade, os termos são todos diferentes entre si. Esta reintrodução de confusão entre termos é possível através de axiomas.
+
+As declarações de tipos são as únicas em que a visibilidade não é linear. Em todo o restante das especificações, um tempo só pode ser utilizado depois de ser declarado.

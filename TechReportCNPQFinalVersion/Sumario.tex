@@ -1,0 +1,86 @@
+\chapter{Sumário Executivo}
+\label{chap:sumario}
+
+O presente relatório apresenta uma versão preliminar da dissertação de mestrado do aluno \textit{Glauber Módolo Cabral}, desenvolvida sob a orientação do professor \textit{Dr. Arnaldo Vieira Moura}, no programa de \textit{Mestrado Acadêmico} da \textit{Universidade Estadual de Campinas (UNICAMP)}.
+Este trabalho está inserido no âmbito do processo CNPq n$\,^{\circ}$: 132039/2007-9.
+
+O projeto original contemplou a construção de uma biblioteca para a linguagem de especificação algébrica \HasCASL.
+A especificação teve como base a biblioteca \Prelude pertencente à linguagem de programação \Haskell.
+O texto detalha as decisões técnicas e discute detalhes da especificação desenvolvida.
+
+A fim de representar totalmente os recursos da linguagem \Haskell, a biblioteca deveria utilizar avaliação preguiçosa de dados, funções contínuas e tipos de dados infinitos.
+Para tanto, seria necessário fazer uso das construções mais avançadas da linguagem \HasCASL, cujas provas envolveriam duas lógicas no provador de teoremas \Isabelle e exigiriam algumas opções do analisador sintático e tradutor de códigos \Hets que ainda não haviam sido implementadas à época do início do trabalho.
+Em face destes fatos, optou-se por utilizar a avaliação estrita de tipos de dados na biblioteca e deixar a introdução de recursos mais avançados para um refinamento posterior.
+
+%Dificuldades
+A primeira dificuldade encontrada envolveu as linguagens \CASL e \HasCASL.
+Embora ambas possam ser usadas conjuntamente, uma vez que todas as construções de \CASL são válidas na linguagem \HasCASL, existem algumas exceções.
+Por outro lado, nosso plano original previa apenas utilizar a linguagem \HasCASL e seus recursos.
+O manual então existente descrevia apenas a linguagem \CASL e suas aplicações.
+A documentação da linguagem \HasCASL ainda está voltada para questões teóricas envolvidas nas construções da linguagem e não descreve facilmente o uso destas últimas.
+Dessa forma, usar precisamente a sintaxe de ambas as linguagens, uma vez que a quase totalidade de exemplos existentes estão escritos em \CASL, mostrou-se uma tarefa complexa.
+
+Uma outra dificuldade no início do trabalho envolveu a correta diferenciação entre as relações lógicas (igualdade e relações de ordem) da linguagem \HasCASL e as funções presentes na biblioteca para as mesmas relações lógicas.
+Como o tipo \Verb.Bool. foi redefinido, a equivalência lógica entre axiomas causou certa confusão.
+Embora os axiomas fossem equivalentes, o uso dos mesmos como regras de reescrita pelo provador de teoremas não era equivalente.
+Mais especificamente, axiomas podiam ser definidos por igualdade, como em
+\begin{Verbatim}
+. (x > y) = (y < x)
+\end{Verbatim}
+
+ou pelo operador de equivalência de \HasCASL, como em
+\begin{Verbatim}
+. (x > y) = True  <=> (y < x) = True
+\end{Verbatim}
+
+No primeiro caso, embora fosse uma melhor escolha como regra de reescrita, não foi possível associar um valor do tipo \Verb.Bool. redefinido a cada membro da igualdade.
+O segundo caso, embora adicione informações aparentemente redundantes, representa a forma correta de definir uma regra de reescrita com o tipo \Verb.Bool. redefinido.
+A fim de implementar a primeira sintaxe, permitindo maior clareza no código, foi necessário realizar a introdução da avaliação preguiçosa e a alteração do tipo de dados \Verb.Bool..
+
+O aprendizado do uso do provador de teoremas \Isabelle também se mostrou um fator complicador considerável no trabalho.
+A decisão de escrever as provas usando a linguagem \HOL ao invés de \textit{Isar}, embora tenha simplificado o início do trabalho por ser a linguagem utilizada no tutorial do provador, tornou a escrita de provas maiores um trabalho mais complexo.
+Um detalhe que causou certa dificuldade inicial foi a maneira como \Isabelle usa os axiomas como regras de reescrita.
+Se um predicado \Verb.P. implica em um predicado \Verb.Q. (\Verb.P ==> Q.), o provador de teoremas tenta casar o predicado \Verb.Q. com o alvo a ser provado, construindo a prova de baixo para cima, o que não é a forma usual de se raciocinar.
+
+Como \HasCASL é um projeto em desenvolvimento, a ferramenta \Hets, para análise e tradução de especificações, não está completamente implementada.
+Especificações envolvendo avaliação preguiçosa e o subconjunto executável da linguagem \HasCASL ainda não podem ser traduzidos para uso direto no provador de teoremas \Isabelle.
+As dificuldades foram sanadas graças a soluções gentilmente sugeridas pelos desenvolvedores da ferramenta \Hets.
+
+%Resultados principais
+O trabalho resultou em uma biblioteca que inclui a especificação de quase todos os tipos de dados e de várias funções presentes na biblioteca \Prelude.
+Foi utilizada a avaliação estrita de tipos de dados ao invés da avaliação preguiçosa devido à complexidade que esta última introduz nas especificações e ao fato de a avaliação preguiçosa poder ser introduzida na biblioteca através de um futuro refinamento.
+A quase totalidade dos teoremas propostos para as especificações da biblioteca foi provada através do provador de teoremas \Isabelle.
+
+Em um segundo momento do trabalho foi realizada uma extensão da biblioteca para adicionar o uso da avaliação preguiçosa de tipos de dados.
+Esta extensão resultou em uma nova versão da biblioteca e na necessidade de se reescrever as provas desenvolvidas.
+Embora essa extensão ainda não tenha traduzido a biblioteca para o subconjunto executável da linguagem \HasCASL, que pode ser traduzido para a linguagem de programação \Haskell, a biblioteca pode ser usada para especificar pequenos programas envolvendo tipos básicos de dados e estruturas simples.
+
+%Trabalhos Futuros
+O trabalho ainda apresenta algumas provas incompletas e algumas funções da biblioteca \Prelude ainda sem especificação.
+Algumas das provas parecem requerer conhecimentos avançados da linguagem \HOL e as funções não especificadas envolvem algumas questões em aberto.
+
+Uma das questões que permanece em aberto é o tratamento de especificações numéricas, as quais não conseguem ser usadas pelo provador \Isabelle como regras de reescrita justamente por não possuírem todos os lemas correlatos necessários e nem vínculos entre seus axiomas e axiomas dos tipos numéricos presentes na linguagem \HOL.
+Especificar todos os tipos numéricos novamente para incluir os lemas faltantes não se mostrou uma opção viável.
+Uma possível solução seria criar isomorfismos entre os tipos numéricos da linguagem \HOL e os tipos especificados nas bibliotecas numéricas da linguagem \CASL.
+Se o isomorfismo for chamado de \Verb.h., pode-se provar um alvo da forma \Verb.t1 = t2. injetando o isomorfismo através da regra \Verb.h x = h y ==> x = y..
+Esta regra resulta em um novo alvo, \Verb.h t1 = h t2., que poderia ser escrito em termos de tipos primitivos de \HOL e, dessa forma, ser provado pelo provador \Isabelle com os axiomas e lemas preexistentes em \HOL.
+Este isomorfismo poderia ser estendido para a especificação de listas.
+Como a linguagem \Haskell trabalha basicamente com listas, esta extensão do isomorfismo facilitaria o processo de prova de várias especificações.
+
+Uma solução para o problema dos tipos numéricos permitiria que o restante das funções da biblioteca \Prelude pudessem ser especificadas e verificadas.
+É o caso, por exemplo, de várias funções da especificação \Verb.List. que foram suprimidas uma vez que a sua inclusão, devido a dependência de especificações numéricas, impedia a construção das provas de lemas envolvendo as demais funções não dependentes de números.
+
+Embora tenha sido realizada a inclusão inicial da avaliação preguiçosa, ainda é necessário utilizar o subconjunto executável da linguagem \HasCASL para que o comportamento das especificações seja equivalente ao das funções em \Haskell.
+No entanto, o uso deste subconjunto já permitiria a especificação de recursão e de tipos infinitos de dados, bem como a tradução das especificações para códigos executáveis em \Haskell.
+
+% Descrição do documento
+\setstretch{0.9}
+As demais seções estão organizadas da seguinte forma.
+A Seção \ref{chap:revisaobib} apresenta um breve resumo de algumas linguagens de especificação formal existentes, e que são relacionadas à linguagem utilizada neste trabalho.
+A Seção \ref{chap:HasCASLTutorial} introduz a linguagem de especificação algébrica \CASL e descreve em maiores detalhes a linguagem \HasCASL, a sublinguagem de \CASL utilizada neste trabalho e que possui suporte para lógica de segunda ordem e, também, um subconjunto de construções semânticas semelhantes à linguagem de programação \Haskell.
+A construção da biblioteca que foi objeto de estudo está relatada na Seção \ref{chap:desenvBiblioteca}, justificando decisões de projeto e detalhando as especificações criadas.
+A verificação da biblioteca criada na seção anterior é reportada na Seção \ref{chap:hetseisabelle}, introduzindo as ferramentas necessárias para a verificação e explicando seu uso na verificação da biblioteca desenvolvida.
+Como a biblioteca criada não contemplou o uso de avaliação preguiçosa, recursão e tipos de dados infinitos, uma extensão da biblioteca foi realizada com o intuito de incluir suporte a estes elementos. A Seção \ref{chap:laziness} descreve esta extensão, discutindo o que foi realizado e os problemas que ainda persistem.
+Os Apêndices \ref{appendix:strictSpec} e \ref{appendix:strictProofs} listam, respectivamente, o código da biblioteca na versão sem avaliação preguiçosa e as provas escritas para esta versão da biblioteca. A biblioteca resultante da extensão está listada no Apêndice \ref{appendix:lazySpec} e as respectivas provas encontram-se no Apêndice \ref{appendix:lazyProofs}.
+
+\setstretch{1}
